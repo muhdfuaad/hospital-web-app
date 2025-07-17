@@ -12,7 +12,11 @@ type UserMap = {
 
 const users: UserMap = {
   Managment: {
+<<<<<<< HEAD
     Fuad: "Managment123",
+=======
+    Arjun: "Managment123",
+>>>>>>> 05d2ae34a0e7678004ff706fcf4df00e640b4c27
     Swetha: "Managment123",
   },
   admin: {
