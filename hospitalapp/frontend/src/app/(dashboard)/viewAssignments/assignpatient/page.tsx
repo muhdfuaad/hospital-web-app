@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { User, Calendar, Clock, Users, UserCheck, Heart, FileText, Search, ExternalLink } from 'lucide-react';
 import { useSearchParams, useRouter } from 'next/navigation';
+import API from '@/lib/axios';
 
 interface FormErrors {
   [key: string]: string;
@@ -71,12 +72,6 @@ const AssignmentForm = () => {
 
   const [errors, setErrors] = useState<FormErrors>({});
 
-  // Data states
-  const [patients, setPatients] = useState<Patient[]>([]);
-  const [doctors, setDoctors] = useState<Doctor[]>([]);
-  const [volunteers, setVolunteers] = useState<Volunteer[]>([]);
-  const [nurses, setNurses] = useState<Nurse[]>([]);
-
   // Search states
   const [patientSearch, setPatientSearch] = useState('');
   const [doctorSearch, setDoctorSearch] = useState('');
@@ -95,12 +90,16 @@ const AssignmentForm = () => {
   const isEdit = searchParams.get("edit")?.toLowerCase() === "true";
   const editId = searchParams.get("id");
 
+  // Data states
+  const [patients, setPatients] = useState<Patient[]>([]);
+  const [doctors, setDoctors] = useState<Doctor[]>([]);
+  const [volunteers, setVolunteers] = useState<Volunteer[]>([]);
+  const [nurses, setNurses] = useState<Nurse[]>([]);
 
   // API functions
   const fetchPatients = async () => {
     try {
-      const response = await fetch('https://localhost:7112/api/Hpforms/all-patients');
-      const data = await response.json();
+      const { data } = await API.get<Patient[]>('/api/Hpforms/all-patients');
       setPatients(data);
     } catch (error) {
       console.error('Error fetching patients:', error);
@@ -110,31 +109,31 @@ const AssignmentForm = () => {
 
   const fetchDoctors = async () => {
     try {
-      const response = await fetch('https://localhost:7112/api/Doctors/all-doctors');
-      const data = await response.json();
+      const { data } = await API.get<Doctor[]>('/api/Doctors/all-doctors');
       setDoctors(data);
     } catch (error) {
       console.error('Error fetching doctors:', error);
+      setDoctors([]);
     }
   };
 
   const fetchVolunteers = async () => {
     try {
-      const response = await fetch('https://localhost:7112/api/Volunteers/all-volunteers');
-      const data = await response.json();
+      const { data } = await API.get<Volunteer[]>('/api/Volunteers/all-volunteers');
       setVolunteers(data);
     } catch (error) {
       console.error('Error fetching volunteers:', error);
+      setVolunteers([]);
     }
   };
 
   const fetchNurses = async () => {
     try {
-      const response = await fetch('https://localhost:7112/api/Nurses/all-nurses');
-      const data = await response.json();
+      const { data } = await API.get<Nurse[]>('/api/Nurses/all-nurses');
       setNurses(data);
     } catch (error) {
       console.error('Error fetching nurses:', error);
+      setNurses([]);
     }
   };
 
@@ -142,9 +141,7 @@ const AssignmentForm = () => {
     const fetchAssignmentForEdit = async () => {
       if (isEdit && editId) {
         try {
-          const res = await fetch(`https://localhost:7112/api/PatientAssignments/byAssignmentId/${editId}`);
-          if (!res.ok) throw new Error("Failed to fetch assignment data");
-          const data = await res.json();
+          const { data }: { data: Record<string, any> } = await API.get(`/api/PatientAssignments/byAssignmentId/${editId}`);
 
           // Get current time in HH:MM format
           const now = new Date();
@@ -152,8 +149,8 @@ const AssignmentForm = () => {
 
           setFormData({
             assignmentId: data.assignmentId || "",
-            date: data.date?.slice(0, 10) || "", // yyyy-mm-dd
-            time: currentTime, // ✅ Use current time instead of data.time
+            date: data.date?.slice(0, 10) || "",
+            time: currentTime,
             patientId: data.patientId || "",
             doctorId: data.doctorId || "",
             volunteerId: data.volunteerId || "",
@@ -161,18 +158,18 @@ const AssignmentForm = () => {
             description: data.description || "",
           });
 
-          // Optionally set search inputs
+          // Pre-fill SearchableSelect display strings
           const selectedPatient = patients.find(p => p.id === data.patientId);
-          if (selectedPatient) setPatientSearch(`${selectedPatient.id} | ${selectedPatient.name} | ${selectedPatient.phone}`);
+          if (selectedPatient) setPatientSearch(`${selectedPatient.id} | ${selectedPatient.name} | ${selectedPatient.phone || ""}`);
 
           const selectedDoctor = doctors.find(d => d.id === data.doctorId);
-          if (selectedDoctor) setDoctorSearch(`${selectedDoctor.id} | ${selectedDoctor.name} | ${selectedDoctor.phone}`);
+          if (selectedDoctor) setDoctorSearch(`${selectedDoctor.id} | ${selectedDoctor.name} | ${selectedDoctor.phone || ""}`);
 
           const selectedVolunteer = volunteers.find(v => v.id === data.volunteerId);
-          if (selectedVolunteer) setVolunteerSearch(`${selectedVolunteer.id} | ${selectedVolunteer.name} | ${selectedVolunteer.phone}`);
+          if (selectedVolunteer) setVolunteerSearch(`${selectedVolunteer.id} | ${selectedVolunteer.name} | ${selectedVolunteer.phone || ""}`);
 
           const selectedNurse = nurses.find(n => n.id === data.nurseId);
-          if (selectedNurse) setNurseSearch(`${selectedNurse.id} | ${selectedNurse.name} | ${selectedNurse.phone}`);
+          if (selectedNurse) setNurseSearch(`${selectedNurse.id} | ${selectedNurse.name} | ${selectedNurse.phone || ""}`);
         } catch (err) {
           console.error("Error fetching assignment for edit:", err);
           alert("Failed to load assignment for editing.");
@@ -180,7 +177,6 @@ const AssignmentForm = () => {
       }
     };
 
-    // Wait for all dropdown data to be fetched before fetching the assignment
     if (patients.length && doctors.length && volunteers.length && nurses.length) {
       fetchAssignmentForEdit();
     }
@@ -192,13 +188,12 @@ const AssignmentForm = () => {
     return `PT-${paddedNumber}`;
   };
 
-  const dropdownRef = useRef<HTMLDivElement>(null);
-
+  //to fetch last assignment Id
   useEffect(() => {
     const fetchLastAssignmentId = async () => {
       try {
-        const res = await fetch('https://localhost:7112/api/PatientAssignments/getid');
-        const lastId = await res.text();
+        const res = await API.get<string>('/api/PatientAssignments/getid'); // response is plain text
+        const lastId = res.data;
 
         const lastNumber = parseInt(lastId.replace('PT-', '')) || 0;
         const newCounter = lastNumber + 1;
@@ -260,7 +255,7 @@ const AssignmentForm = () => {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, [activeDropdown]);
 
-  
+
   // Filter functions
   function filterBySearch<T extends { id: string; name: string; phone?: string }>(
     items: T[],
@@ -313,6 +308,9 @@ const AssignmentForm = () => {
     return Object.keys(newErrors).length === 0;
   };
 
+  const [submitMessage, setSubmitMessage] = useState('');
+  const [submitStatus, setSubmitStatus] = useState<'success' | 'error' | ''>('');
+
   const handleSubmit = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
 
@@ -335,42 +333,32 @@ const AssignmentForm = () => {
           description: submissionData.description,
         };
 
-        let response;
         if (isEdit && editId) {
-          // PUT request for update
-          response = await fetch(`https://localhost:7112/api/PatientAssignments/updateByAssignmentId/${editId}`, {
-            method: "PUT",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify(apiData),  // ✅ NO "id" field here
-          });
+          await API.put(`/api/PatientAssignments/updateByAssignmentId/${editId}`, apiData);
+          setSubmitMessage("Assignment updated successfully!");
         } else {
-          // POST request for create
-          response = await fetch("https://localhost:7112/api/PatientAssignments", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify(apiData),
-          });
+          await API.post("/api/PatientAssignments", apiData);
+          setSubmitMessage("Assignment created successfully!");
         }
 
+        setSubmitStatus("success");
 
-        if (!response.ok) {
-          const errorText = await response.text();
-          throw new Error(`HTTP ${response.status}: ${errorText}`);
-        }
-
-        alert(`Assignment ${isEdit ? "updated" : "created"} successfully!`);
-        router.push("/viewAssignments");
-      } catch (error) {
+        setTimeout(() => {
+          router.push("/viewAssignments");
+        }, 1000);
+      } catch (error: any) {
         console.error("Error submitting assignment:", error);
-        const errorMessage = error instanceof Error ? error.message : "An unknown error occurred";
-        alert(`Failed to ${isEdit ? "update" : "create"} assignment: ${errorMessage}`);
+        const errorMessage =
+          error.response?.data?.message ||
+          error.message ||
+          "An unknown error occurred";
+
+        setSubmitMessage(`Failed to ${isEdit ? "update" : "create"} assignment: ${errorMessage}`);
+        setSubmitStatus("error");
       }
     }
   };
+
 
   return (
     <div className="min-h-screen w-full bg-gray-50 px-0 py-0">
@@ -593,6 +581,17 @@ const AssignmentForm = () => {
             </div>
 
             {/* Submit Button */}
+            {/* Submit Status Message */}
+            {submitMessage && (
+              <div
+                className={`mb-4 p-3 rounded-lg text-center text-sm font-semibold ${submitStatus === 'success'
+                  ? 'bg-green-100 text-green-800 border border-green-300'
+                  : 'bg-red-100 text-red-800 border border-red-300'
+                  }`}
+              >
+                {submitMessage}
+              </div>
+            )}
             <div className="flex justify-center pt-6">
               <button
                 onClick={handleSubmit}

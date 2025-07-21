@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { User, Eye, MapPin, Building, Pill, Heart, Activity, Phone, Calendar, FileText, DollarSign, HandHeart, Camera, Upload, Users, AlertCircle, ClipboardList, CheckCircle, Shield, RotateCcw, Lock, Plus, X, Check, Home } from 'lucide-react';
 import { useSearchParams } from 'next/navigation';
+import API from '@/lib/axios';
 import { useRouter } from 'next/navigation';
 
 // Type definitions matching backend
@@ -62,8 +63,8 @@ interface PatientDetailDto {
 
 const PatientRegistrationForm = () => {
     // Configuration
-    const API_BASE_URL = 'https://localhost:7112/api/PatientDetails';
-
+    // const API_BASE_URL = 'https://localhost:7112/api';
+    const API_BASE_URL = API.defaults.baseURL;
     const router = useRouter();
     const searchParams = useSearchParams();
     const incomingPatientId = searchParams.get('patientId');
@@ -153,29 +154,6 @@ const PatientRegistrationForm = () => {
         'Urinary problems', 'Mouth Ulcers', 'Bad smell', 'Drug Allergies', 'Other'
     ];
 
-    const economicSituationOptions = ['Poor', 'Lower Middle Class', 'Middle Class', 'Upper Middle Class', 'Rich'];
-    const relationOptions = ['Spouse', 'Child', 'Parent', 'Sibling', 'Relative', 'Friend', 'Other'];
-    const maritalStatusOptions = ['Single', 'Married', 'Divorced', 'Widowed'];
-
-    // Fetch clinic master data
-    useEffect(() => {
-        const fetchClinics = async () => {
-            try {
-                const response = await fetch("https://localhost:7112/api/ClinicMasters");
-                if (response.ok) {
-                    const data: ClinicMaster[] = await response.json();
-                    setClinicMasters(Array.isArray(data) ? data : []);
-                } else {
-                    console.error("❌ Failed to fetch clinics");
-                }
-            } catch (error) {
-                console.error("❌ Error fetching clinics:", error);
-            }
-        };
-
-        fetchClinics();
-    }, []);
-
     // Set incoming patientId into formData
     useEffect(() => {
         if (!incomingPatientId) return;
@@ -190,7 +168,7 @@ const PatientRegistrationForm = () => {
         const checkIfEditMode = async () => {
             setIsLoading(true);
             try {
-                const res = await fetch(`${API_BASE_URL}/patient/${incomingPatientId}`);
+                const res = await fetch(`${API_BASE_URL}/PatientDetails/patient/${incomingPatientId}`);
                 if (!res.ok) throw new Error("Patient not found");
 
                 const data: PatientDetailDto = await res.json();
@@ -223,7 +201,7 @@ const PatientRegistrationForm = () => {
             const fetchPatientData = async () => {
                 setIsLoading(true);
                 try {
-                    const res = await fetch(`${API_BASE_URL}/patient/${incomingPatientId}`);
+                    const res = await fetch(`${API_BASE_URL}/PatientDetails/patient/${incomingPatientId}`);
                     if (!res.ok) throw new Error("Patient fetch failed");
 
                     const data: PatientDetailDto = await res.json();
@@ -360,10 +338,6 @@ const PatientRegistrationForm = () => {
         return formDataObj;
     };
 
-    const handleInputChange = (field: string, value: string) => {
-        setFormData(prev => ({ ...prev, [field]: value }));
-    };
-
     const handleTreatmentChange = (treatmentKey: string, checked: boolean) => {
         setFormData(prev => ({
             ...prev,
@@ -405,13 +379,30 @@ const PatientRegistrationForm = () => {
         setClinics(updated);
     };
 
+    // Fetch clinic master data
+    useEffect(() => {
+        const fetchClinics = async () => {
+            try {
+                const { data } = await API.get<ClinicMaster[]>('/api/ClinicMasters');
+                setClinicMasters(Array.isArray(data) ? data : []);
+            } catch (error) {
+                console.error('❌ Error fetching clinics:', error);
+            }
+        };
+
+        fetchClinics();
+    }, []);
+
     const handleAddClinic = async () => {
         const trimmed = newClinicName.trim();
         if (!trimmed) {
             setClinicError('Clinic name is required');
             return;
         }
-        const exists = clinicMasters.some(c => c.clinicName.toLowerCase() === trimmed.toLowerCase());
+
+        const exists = clinicMasters.some(
+            (c) => c.clinicName.toLowerCase() === trimmed.toLowerCase()
+        );
         if (exists) {
             setClinicError('Clinic already exists');
             return;
@@ -419,16 +410,15 @@ const PatientRegistrationForm = () => {
 
         setIsClinicLoading(true);
         try {
-            const res = await fetch('https://localhost:7112/api/ClinicMasters', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ clinicName: trimmed }),
+            const { data: saved } = await API.post<ClinicMaster>('/api/ClinicMasters', {
+                clinicName: trimmed,
             });
 
-            if (!res.ok) throw new Error('Failed to save clinic');
-            const saved = await res.json();
-            setClinicMasters(prev => [...prev, saved]);
-            setClinics(prev => [...prev, { clinicName: saved.clinicName, registerNo: '', remarks: '' }]);
+            setClinicMasters((prev) => [...prev, saved]);
+            setClinics((prev) => [
+                ...prev,
+                { clinicName: saved.clinicName, registerNo: '', remarks: '' },
+            ]);
             setShowClinicModal(false);
             setNewClinicName('');
         } catch (err) {
@@ -438,10 +428,6 @@ const PatientRegistrationForm = () => {
             setIsClinicLoading(false);
         }
     };
-
-
-
-
 
     // Difficulty handlers
     const addDifficulty = () => {
@@ -521,8 +507,8 @@ const PatientRegistrationForm = () => {
             setIsSubmitting(true);
 
             const url = isEditMode
-                ? `${API_BASE_URL}/patient/${formData.patientId}` // PUT
-                : `${API_BASE_URL}`;                     // POST
+                ? `${API_BASE_URL}/PatientDetails/patient/${formData.patientId}` // PUT
+                : `${API_BASE_URL}/PatientDetails`;                     // POST
 
             const response = await fetch(url, {
                 method: isEditMode ? 'PUT' : 'POST',
@@ -535,7 +521,7 @@ const PatientRegistrationForm = () => {
             if (response.ok) {
                 setSubmitMessage('✅ Patient details saved successfully!');
                 setSubmitStatus('success');
-                router.push('/viewpatients');
+                router.push('/Viewpatients');
             } else {
                 const errorText = await response.text(); // Fetch full error from backend
                 console.error('❌ Error from backend:', errorText);
@@ -1361,12 +1347,13 @@ const PatientRegistrationForm = () => {
                         <div className="flex justify-center mt-10">
                             <button
                                 type="submit"
-                                className="bg-gradient-to-r from-green-600 to-green-700 text-white px-12 py-4 rounded-2xl text-lg font-semibold hover:from-green-700 hover:to-green-800 transition-all duration-300 transform hover:scale-105 shadow-xl hover:shadow-2xl flex items-center gap-3"
+                                className="bg-gradient-to-r from-green-600 to-green-700 text-white px-6 py-3 md:px-10 md:py-3 rounded-xl text-base md:text-lg font-semibold hover:from-green-700 hover:to-green-800 transition-all duration-300 transform hover:scale-105 shadow-md hover:shadow-xl flex items-center gap-2"
                             >
-                                <Check className="w-6 h-6" />
+                                <Check className="w-5 h-5" />
                                 Submit Patient Registration Form
                             </button>
                         </div>
+
                         {/* Submit Status Message */}
                         {submitMessage && (
                             <div className={`mb-4 p-3 rounded-lg text-center text-sm font-semibold ${submitStatus === 'success'

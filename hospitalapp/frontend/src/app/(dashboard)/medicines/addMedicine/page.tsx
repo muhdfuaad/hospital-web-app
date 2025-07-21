@@ -2,6 +2,9 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
+import API from '@/lib/axios';
+
+const API_BASE = API.defaults.baseURL;
 
 interface CompanyOption {
   id: number;
@@ -86,8 +89,8 @@ export default function MedicineFormPage() {
       try {
         // Fetch dropdowns first
         const [companiesRes, typesRes] = await Promise.all([
-          fetch('https://localhost:7112/api/MedicineCompanies'),
-          fetch('https://localhost:7112/api/MedicineTypes')
+          fetch(`${API_BASE}/api/MedicineCompanies`),
+          fetch(`${API_BASE}/api/MedicineTypes`)
         ]);
 
         if (!companiesRes.ok || !typesRes.ok) {
@@ -103,7 +106,7 @@ export default function MedicineFormPage() {
         // If editing, fetch medicine
         if (editId) {
           setIsEditMode(true);
-          const res = await fetch(`https://localhost:7112/api/Medicines/${editId}`);
+          const res = await fetch(`${API_BASE}/api/Medicines/${editId}`);
           if (!res.ok) {
             console.error('Failed to fetch medicine data for edit');
             return;
@@ -150,8 +153,8 @@ export default function MedicineFormPage() {
     async function fetchDropdowns() {
       try {
         const [companiesRes, typesRes] = await Promise.all([
-          fetch('https://localhost:7112/api/MedicineCompanies'),
-          fetch('https://localhost:7112/api/MedicineTypes')
+          fetch(`${API_BASE}/api/MedicineCompanies`),
+          fetch(`${API_BASE}/api/MedicineTypes`)
         ]);
 
         if (!companiesRes.ok || !typesRes.ok) {
@@ -225,8 +228,8 @@ export default function MedicineFormPage() {
       };
 
       const url = editId
-        ? `https://localhost:7112/api/Medicines/${editId}`
-        : 'https://localhost:7112/api/Medicines';
+        ? `${API_BASE}/api/Medicines/${editId}`
+        : `${API_BASE}/api/Medicines`;
 
       const method = editId ? 'PUT' : 'POST';
 
@@ -297,7 +300,7 @@ export default function MedicineFormPage() {
   // Add these functions to handle API calls
   const fetchCompanies = async () => {
     try {
-      const response = await fetch('https://localhost:7112/api/MedicineCompanies');
+      const response = await fetch(`${API_BASE}/api/MedicineCompanies`);
       const data: { companyId: number; companyName: string }[] = await response.json();
 
       setCompanies(data.map(c => ({
@@ -311,7 +314,7 @@ export default function MedicineFormPage() {
 
   const fetchTypes = async () => {
     try {
-      const response = await fetch('https://localhost:7112/api/MedicineTypes');
+      const response = await fetch(`${API_BASE}/api/MedicineTypes`);
       const data: { typeId: number; typeName: string }[] = await response.json();
 
       setTypes(data.map(t => ({
@@ -327,7 +330,7 @@ export default function MedicineFormPage() {
   const handleAddCompany = async () => {
     if (newCompany.trim()) {
       try {
-        const response = await fetch('https://localhost:7112/api/MedicineCompanies', {
+        const response = await fetch(`${API_BASE}/api/MedicineCompanies`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ companyName: newCompany.trim() })
@@ -366,7 +369,7 @@ export default function MedicineFormPage() {
   const handleAddType = async () => {
     if (newType.trim()) {
       try {
-        const response = await fetch('https://localhost:7112/api/MedicineTypes', {
+        const response = await fetch(`${API_BASE}/api/MedicineTypes`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ typeName: newType.trim() })

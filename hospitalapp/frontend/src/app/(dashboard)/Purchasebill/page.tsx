@@ -1,9 +1,10 @@
-
 'use client';
 import React, { useState, useEffect, useRef } from 'react';
-import { Combobox } from '@headlessui/react';
 import { Trash2, Plus, X, User, Users, Edit, Save, ChevronDown } from 'lucide-react';
 import { SearchableSelect } from '@/components/SearchableSelect';
+import API from '@/lib/axios';
+
+const API_BASE = API.defaults.baseURL;
 
 // Types
 interface Supplier {
@@ -17,6 +18,8 @@ interface Medicine {
     id: number;
     itemCode: string;
     medicineName: string;
+    type: string;
+    packItem: string;
     purchaseRate: number;
     salesRate: number;
     gst: number;
@@ -26,9 +29,10 @@ interface Medicine {
 interface PurchaseItem {
     id: number;
     itemCode: string;
+    type: string;
+    packItem: string;
     medicineId: number;
     medicineName: string;
-
     batchNo: string;
     expiryDate: string;
     qty: number;
@@ -36,8 +40,17 @@ interface PurchaseItem {
     purchaseRate: number;
     salesRate: number;
     gst: number;
-    amount: number;
+    totalAmount: number;
     hsnCode: string;
+
+    baseAmount?: number;
+    gstAmount?: number;
+    cgstAmount?: number;
+    sgstAmount?: number;
+    igstAmount?: number;
+    mrp?: number;
+    discountPercent?: number;
+    discountAmount?: number;
 }
 
 interface PurchaseBill {
@@ -60,6 +73,8 @@ interface PurchaseBill {
     igst: number;
     cessAmount: number;
     finalTotal: number;
+    taxType?: 'intra' | 'inter';
+    isCancelled?: boolean;
 }
 
 const PurchaseBillPage: React.FC = () => {
@@ -78,6 +93,8 @@ const PurchaseBillPage: React.FC = () => {
                 id: Date.now(),
                 itemCode: '',
                 medicineId: 0,
+                type: '',
+                packItem: '',
                 medicineName: '',
                 batchNo: '',
                 expiryDate: '',
@@ -86,8 +103,14 @@ const PurchaseBillPage: React.FC = () => {
                 purchaseRate: 0,
                 salesRate: 0,
                 gst: 0,
-                amount: 0,
-                hsnCode: ''
+                totalAmount: 0,
+                hsnCode: '',
+                discountPercent: 0, // ✅ set this default
+                baseAmount: 0,
+                gstAmount: 0,
+                cgstAmount: 0,
+                sgstAmount: 0,
+                igstAmount: 0
             }
         ],
         grossTotal: 0,
@@ -107,23 +130,19 @@ const PurchaseBillPage: React.FC = () => {
     const [loading, setLoading] = useState(false);
     const [editingItem, setEditingItem] = useState<number | null>(null);
 
-    const [dropdownPosition, setDropdownPosition] = useState<{ top: number; left: number; width: number } | null>(null);
-    const inputRefs = useRef<{ [key: number]: HTMLInputElement | null }>({});
+    const isCancelled = purchaseBill.isCancelled === true;
+    const isFinalized = purchaseBill.finalTotal > 0; // Or use a separate status field like purchaseBill.status === 'finalized'
 
-    const handleEnterKey = (e: React.KeyboardEvent<HTMLInputElement>, index: number) => {
-        if (e.key === "Enter") {
-            e.preventDefault();
-            const next = inputRefs.current[index + 1];
-            if (next) {
-                next.focus();
-            }
-        }
-    };
+
+    const inputRefs = useRef<{ [key: number]: HTMLInputElement | null }>({});
+    const fieldRefs = useRef<{ [key: string]: HTMLInputElement | null }>({});
+
+
     // Fetch suppliers from API
     useEffect(() => {
         const fetchSuppliers = async () => {
             try {
-                const res = await fetch('https://localhost:7112/api/Suppliers');
+                const res = await fetch(`${API_BASE}/api/Suppliers`);
                 const data = await res.json();
                 setSuppliers(data);
             } catch (error) {
@@ -137,7 +156,7 @@ const PurchaseBillPage: React.FC = () => {
     useEffect(() => {
         const fetchMedicines = async () => {
             try {
-                const res = await fetch('https://localhost:7112/api/Medicines/dropdown');
+                const res = await fetch(`${API_BASE}/api/Medicines/dropdown`);
                 if (!res.ok) {
                     throw new Error('Failed to fetch medicines');
                 }
@@ -150,35 +169,24 @@ const PurchaseBillPage: React.FC = () => {
         fetchMedicines();
     }, []);
 
-    // Fetch supplier details
-    const fetchSupplierDetails = async () => {
-        if (!purchaseBill.supplierId) return;
 
-        setLoading(true);
-        try {
-            const selectedSupplier = suppliers.find(s => s.id === purchaseBill.supplierId);
-            if (selectedSupplier) {
-                setPurchaseBill(prev => ({
-                    ...prev,
-                    supplierName: selectedSupplier.name,
-                    supplierAddress: selectedSupplier.address,
-                    gst: selectedSupplier.gstNo
-                }));
-            }
-        } catch (error) {
-            console.error('Error fetching supplier details:', error);
-        } finally {
-            setLoading(false);
-        }
+    // Filter medicines based on search term
+    const getFilteredMedicines = (itemId: number) => {
+        const searchTerm = medicineSearches[itemId] || '';
+        return medicines.filter((medicine) =>
+            medicine.medicineName?.toLowerCase().startsWith(searchTerm.toLowerCase())
+        );
     };
 
     // Add new item row
     const addItem = () => {
         const newItem: PurchaseItem = {
             id: Date.now(),
-            itemCode: '',
             medicineId: 0,
             medicineName: '',
+            itemCode: '',
+            type: '',
+            packItem: '',
             batchNo: '',
             expiryDate: '',
             qty: 1,
@@ -186,8 +194,14 @@ const PurchaseBillPage: React.FC = () => {
             purchaseRate: 0,
             salesRate: 0,
             gst: 0,
-            amount: 0,
-            hsnCode: ''
+            hsnCode: '',
+            discountPercent: 0, // ✅ set this default
+            totalAmount: 0,
+            baseAmount: 0,
+            gstAmount: 0,
+            cgstAmount: 0,
+            sgstAmount: 0,
+            igstAmount: 0,
         };
 
         setPurchaseBill(prev => ({
@@ -198,53 +212,92 @@ const PurchaseBillPage: React.FC = () => {
 
     // Remove item
     const removeItem = (itemId: number) => {
+        if (purchaseBill.isCancelled || purchaseBill.finalTotal > 0) {
+            alert("This bill is finalized or cancelled. Items cannot be deleted.");
+            return;
+        }
+
         setPurchaseBill(prev => ({
             ...prev,
             items: prev.items.filter(item => item.id !== itemId)
         }));
     };
 
+
     // Update item
     const updateItem = (itemId: number, field: keyof PurchaseItem, value: any) => {
-        setPurchaseBill(prev => ({
-            ...prev,
-            items: prev.items.map(item => {
+        setPurchaseBill(prev => {
+            const updatedItems = prev.items.map(item => {
                 if (item.id === itemId) {
                     const updatedItem = { ...item };
 
-                    if (field === 'qty' || field === 'freeQty' || field === 'purchaseRate' || field === 'salesRate' || field === 'gst') {
+                    // Parse and set value
+                    if (
+                        field === 'qty' ||
+                        field === 'freeQty' ||
+                        field === 'purchaseRate' ||
+                        field === 'salesRate' ||
+                        field === 'gst' ||
+                        field === 'mrp' ||
+                        field === 'discountPercent'
+                    ) {
                         (updatedItem as any)[field] = parseFloat(value) || 0;
                     } else {
                         (updatedItem as any)[field] = value;
                     }
 
-                    // Recalculate amount
-                    const baseAmount = updatedItem.qty * updatedItem.purchaseRate;
+                    // Recalculate
+                    const baseBeforeDiscount = updatedItem.qty * updatedItem.purchaseRate;
+                    const discountAmount = (baseBeforeDiscount * (updatedItem.discountPercent || 0)) / 100;
+                    const baseAmount = baseBeforeDiscount - discountAmount;
                     const gstAmount = (baseAmount * updatedItem.gst) / 100;
-                    updatedItem.amount = baseAmount + gstAmount;
+
+                    if (prev.taxType === 'intra') {
+                        updatedItem.cgstAmount = gstAmount / 2;
+                        updatedItem.sgstAmount = gstAmount / 2;
+                        updatedItem.igstAmount = 0;
+                    } else {
+                        updatedItem.cgstAmount = 0;
+                        updatedItem.sgstAmount = 0;
+                        updatedItem.igstAmount = gstAmount;
+                    }
+
+                    updatedItem.baseAmount = baseAmount;
+                    updatedItem.gstAmount = gstAmount;
+                    updatedItem.totalAmount = baseAmount + gstAmount;
 
                     return updatedItem;
                 }
                 return item;
-            })
-        }));
+            });
+
+            // ✅ Recalculate totals based on updated items
+            const gstTotal = updatedItems.reduce((sum, item) => sum + (item.gstAmount || 0), 0);
+            const cgst = updatedItems.reduce((sum, item) => sum + (item.cgstAmount || 0), 0);
+            const sgst = updatedItems.reduce((sum, item) => sum + (item.sgstAmount || 0), 0);
+            const igst = updatedItems.reduce((sum, item) => sum + (item.igstAmount || 0), 0);
+
+            return {
+                ...prev,
+                items: updatedItems,
+                gstTotal,
+                cgst,
+                sgst,
+                igst
+            };
+        });
     };
 
-    // Filter medicines based on search term
-    const getFilteredMedicines = (itemId: number) => {
-        const searchTerm = medicineSearches[itemId] || '';
-        return medicines.filter((medicine) =>
-            medicine.medicineName?.toLowerCase().startsWith(searchTerm.toLowerCase())
-        );
-    };
 
+    const isKeralaGST = (gstNo: string): boolean => gstNo?.slice(0, 2) === '32';
 
-    // Calculate totals
     useEffect(() => {
         const grossTotal = purchaseBill.items.reduce((sum, item) => sum + (item.qty * item.purchaseRate), 0);
-        const gstTotal = purchaseBill.items.reduce((sum, item) => sum + ((item.qty * item.purchaseRate * item.gst) / 100), 0);
-        const cgst = gstTotal / 2;
-        const sgst = gstTotal / 2;
+        const gstTotal = purchaseBill.items.reduce((sum, item) => sum + (item.gstAmount || 0), 0);
+        const cgst = purchaseBill.items.reduce((sum, item) => sum + (item.cgstAmount || 0), 0);
+        const sgst = purchaseBill.items.reduce((sum, item) => sum + (item.sgstAmount || 0), 0);
+        const igst = purchaseBill.items.reduce((sum, item) => sum + (item.igstAmount || 0), 0);
+
         const roundOff = Math.round((grossTotal + gstTotal - purchaseBill.discount) * 100) / 100 - (grossTotal + gstTotal - purchaseBill.discount);
         const finalTotal = grossTotal + gstTotal - purchaseBill.discount + roundOff + purchaseBill.cessAmount;
 
@@ -254,10 +307,12 @@ const PurchaseBillPage: React.FC = () => {
             gstTotal,
             cgst,
             sgst,
+            igst,
             roundOff,
             finalTotal
         }));
     }, [purchaseBill.items, purchaseBill.discount, purchaseBill.cessAmount]);
+
 
     // Save purchase bill
     const savePurchaseBill = async () => {
@@ -269,22 +324,28 @@ const PurchaseBillPage: React.FC = () => {
         }
     };
 
-    // Cancel purchase bill
-    const cancelPurchaseBill = () => {
+    const cancelPurchaseBill = async () => {
         const confirmed = window.confirm('Are you sure you want to cancel this bill?');
+        if (!confirmed) return;
 
-        if (confirmed) {
+        try {
+            // Call backend to mark cancelled (PUT /api/PurchaseBills/{id}/cancel)
+            await API.put(`/api/PurchaseBills/${purchaseBill.purchaseId}/cancel`);
+
+            // Update local UI state
             setPurchaseBill((prev) => ({
                 ...prev,
-                cancelled: true, // add a cancelled flag to the bill object
+                isCancelled: true,
                 items: prev.items.map((item) => ({
                     ...item,
                     medicineName: `[CANCELLED] ${item.medicineName}`,
-                    isCancelled: true, // optional for UI styling
                 })),
             }));
 
             alert('Purchase bill marked as CANCELLED!');
+        } catch (error) {
+            console.error('Error cancelling bill:', error);
+            alert('Failed to cancel purchase bill.');
         }
     };
 
@@ -318,6 +379,48 @@ const PurchaseBillPage: React.FC = () => {
             });
         }
     };
+
+    const fieldOrder: (keyof PurchaseItem)[] = [
+        'itemCode',
+        'batchNo',
+        'expiryDate',
+        'qty',
+        'freeQty',
+        'purchaseRate',
+        'salesRate',
+        'gst',
+        'hsnCode',
+    ];
+
+
+    const handleFieldKeyDown = (
+        e: React.KeyboardEvent<HTMLInputElement>,
+        currentKey: string
+    ) => {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            const keys = Object.keys(fieldRefs.current);
+            const currentIndex = keys.indexOf(currentKey);
+            const nextKey = keys[currentIndex + 1];
+            if (nextKey && fieldRefs.current[nextKey]) {
+                fieldRefs.current[nextKey]?.focus();
+            }
+        }
+    };
+    const handleEnterKey = (
+        e: React.KeyboardEvent<HTMLInputElement>,
+        currentKey: string,
+        nextKey: string
+    ) => {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            const nextField = fieldRefs.current[nextKey];
+            if (nextField) {
+                nextField.focus();
+            }
+        }
+    };
+
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-blue-50 to-blue-100">
@@ -378,16 +481,57 @@ const PurchaseBillPage: React.FC = () => {
                                 onSelect={(id) => {
                                     const selectedSupplier = suppliers.find(s => s.id.toString() === id);
                                     if (selectedSupplier) {
+                                        const isKerala = isKeralaGST(selectedSupplier.gstNo);
+
+                                        const updatedItems = purchaseBill.items.map(item => {
+                                            const baseBeforeDiscount = item.qty * item.purchaseRate;
+                                            const discountAmount = (baseBeforeDiscount * (item.discountPercent || 0)) / 100;
+                                            const baseAmount = baseBeforeDiscount - discountAmount;
+                                            const gstAmount = (baseAmount * item.gst) / 100;
+
+                                            let cgstAmount = 0, sgstAmount = 0, igstAmount = 0;
+                                            if (isKerala) {
+                                                cgstAmount = gstAmount / 2;
+                                                sgstAmount = gstAmount / 2;
+                                            } else {
+                                                igstAmount = gstAmount;
+                                            }
+
+                                            return {
+                                                ...item,
+                                                baseAmount,
+                                                gstAmount,
+                                                cgstAmount,
+                                                sgstAmount,
+                                                igstAmount,
+                                                amount: baseAmount + gstAmount,
+                                            };
+                                        });
+
+                                        // Recalculate correct totals
+                                        const gstTotal = updatedItems.reduce((sum, i) => sum + (i.gstAmount || 0), 0);
+                                        const cgst = updatedItems.reduce((sum, i) => sum + (i.cgstAmount || 0), 0);
+                                        const sgst = updatedItems.reduce((sum, i) => sum + (i.sgstAmount || 0), 0);
+                                        const igst = updatedItems.reduce((sum, i) => sum + (i.igstAmount || 0), 0);
+
                                         setPurchaseBill(prev => ({
                                             ...prev,
                                             supplierId: selectedSupplier.id,
                                             supplierName: selectedSupplier.name,
                                             supplierAddress: selectedSupplier.address,
-                                            gst: selectedSupplier.gstNo
+                                            gst: selectedSupplier.gstNo,
+                                            taxType: isKerala ? 'intra' : 'inter',
+                                            items: updatedItems,
+                                            gstTotal,
+                                            cgst,
+                                            sgst,
+                                            igst,
                                         }));
+
                                         setMedicineSearches(prev => ({ ...prev, supplier: '' }));
                                     }
                                 }}
+
                                 renderItem={(item) => (
                                     <div className="text-sm font-medium text-gray-700">
                                         {item.name}
@@ -482,18 +626,22 @@ const PurchaseBillPage: React.FC = () => {
 
                 {/* Items Table */}
                 <div className="bg-white rounded-lg shadow-lg relative overflow-visible z-10">
-                    <div className="overflow-x-visible">
-                        <table className="w-full">
+                    <div className="w-full overflow-x-auto">
+                        <table className="min-w-[800px] w-full border border-blue-300 text-xs sm:text-sm">
                             <thead className="bg-gradient-to-r from-blue-600 to-blue-800 text-white">
                                 <tr>
                                     <th className="px-2 py-3 text-left text-xs sm:text-sm font-medium border-r border-blue-500">Item Code</th>
                                     <th className="px-2 py-3 text-left text-xs sm:text-sm font-medium border-r border-blue-500">Medicine</th>
+                                    <th className="px-2 py-3 text-center text-xs sm:text-sm font-medium border-r border-blue-500">Type</th>
+                                    <th className="px-2 py-3 text-center text-xs sm:text-sm font-medium border-r border-blue-500">Pack Item</th>
                                     <th className="px-2 py-3 text-left text-xs sm:text-sm font-medium border-r border-blue-500">Batch</th>
                                     <th className="px-2 py-3 text-left text-xs sm:text-sm font-medium border-r border-blue-500">Expiry</th>
                                     <th className="px-2 py-3 text-center text-xs sm:text-sm font-medium border-r border-blue-500">Qty</th>
                                     <th className="px-2 py-3 text-center text-xs sm:text-sm font-medium border-r border-blue-500">Free</th>
+                                    <th className="px-2 py-3 text-center text-xs sm:text-sm font-medium border-r border-blue-500">Disc %</th>
                                     <th className="px-2 py-3 text-center text-xs sm:text-sm font-medium border-r border-blue-500">P.Rate</th>
                                     <th className="px-2 py-3 text-center text-xs sm:text-sm font-medium border-r border-blue-500">S.Rate</th>
+                                    <th className="px-2 py-3 text-center text-xs sm:text-sm font-medium border-r border-blue-500">MRP</th>
                                     <th className="px-2 py-3 text-center text-xs sm:text-sm font-medium border-r border-blue-500">GST%</th>
                                     <th className="px-2 py-3 text-center text-xs sm:text-sm font-medium border-r border-blue-500">Amount</th>
                                     <th className="px-2 py-3 text-center text-xs sm:text-sm font-medium border-r border-blue-500">HSN</th>
@@ -508,7 +656,7 @@ const PurchaseBillPage: React.FC = () => {
                                                 type="text"
                                                 value={item.itemCode}
                                                 onChange={(e) => updateItem(item.id, 'itemCode', e.target.value)}
-                                                className="w-18 px-1 py-1 text-xs border border-blue-300 rounded"
+                                                className="w-16 px-1 py-1 text-xs border border-blue-300 rounded"
                                             />
                                         </td>
                                         <td className="relative border-r border-blue-200 px-2 py-2 z-10 overflow-visible">
@@ -530,17 +678,34 @@ const PurchaseBillPage: React.FC = () => {
                                                         const selected = medicines.find(m => m.id.toString() === medicineId);
                                                         if (!selected) return;
 
-                                                        const baseAmount = item.qty * (selected.purchaseRate ?? 0);
-                                                        const gstAmount = (baseAmount * (selected.gst ?? 0)) / 100;
+                                                        setPurchaseBill(prev => ({
+                                                            ...prev,
+                                                            items: prev.items.map(pItem => {
+                                                                if (pItem.id !== item.id) return pItem;
 
-                                                        updateItem(item.id, 'medicineId', selected.id);
-                                                        updateItem(item.id, 'itemCode', selected.itemCode ?? '');
-                                                        updateItem(item.id, 'medicineName', selected.medicineName);
-                                                        updateItem(item.id, 'purchaseRate', selected.purchaseRate ?? 0);
-                                                        updateItem(item.id, 'salesRate', selected.salesRate ?? 0);
-                                                        updateItem(item.id, 'gst', selected.gst ?? 0);
-                                                        updateItem(item.id, 'hsnCode', selected.hsnCode ?? '');
-                                                        updateItem(item.id, 'amount', baseAmount + gstAmount);
+                                                                const baseAmount = pItem.qty * selected.purchaseRate;
+                                                                const gstAmount = (baseAmount * selected.gst) / 100;
+
+                                                                return {
+                                                                    ...pItem,
+                                                                    medicineId: selected.id,
+                                                                    itemCode: selected.itemCode,
+                                                                    medicineName: selected.medicineName,
+                                                                    type: selected.type,
+                                                                    packItem: selected.packItem,
+                                                                    purchaseRate: selected.purchaseRate,
+                                                                    salesRate: selected.salesRate,
+                                                                    gst: selected.gst,
+                                                                    hsnCode: selected.hsnCode,
+                                                                    amount: baseAmount + gstAmount,
+                                                                    baseAmount,
+                                                                    gstAmount,
+                                                                    cgstAmount: gstAmount / 2,
+                                                                    sgstAmount: gstAmount / 2,
+                                                                    igstAmount: 0,
+                                                                };
+                                                            })
+                                                        }));
 
                                                         setMedicineSearches(prev => ({ ...prev, [item.id]: '' }));
                                                     }}
@@ -554,13 +719,29 @@ const PurchaseBillPage: React.FC = () => {
 
                                             </div>
                                         </td>
+                                        <td className="px-2 py-2 border-r border-blue-200 text-xs sm:text-sm">
+                                            <input
+                                                type="text"
+                                                value={item.type || ''}
+                                                readOnly
+                                                className="w-16 px-1 py-1 border border-blue-300 rounded text-xs bg-gray-100 cursor-not-allowed"
+                                            />
+                                        </td>
+                                        <td className="px-2 py-2 border-r border-blue-200 text-xs sm:text-sm">
+                                            <input
+                                                type="text"
+                                                value={item.packItem || ''}
+                                                readOnly
+                                                className="w-8 px-1 py-1 text-xs border border-blue-300 rounded bg-gray-100 cursor-not-allowed"
+                                            />
+                                        </td>
 
                                         <td className="px-2 py-2 border-r border-blue-200 text-xs sm:text-sm">
                                             <input
                                                 type="text"
                                                 value={item.batchNo}
                                                 onChange={(e) => updateItem(item.id, 'batchNo', e.target.value)}
-                                                className="w-22 px-2 py-1 border border-blue-300 rounded text-xs"
+                                                className="w-20 px-2 py-1 border border-blue-300 rounded text-xs"
                                             />
                                         </td>
                                         <td className="px-1 py-1 border-r border-blue-200 text-xs sm:text-sm">
@@ -569,7 +750,7 @@ const PurchaseBillPage: React.FC = () => {
                                                 placeholder="MM-YYYY"
                                                 value={medicineSearches[`expiry-${item.id}`] || formatExpiry(item.expiryDate)}
                                                 onChange={(e) => handleExpiryChange(e.target.value, item.id)}
-                                                className="w-[7.5rem] px-2 py-1 border border-blue-300 rounded text-xs text-center tracking-wider"
+                                                className="w-[4.5rem] px-2 py-1 border border-blue-300 rounded text-xs text-center tracking-wider"
                                                 maxLength={7}
                                                 inputMode="numeric"
                                                 pattern="\d{2}-\d{4}"
@@ -578,9 +759,21 @@ const PurchaseBillPage: React.FC = () => {
                                         <td className="px-2 py-2 border-r border-blue-200 text-center text-xs sm:text-sm">
                                             <input
                                                 type="number"
-                                                value={item.qty}
-                                                onChange={(e) => updateItem(item.id, 'qty', parseInt(e.target.value))}
-                                                className="w-15 px-1 py-1 text-xs border border-blue-300 rounded text-center"
+                                                inputMode="numeric"
+                                                value={item.qty === 0 ? '' : item.qty}
+                                                onFocus={(e) => {
+                                                    if (e.target.value === '0') e.target.value = '';
+                                                }}
+                                                onBlur={(e) => {
+                                                    const val = parseFloat(e.target.value);
+                                                    updateItem(item.id, 'qty', isNaN(val) ? 0 : val);
+                                                }}
+                                                onChange={(e) => {
+                                                    const val = e.target.value;
+                                                    // Temporarily allow empty string while typing
+                                                    updateItem(item.id, 'qty', val === '' ? '' : parseFloat(val));
+                                                }}
+                                                className="w-12 px-1 py-1 border border-blue-300 rounded text-xs"
                                             />
                                         </td>
                                         <td className="px-2 py-2 border-r border-blue-200 text-center text-xs sm:text-sm">
@@ -588,16 +781,27 @@ const PurchaseBillPage: React.FC = () => {
                                                 type="number"
                                                 value={item.freeQty}
                                                 onChange={(e) => updateItem(item.id, 'freeQty', e.target.value)}
-                                                className="w-15 px-2 py-1 border border-blue-300 rounded text-xs text-center"
+                                                className="w-12 px-2 py-1 border border-blue-300 rounded text-xs text-center"
                                             />
                                         </td>
+                                        <td className="px-2 py-2 border-r border-blue-200 text-xs sm:text-sm">
+                                            <input
+                                                type="number"
+                                                min={0}
+                                                max={100}
+                                                value={item.discountPercent}
+                                                onChange={(e) => updateItem(item.id, 'discountPercent', e.target.value)}
+                                                className="w-12 px-1 py-1 border border-blue-300 rounded text-xs"
+                                            />
+                                        </td>
+
                                         <td className="px-2 py-2 border-r border-blue-200 text-center text-xs sm:text-sm">
                                             <input
                                                 type="number"
                                                 step="0.01"
                                                 value={Number(item.purchaseRate) || ''}
                                                 onChange={(e) => updateItem(item.id, 'purchaseRate', e.target.value)}
-                                                className="w-20 px-2 py-1 border border-blue-300 rounded text-xs text-center"
+                                                className="w-16 px-2 py-1 border border-blue-300 rounded text-xs text-center"
                                             />
                                         </td>
                                         <td className="px-2 py-2 border-r border-blue-200 text-center text-xs sm:text-sm">
@@ -606,36 +810,88 @@ const PurchaseBillPage: React.FC = () => {
                                                 step="0.01"
                                                 value={purchaseBill.items.find(i => i.id === item.id)?.salesRate ?? ''}
                                                 onChange={(e) => updateItem(item.id, 'salesRate', e.target.value)}
-                                                className="w-20 px-2 py-1 border border-blue-300 rounded text-xs text-center"
+                                                className="w-16 px-2 py-1 border border-blue-300 rounded text-xs text-center"
                                             />
 
+                                        </td>
+                                        <td className="px-2 py-2 border-r border-blue-200 text-xs sm:text-sm">
+                                            <input
+                                                type="number"
+                                                value={item.mrp || ''}
+                                                onChange={(e) => updateItem(item.id, 'mrp', e.target.value)}
+                                                className="w-16 px-1 py-1 text-xs border border-blue-300 rounded"
+                                            />
                                         </td>
                                         <td className="px-2 py-2 border-r border-blue-200 text-center text-xs sm:text-sm">
                                             <input
                                                 type="text"
                                                 value={purchaseBill.items.find(i => i.id === item.id)?.gst ?? ''}
                                                 onChange={(e) => updateItem(item.id, 'gst', e.target.value)}
-                                                className="w-12 px-2 py-1 border border-blue-300 rounded text-xs"
+                                                className="w-8 px-2 py-1 border border-blue-300 rounded text-xs"
                                             />
                                         </td>
                                         <td className="px-2 py-2 border-r border-blue-200 text-center text-xs sm:text-sm font-bold text-green-700">
-                                            ₹{item.amount.toFixed(2)}
+                                            ₹{item.totalAmount.toFixed(2)}
                                         </td>
                                         <td className="px-2 py-2 border-r border-blue-200 text-center text-xs sm:text-sm">
                                             <input
                                                 type="text"
                                                 value={purchaseBill.items.find(i => i.id === item.id)?.hsnCode ?? ''}
                                                 onChange={(e) => updateItem(item.id, 'hsnCode', e.target.value)}
-                                                className="w-22 px-2 py-1 border border-blue-300 rounded text-xs"
+                                                className="w-18 px-2 py-1 border border-blue-300 rounded text-xs"
                                             />
                                         </td>
                                         <td className="px-2 py-2 text-center">
                                             <button
+                                                type="button"
                                                 onClick={() => removeItem(item.id)}
-                                                className="text-red-600 hover:text-red-800 hover:bg-red-100 p-1 rounded transition-all duration-200"
+                                                disabled={isCancelled || isFinalized}
+                                                className={`text-red-600 hover:text-red-800 transition ${isCancelled || isFinalized ? 'opacity-40 cursor-not-allowed' : ''
+                                                    }`}
+                                                title={
+                                                    isCancelled
+                                                        ? 'Bill is cancelled'
+                                                        : isFinalized
+                                                            ? 'Finalized bill cannot be modified'
+                                                            : 'Delete item'
+                                                }
                                             >
-                                                <Trash2 size={14} />
+                                                <Trash2 className="w-4 h-4" />
                                             </button>
+                                        </td>
+
+                                        {/* Hidden fields for backend calculations */}
+                                        <td className="hidden">
+                                            <input
+                                                type="hidden"
+                                                value={(item.qty * item.purchaseRate).toFixed(2)} // base amount
+                                                onChange={() => { }} // no-op
+                                                name={`item-${item.id}-baseAmount`}
+                                            />
+                                            <input
+                                                type="hidden"
+                                                value={((item.qty * item.purchaseRate * item.gst) / 100).toFixed(2)} // gst amount
+                                                onChange={() => { }}
+                                                name={`item-${item.id}-gstAmount`}
+                                            />
+                                            <input
+                                                type="hidden"
+                                                value={(((item.qty * item.purchaseRate * item.gst) / 2) / 100).toFixed(2)} // cgst
+                                                onChange={() => { }}
+                                                name={`item-${item.id}-cgstAmount`}
+                                            />
+                                            <input
+                                                type="hidden"
+                                                value={(((item.qty * item.purchaseRate * item.gst) / 2) / 100).toFixed(2)} // sgst
+                                                onChange={() => { }}
+                                                name={`item-${item.id}-sgstAmount`}
+                                            />
+                                            <input
+                                                type="hidden"
+                                                value={(0).toFixed(2)} // igst — modify logic if inter-state
+                                                onChange={() => { }}
+                                                name={`item-${item.id}-igstAmount`}
+                                            />
                                         </td>
                                     </tr>
                                 ))}
@@ -691,9 +947,11 @@ const PurchaseBillPage: React.FC = () => {
                             <div className="border border-blue-300 rounded-lg overflow-hidden">
                                 <div className="bg-blue-600 text-white p-2 text-center font-semibold text-sm">Amount Details</div>
                                 <div className="divide-y divide-blue-200">
-                                    <div className="flex justify-between items-center p-2 bg-white">
-                                        <span className="text-sm font-medium text-blue-900">Gross Total:</span>
-                                        <span className="text-sm font-bold text-blue-900">₹{purchaseBill.grossTotal.toFixed(2)}</span>
+                                    <div className="flex justify-between items-center p-2 bg-green-50 font-bold">
+                                        <span className="text-sm text-green-900">Gross Total:</span>
+                                        <span className="text-sm text-green-900">
+                                            ₹{(purchaseBill.items.reduce((acc, item) => acc + (item.totalAmount || 0), 0) + (purchaseBill.cessAmount || 0)).toFixed(2)}
+                                        </span>
                                     </div>
                                     <div className="flex justify-between items-center p-2 bg-blue-50">
                                         <span className="text-sm font-medium text-blue-900">Round Off:</span>

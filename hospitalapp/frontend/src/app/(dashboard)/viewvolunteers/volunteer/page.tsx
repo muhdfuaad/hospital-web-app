@@ -2,7 +2,10 @@
 
 import React, { useState, useCallback, useEffect } from 'react';
 import { Camera, User, MapPin, Briefcase, Calendar, Phone, Mail, Shield, Lock, CheckCircle } from 'lucide-react';
+import API from '@/lib/axios';
 import { useRouter, useSearchParams } from 'next/navigation';
+
+const API_BASE = API.defaults.baseURL;
 
 interface District {
     id: number;
@@ -77,18 +80,18 @@ const VolunteerRegistrationForm: React.FC = () => {
     const [submitMessage, setSubmitMessage] = useState<string>('');
     const [submitStatus, setSubmitStatus] = useState<'success' | 'error' | ''>('');
 
-    // Modify the existing Vol_Id fetch useEffect to only run when NOT in edit mode
+    // // Fetch Vol_Id from API (only for new registrations)
     useEffect(() => {
         if (!isEditMode) {
             const fetchVolId = async () => {
                 try {
-                    const response = await fetch('https://localhost:7112/api/Volunteers/get-id');
-                    if (response.ok) {
-                        const volId = await response.text();
-                        setFormData(prev => ({ ...prev, Vol_Id: volId }));
-                    } else {
-                        console.error('Failed to fetch Vol_Id - API response not OK');
-                    }
+                    const response = await API.get<string>('/api/Volunteers/get-id'); // Assuming it returns a plain string
+                    const volId = response.data;
+
+                    setFormData(prev => ({
+                        ...prev,
+                        Vol_Id: volId,
+                    }));
                 } catch (err) {
                     console.error('Failed to fetch Vol_Id', err);
                 }
@@ -103,21 +106,14 @@ const VolunteerRegistrationForm: React.FC = () => {
         const fetchLocations = async () => {
             try {
                 const [dRes, pRes] = await Promise.all([
-                    fetch('https://localhost:7112/api/Districts'),
-                    fetch('https://localhost:7112/api/Panchayaths'),
+                    API.get<District[]>('/api/Districts'),
+                    API.get<Panchayath[]>('/api/Panchayaths'),
                 ]);
 
-                if (dRes.ok && pRes.ok) {
-                    const dData = await dRes.json();
-                    const pData = await pRes.json();
-                    setDistricts(dData);
-                    setPanchayaths(pData);
-                } else {
-                    console.error('Failed to fetch districts/panchayaths - API response not OK');
-                }
-            } catch (err) {
-                console.error('Failed to fetch districts/panchayaths', err);
-                // You might want to show a user-friendly error message here
+                setDistricts(dRes.data);
+                setPanchayaths(pRes.data);
+            } catch (error) {
+                console.error('Failed to fetch districts/panchayaths', error);
             }
         };
 
@@ -129,7 +125,7 @@ const VolunteerRegistrationForm: React.FC = () => {
             const fetchVolunteerData = async () => {
                 setIsLoading(true);
                 try {
-                    const response = await fetch(`https://localhost:7112/api/Volunteers/${volunteerId}`);
+                    const response = await fetch(`${API_BASE}/api/Volunteers/${volunteerId}`);
                     if (response.ok) {
                         const volunteerData = await response.json();
 
@@ -327,8 +323,8 @@ const VolunteerRegistrationForm: React.FC = () => {
 
             // Determine API endpoint and method based on mode
             const apiUrl = isEditMode
-                ? `https://localhost:7112/api/Volunteers/${volunteerId}`
-                : 'https://localhost:7112/api/Volunteers';
+                ? `${API_BASE}/api/Volunteers/${volunteerId}`
+                : `${API_BASE}/api/Volunteers`;
 
             const method = isEditMode ? 'PUT' : 'POST';
 
@@ -368,7 +364,7 @@ const VolunteerRegistrationForm: React.FC = () => {
 
                     // Fetch new Vol_Id after successful submission
                     try {
-                        const volIdResponse = await fetch('https://localhost:7112/api/Volunteers/get-id');
+                        const volIdResponse = await fetch(`${API_BASE}/api/Volunteers/get-id`);
                         if (volIdResponse.ok) {
                             const newVolId = await volIdResponse.text();
                             setFormData(prev => ({ ...prev, Vol_Id: newVolId }));

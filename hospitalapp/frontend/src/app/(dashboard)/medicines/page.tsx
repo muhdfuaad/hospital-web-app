@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import API from '@/lib/axios';
 import { Search, FilePen, Trash2, PlusCircle } from 'lucide-react';
 
 interface MedicineItem {
@@ -37,26 +38,24 @@ export default function MedicineInventory() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    async function fetchMedicines() {
+    const fetchMedicines = async () => {
       setLoading(true);
       setError(null);
       try {
-        const res = await fetch('https://localhost:7112/api/Medicines');
-        if (!res.ok) throw new Error(`Error fetching medicines: ${res.statusText}`);
-        const data: MedicineItem[] = await res.json();
+        const { data } = await API.get<MedicineItem[]>("/api/Medicines");
         setMedicines(data);
       } catch (err: any) {
-        setError(err.message || 'Unknown error');
+        setError(err?.message || "Unknown error");
       } finally {
         setLoading(false);
       }
-    }
+    };
 
     fetchMedicines();
   }, []);
 
   const handleNewClick = () => {
-    router.push('/medicines/addMedicine');
+    router.push("/medicines/addMedicine");
   };
 
   const handleEdit = (medicine: MedicineItem) => {
@@ -64,32 +63,27 @@ export default function MedicineInventory() {
   };
 
   const handleDelete = async (id: string) => {
-    const confirmDelete = confirm('Are you sure you want to delete this medicine?');
+    const confirmDelete = confirm("Are you sure you want to delete this medicine?");
     if (!confirmDelete) return;
 
     try {
-      const res = await fetch(`https://localhost:7112/api/Medicines/${id}`, {
-        method: 'DELETE'
-      });
-      if (!res.ok) throw new Error('Delete failed');
+      await API.delete(`/api/Medicines/${id}`);
       setMedicines(prev => prev.filter(m => m.id !== id));
     } catch (error) {
-      alert('Failed to delete medicine');
+      alert("Failed to delete medicine");
       console.error(error);
     }
   };
 
   const filteredMedicines = medicines.filter(med =>
-    med.medicineName
-      .toLowerCase()
-      .split(' ') // split by words
-      .some(word => word.startsWith(searchTerm.toLowerCase()))
+    med.medicineName.toLowerCase().split(' ').some(word =>
+      word.startsWith(searchTerm.toLowerCase())
+    )
   );
-
-
+  
   return (
     <div className="min-h-screen bg-gray-100 p-6">
-     
+
       {/* Top Bar: New + Search */}
       <div className="flex flex-col sm:flex-row justify-between items-center bg-white shadow-sm rounded-lg p-4 mb-4 gap-4">
         <button
@@ -100,11 +94,11 @@ export default function MedicineInventory() {
           Add New Medicine
         </button>
 
-         {/* Title Header */}
-      <div className="mb-6 text-center">
-        <h1 className="text-3xl font-bold text-blue-900 tracking-tight animate-pulse">MEDICINES</h1>
-        <p className="text-sm text-gray-500">Manage and track all available medicines in inventory.</p>
-      </div>
+        {/* Title Header */}
+        <div className="mb-6 text-center">
+          <h1 className="text-3xl font-bold text-blue-900 tracking-tight animate-pulse">MEDICINES</h1>
+          <p className="text-sm text-gray-500">Manage and track all available medicines in inventory.</p>
+        </div>
 
         <div className="flex items-center gap-2 w-full sm:w-auto">
           <Search className="w-4 h-4 text-gray-500" />

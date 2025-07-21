@@ -3,10 +3,12 @@
 import { useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { NotebookPen, FilePen, Trash2 } from 'lucide-react';
+import API from '@/lib/axios';
 import Link from 'next/link';
 import "./viewAssign.css";
 
-const API_BASE = "https://localhost:7112";
+// const API_BASE = "https://localhost:7112";
+const API_BASE = API.defaults.baseURL;
 
 interface PatientAssignmentDataType {
     id: number;

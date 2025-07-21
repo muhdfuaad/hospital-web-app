@@ -3,7 +3,10 @@
 import React, { useState, useCallback, useEffect } from 'react';
 import { Camera, User, MapPin, Briefcase, Calendar, Phone, Mail, Heart, GraduationCap, Shield, Lock, CheckCircle } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import API from '@/lib/axios';
 import { useSearchParams } from 'next/navigation';
+
+const API_BASE = API.defaults.baseURL;
 
 interface District {
     id: number;
@@ -76,8 +79,10 @@ const NurseRegistrationForm: React.FC = () => {
     const [errors, setErrors] = useState<Record<string, string>>({});
     const [photoFileName, setPhotoFileName] = useState<string>('');
     const [existingPhotoUrl, setExistingPhotoUrl] = useState<string>('');
+
     const [districts, setDistricts] = useState<District[]>([]);
     const [panchayaths, setPanchayaths] = useState<Panchayath[]>([]);
+
     const [selectedDistrictId, setSelectedDistrictId] = useState<number | null>(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [submitMessage, setSubmitMessage] = useState<string>('');
@@ -89,13 +94,13 @@ const NurseRegistrationForm: React.FC = () => {
         if (!isEditMode) {
             const fetchNurseId = async () => {
                 try {
-                    const response = await fetch('https://localhost:7112/api/Nurses/get-id');
-                    if (response.ok) {
-                        const nurseId = await response.text();
-                        setFormData(prev => ({ ...prev, Nurse_Id: nurseId }));
-                    } else {
-                        console.error('Failed to fetch Nurse_Id - API response not OK');
-                    }
+                    const response = await API.get<string>('/api/Nurses/get-id'); // expects plain string
+                    const nurseId = response.data;
+
+                    setFormData(prev => ({
+                        ...prev,
+                        Nurse_Id: nurseId
+                    }));
                 } catch (err) {
                     console.error('Failed to fetch Nurse_Id', err);
                 }
@@ -110,21 +115,14 @@ const NurseRegistrationForm: React.FC = () => {
         const fetchLocations = async () => {
             try {
                 const [dRes, pRes] = await Promise.all([
-                    fetch('https://localhost:7112/api/Districts'),
-                    fetch('https://localhost:7112/api/Panchayaths'),
+                    API.get<District[]>('/api/Districts'),
+                    API.get<Panchayath[]>('/api/Panchayaths'),
                 ]);
 
-                if (dRes.ok && pRes.ok) {
-                    const dData = await dRes.json();
-                    const pData = await pRes.json();
-                    setDistricts(dData);
-                    setPanchayaths(pData);
-                } else {
-                    console.error('Failed to fetch districts/panchayaths - API response not OK');
-                }
-            } catch (err) {
-                console.error('Failed to fetch districts/panchayaths', err);
-                // You might want to show a user-friendly error message here
+                setDistricts(dRes.data);
+                setPanchayaths(pRes.data);
+            } catch (error) {
+                console.error('Failed to fetch districts/panchayaths', error);
             }
         };
 
@@ -137,50 +135,42 @@ const NurseRegistrationForm: React.FC = () => {
             const fetchNurseData = async () => {
                 setIsLoading(true);
                 try {
-                    const response = await fetch(`https://localhost:7112/api/Nurses/${nurseId}`);
-                    if (response.ok) {
-                        const nurseData = await response.json();
+                    const { data: nurseData } = await API.get<Record<string, any>>(`/api/Nurses/${nurseId}`);
 
-                        // Format the date for the input field
-                        const formattedDob = nurseData.dob ? new Date(nurseData.dob).toISOString().split('T')[0] : '';
+                    const formattedDob = nurseData.dob
+                        ? new Date(nurseData.dob).toISOString().split('T')[0]
+                        : '';
 
-                        setFormData({
-                            Nurse_Id: nurseData.nurse_Id || '',
-                            district: nurseData.district || '',
-                            panchayath: nurseData.panchayath || '',
-                            ward_no: nurseData.ward_no || '',
-                            NurseName: nurseData.nurseName || '',
-                            address: nurseData.address || '',
-                            gender: nurseData.gender || '',
-                            dob: formattedDob,
-                            age: nurseData.age || '',
-                            BloodGroup: nurseData.bloodGroup || '',
-                            phone: nurseData.phone || '',
-                            email: nurseData.email || '',
-                            specialization: nurseData.specialization || '',
-                            degree: nurseData.degree || '',
-                            experience: nurseData.experience || '',
-                            licenseNumber: nurseData.licenseNumber || '',
-                            department: nurseData.department || '',
-                            Photo: null, // File will be handled separately
-                            description: nurseData.description || ''
-                        });
+                    setFormData({
+                        Nurse_Id: nurseData.nurse_Id || '',
+                        district: nurseData.district || '',
+                        panchayath: nurseData.panchayath || '',
+                        ward_no: nurseData.ward_no || '',
+                        NurseName: nurseData.nurseName || '',
+                        address: nurseData.address || '',
+                        gender: nurseData.gender || '',
+                        dob: formattedDob,
+                        age: nurseData.age || '',
+                        BloodGroup: nurseData.bloodGroup || '',
+                        phone: nurseData.phone || '',
+                        email: nurseData.email || '',
+                        specialization: nurseData.specialization || '',
+                        degree: nurseData.degree || '',
+                        experience: nurseData.experience || '',
+                        licenseNumber: nurseData.licenseNumber || '',
+                        department: nurseData.department || '',
+                        Photo: null, // File will be handled separately
+                        description: nurseData.description || '',
+                    });
 
-                        // Set existing photo URL if available
-                        if (nurseData.photo) {
-                            setExistingPhotoUrl(`https://localhost:7112/uploads/${nurseData.photo}`);
-                            setPhotoFileName(nurseData.photo);
-                        }
+                    if (nurseData.photo) {
+                        setExistingPhotoUrl(`${API_BASE}/uploads/${nurseData.photo}`);
+                        setPhotoFileName(nurseData.photo);
+                    }
 
-                        // Set selected district for panchayath filtering
-                        const selectedDistrict = districts.find(d => d.name === nurseData.district);
-                        if (selectedDistrict) {
-                            setSelectedDistrictId(selectedDistrict.id);
-                        }
-                    } else {
-                        console.error('Failed to fetch nurse data');
-                        setSubmitStatus('error');
-                        setSubmitMessage('Failed to load nurse data for editing');
+                    const selectedDistrict = districts.find(d => d.name === nurseData.district);
+                    if (selectedDistrict) {
+                        setSelectedDistrictId(selectedDistrict.id);
                     }
                 } catch (err) {
                     console.error('Error fetching nurse data:', err);
@@ -194,8 +184,6 @@ const NurseRegistrationForm: React.FC = () => {
             fetchNurseData();
         }
     }, [isEditMode, nurseId, districts]);
-
-
 
     // Update selected district when district data changes in edit mode
     useEffect(() => {
@@ -266,8 +254,8 @@ const NurseRegistrationForm: React.FC = () => {
 
             // Determine API endpoint and method based on mode
             const apiUrl = isEditMode
-                ? `https://localhost:7112/api/Nurses/${nurseId}`
-                : 'https://localhost:7112/api/Nurses';
+                ? `${API_BASE}/api/Nurses/${nurseId}`
+                : `${API_BASE}/api/Nurses`;
 
             const method = isEditMode ? 'PUT' : 'POST';
 
@@ -309,7 +297,7 @@ const NurseRegistrationForm: React.FC = () => {
 
                     // Fetch new Nurse_Id after successful submission
                     try {
-                        const nurseIdResponse = await fetch('https://localhost:7112/api/Nurses/get-id');
+                        const nurseIdResponse = await fetch(`${API_BASE}/api/Nurses/get-id`);
                         if (nurseIdResponse.ok) {
                             const newNurseId = await nurseIdResponse.text();
                             setFormData(prev => ({ ...prev, Nurse_Id: newNurseId }));

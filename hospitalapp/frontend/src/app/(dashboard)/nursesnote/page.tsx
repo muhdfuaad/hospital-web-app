@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation'
+import API from '@/lib/axios';
 import { Heart, FileText, Activity, User, Calendar, VenetianMask, Stethoscope, Eye, Pill, Target, Check, X, Plus } from 'lucide-react';
 
 interface FormData {
@@ -113,152 +114,126 @@ export default function NursesNote() {
 
     // ✅ Fetch assignmentId + patientId + basic info
     useEffect(() => {
-        const assignment = searchParams.get('assignmentId'); // must match URL param
+        const assignment = searchParams.get('assignmentId');
+        if (!assignment) return;
 
-        if (!assignment) {
-            console.error("❌ No assignmentId provided in query parameters.");
-            return;
-        }
+        if (assignmentId === assignment) return;
 
         setAssignmentId(assignment);
-        console.log("🔄 Fetching PatientAssignment for assignmentId:", assignment);
 
-        fetch(`https://localhost:7112/api/PatientAssignments/byAssignmentId/${assignment}`)
+        const fetchAssignmentAndPatient = async () => {
+            try {
+                // ✅ Fetch assignment info
+                const assignmentRes = await API.get(`/api/PatientAssignments/byAssignmentId/${assignment}`);
+                const assignmentData = assignmentRes.data as any;
 
-            .then(async (res) => {
-                if (!res.ok) {
-                    const errText = await res.text();
-                    throw new Error(`❌ Failed to fetch assignment: ${res.status} - ${errText}`);
-                }
-                return res.json();
-            })
-            .then((assignmentData) => {
-                if (!assignmentData?.patientId) {
-                    throw new Error("❌ Patient ID not found in assignment.");
-                }
-
-                console.log("✅ Assignment fetched:", assignmentData);
+                if (!assignmentData?.patientId) return;
 
                 setPatientId(assignmentData.patientId);
                 setFormData(prev => ({
                     ...prev,
-                    reviewId: assignment, // linking assignmentId as reviewId
+                    reviewId: assignment,
                     patientId: assignmentData.patientId
                 }));
 
-                // Fetching full patient info from Hpforms
-                return fetch(`https://localhost:7112/api/Hpforms/patient/${assignmentData.patientId}`);
+                // ✅ Fetch patient info using patientId
+                const patientRes = await API.get(`/api/Hpforms/patient/${assignmentData.patientId}`);
+                const patientData = patientRes.data as any;
 
-            })
-            .then(async (res) => {
-                if (!res.ok) {
-                    const errText = await res.text();
-                    throw new Error(`❌ Failed to fetch patient info: ${res.status} - ${errText}`);
-                }
-                return res.json();
-            })
-            .then((patientData) => {
-                console.log("✅ Patient info fetched:", patientData);
+                if (!patientData) return;
 
-                const updatedInfo = {
+                setPatientInfo({
                     name: patientData.name || '',
                     age: patientData.age || '',
                     gender: patientData.gender || ''
-                };
-
-                setPatientInfo(updatedInfo);
-
-                // 🔍 Debug: confirm updated state values
-                console.log("🧠 Final formData:", {
-                    reviewId: assignment,
-                    patientId: patientData.patientId // this might not exist, so just confirming
                 });
-                console.log("👤 Final patientInfo:", updatedInfo);
-            })
+            } catch (err) {
+                console.error('Failed to fetch assignment or patient data:', err);
+            }
+        };
 
-            .catch(err => {
-                console.error("❌ Error loading data:", err.message);
-            });
-    }, [searchParams]);
+        fetchAssignmentAndPatient();
+    }, [searchParams, assignmentId]);
 
     // to prefill data in form when Edit mode
     useEffect(() => {
-    const assignment = searchParams.get("assignmentId");
+        const assignment = searchParams.get("assignmentId");
 
-    if (!assignment) return;
+        if (!assignment) return;
 
-    console.log("🧠 Fetching existing NursesNote by reviewId (assignmentId):", assignment);
+        const fetchNursesNote = async () => {
+            try {
+                const response = await API.get(`/api/NursesNotes/review/${assignment}`);
 
-    fetch(`https://localhost:7112/api/NursesNotes/review/${assignment}`)
-        .then(async res => {
-            if (res.status === 404) {
-                console.log("🆕 No existing NursesNote found. New form.");
-                return null;
+                if (response.status === 204 || !response.data) {
+                    console.log("🆕 No existing NursesNote found. New form.");
+                    return;
+                }
+
+                const data = response.data as any;
+
+                console.log("✅ Prefilled NursesNote:", data);
+
+                const formattedDate = data.date
+                    ? new Date(data.date).toISOString().split('T')[0]
+                    : '';
+
+                setFormData((prev) => ({
+                    ...prev,
+                    reviewId: data.reviewId,
+                    patientId: data.patientId,
+                    date: formattedDate,
+                    diagnosis: data.diagnosis || '',
+                    situation: data.situation || '',
+                    consciousness: data.consciousness || (data.consciousnesGenderPlain ? 'different' : 'normal'),
+                    consciousnesgenderplain: data.consciousnesGenderPlain || '',
+                    assistance: data.assistance || 'no',
+                    assistanceDetails: data.assistanceDetails || '',
+                    physicalDifficulties: data.physicalDifficulties || '',
+                    food: data.food || 'normal',
+                    foodDetails: data.foodDetails || '',
+                    sleep: data.sleep || 'normal',
+                    sleepDetails: data.sleepDetails || '',
+                    bowelMovements: data.bowelMovements || 'normal',
+                    bowelDetails: data.bowelDetails || '',
+                    urination: data.urination || 'normal',
+                    urinationDetails: data.urinationDetails || '',
+                    emotionalFactors: data.emotionalFactors || '',
+                    bp: data.bp || '',
+                    pulse: data.pulse || '',
+                    temperature: data.temperature || '',
+                    height: data.height || '',
+                    weight: data.weight || '',
+                    generalHygiene: data.generalHygiene || 'normal',
+                    generalHygieneDesc: data.generalHygieneDesc || '',
+                    personalHygiene: data.personalHygiene || 'normal',
+                    personalHygieneDesc: data.personalHygieneDesc || '',
+                    oralHygiene: data.oralHygiene || 'normal',
+                    oralHygieneDesc: data.oralHygieneDesc || '',
+                    skinHygiene: data.skinHygiene || 'normal',
+                    skinHygieneDesc: data.skinHygieneDesc || '',
+                    perinealHygiene: data.perinealHygiene || 'normal',
+                    perinealHygieneDesc: data.perinealHygieneDesc || '',
+                    otherHygiene: data.otherHygiene || 'normal',
+                    otherHygieneDesc: data.otherHygieneDesc || '',
+                    specialConditions: data.specialConditions || '',
+                    otherTreatments: data.otherTreatments || '',
+                    medications: data.medications || '',
+                    planSuggestions: data.planSuggestions || '',
+                    rehabilitationDetails: data.rehabilitationDetails || '',
+                }));
+            } catch (error: any) {
+                if (error.response?.status === 404) {
+                    console.log("🆕 No existing NursesNote found. New form.");
+                } else {
+                    console.error("❌ Error fetching NursesNote:", error.message);
+                }
             }
-            if (!res.ok) {
-                const err = await res.text();
-                throw new Error(`❌ Error fetching NursesNote: ${res.status} - ${err}`);
-            }
-            return res.json();
-        })
-        .then((data) => {
-            if (!data) return;
+        };
 
-            console.log("✅ Prefilled NursesNote:", data);
+        fetchNursesNote();
+    }, [searchParams]);
 
-            const formattedDate = data.date
-                ? new Date(data.date).toISOString().split('T')[0]
-                : '';
-
-            setFormData(prev => ({
-                ...prev,
-                reviewId: data.reviewId,
-                patientId: data.patientId,
-                date: formattedDate,
-                diagnosis: data.diagnosis || '',
-                situation: data.situation || '',
-                consciousness: data.consciousness || (data.consciousnesGenderPlain ? 'different' : 'normal'),
-                consciousnesgenderplain: data.consciousnesGenderPlain || '',
-                assistance: data.assistance || 'no',
-                assistanceDetails: data.assistanceDetails || '',
-                physicalDifficulties: data.physicalDifficulties || '',
-                food: data.food || 'normal',
-                foodDetails: data.foodDetails || '',
-                sleep: data.sleep || 'normal',
-                sleepDetails: data.sleepDetails || '',
-                bowelMovements: data.bowelMovements || 'normal',
-                bowelDetails: data.bowelDetails || '',
-                urination: data.urination || 'normal',
-                urinationDetails: data.urinationDetails || '',
-                emotionalFactors: data.emotionalFactors || '',
-                bp: data.bp || '',
-                pulse: data.pulse || '',
-                temperature: data.temperature || '',
-                height: data.height || '',
-                weight: data.weight || '',
-                generalHygiene: data.generalHygiene || 'normal',
-                generalHygieneDesc: data.generalHygieneDesc || '',
-                personalHygiene: data.personalHygiene || 'normal',
-                personalHygieneDesc: data.personalHygieneDesc || '',
-                oralHygiene: data.oralHygiene || 'normal',
-                oralHygieneDesc: data.oralHygieneDesc || '',
-                skinHygiene: data.skinHygiene || 'normal',
-                skinHygieneDesc: data.skinHygieneDesc || '',
-                perinealHygiene: data.perinealHygiene || 'normal',
-                perinealHygieneDesc: data.perinealHygieneDesc || '',
-                otherHygiene: data.otherHygiene || 'normal',
-                otherHygieneDesc: data.otherHygieneDesc || '',
-                specialConditions: data.specialConditions || '',
-                otherTreatments: data.otherTreatments || '',
-                medications: data.medications || '',
-                planSuggestions: data.planSuggestions || '',
-                rehabilitationDetails: data.rehabilitationDetails || '',
-            }));
-        })
-        .catch(err => {
-            console.error("❌ Unexpected fetch error:", err.message);
-        });
-}, [searchParams]);
 
 
     const handleInputChange = (field: keyof FormData, value: string | number) => {
@@ -275,37 +250,26 @@ export default function NursesNote() {
             const isEditMode = !!formData.reviewId;
 
             const payload = { ...formData };
-
             console.log("📝 Submitting NursesNote:", payload);
 
-            const response = await fetch(
-                isEditMode
-                    ? `https://localhost:7112/api/NursesNotes/review/${formData.reviewId}`
-                    : 'https://localhost:7112/api/NursesNotes',
-                {
-                    method: isEditMode ? 'PUT' : 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(payload),
-                }
-            );
-
-            if (!response.ok) {
-                const errorText = await response.text();
-                throw new Error(`❌ Failed to ${isEditMode ? 'update' : 'create'} nurses note: ${errorText}`);
+            if (isEditMode) {
+                await API.put(`/api/NursesNotes/review/${formData.reviewId}`, payload);
+            } else {
+                await API.post('/api/NursesNotes', payload);
             }
 
-            setSubmitMessage(isEditMode
-                ? "Nurse's Note updated successfully!"
-                : "Nurse's Note created successfully!");
+            setSubmitMessage(
+                isEditMode
+                    ? "Nurse's Note updated successfully!"
+                    : "Nurse's Note created successfully!"
+            );
             setSubmitStatus('success');
 
             setTimeout(() => {
                 router.push('/viewAssignments');
             }, 1000);
 
-        } catch (error) {
+        } catch (error: any) {
             console.error('❌ Error submitting nurses note:', error);
             setSubmitMessage('An error occurred while submitting the form.');
             setSubmitStatus('error');

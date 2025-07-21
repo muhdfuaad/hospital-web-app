@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { FilePen, Trash2 } from 'lucide-react';
-import Link from 'next/link';
+import API from '@/lib/axios';
 
 interface District {
   id: number;
@@ -25,15 +25,14 @@ export default function PanchayathsPage() {
   const [editingId, setEditingId] = useState<number | null>(null);
   const [error, setError] = useState('');
 
+  // ✅ Fetch both districts and panchayaths
   const fetchData = async () => {
     try {
-      const districtRes = await fetch('https://localhost:7112/api/Districts');
-      const districtData = await districtRes.json();
-      setDistricts(districtData);
+      const districtRes = await API.get<District[]>('/api/Districts');
+      setDistricts(districtRes.data);
 
-      const panchayathRes = await fetch('https://localhost:7112/api/Panchayaths');
-      const panchayathData = await panchayathRes.json();
-      setPanchayaths(panchayathData);
+      const panchayathRes = await API.get<Panchayath[]>('/api/Panchayaths');
+      setPanchayaths(panchayathRes.data);
     } catch (err) {
       console.error('Failed fetching data:', err);
     }
@@ -43,6 +42,19 @@ export default function PanchayathsPage() {
     fetchData();
   }, []);
 
+  // ✅ Delete Panchayath
+  const handleDelete = async (id: number) => {
+    if (!confirm('Are you sure to delete this panchayath?')) return;
+    try {
+      await API.delete(`/api/Panchayaths/${id}`);
+      await fetchData();
+    } catch (err) {
+      console.error(err);
+      alert('Failed deleting panchayath, see console.');
+    }
+  };
+
+  // ✅ Save/Add/Edit Panchayath
   const handleSave = async () => {
     setError('');
 
@@ -57,9 +69,10 @@ export default function PanchayathsPage() {
     }
 
     const normalized = panchayathName.trim().toLowerCase();
-    const duplicate = panchayaths.some(p =>
-      p.panchayathName.trim().toLowerCase() === normalized &&
-      p.panchayathId !== editingId
+    const duplicate = panchayaths.some(
+      (p) =>
+        p.panchayathName.trim().toLowerCase() === normalized &&
+        p.panchayathId !== editingId
     );
 
     if (duplicate) {
@@ -67,10 +80,10 @@ export default function PanchayathsPage() {
       return;
     }
 
-    const method = editingId ? 'PUT' : 'POST';
+    const method = editingId ? 'put' : 'post';
     const url = editingId
-      ? `https://localhost:7112/api/Panchayaths/${editingId}`
-      : 'https://localhost:7112/api/Panchayaths';
+      ? `/api/Panchayaths/${editingId}`
+      : '/api/Panchayaths';
 
     const bodyData = {
       id: editingId || 0,
@@ -80,12 +93,7 @@ export default function PanchayathsPage() {
     };
 
     try {
-      const res = await fetch(url, {
-        method,
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(bodyData),
-      });
-      if (!res.ok) throw new Error(await res.text());
+      await API[method](url, bodyData);
 
       setPanchayathName('');
       setSelectedDistrictId('');
@@ -96,18 +104,6 @@ export default function PanchayathsPage() {
     } catch (err) {
       console.error(err);
       setError('Failed saving panchayath, check console');
-    }
-  };
-
-  const handleDelete = async (id: number) => {
-    if (!confirm('Are you sure to delete this panchayath?')) return;
-    try {
-      const res = await fetch(`https://localhost:7112/api/Panchayaths/${id}`, { method: 'DELETE' });
-      if (!res.ok) throw new Error(await res.text());
-      await fetchData();
-    } catch (err) {
-      console.error(err);
-      alert('Failed deleting panchayath, see console.');
     }
   };
 

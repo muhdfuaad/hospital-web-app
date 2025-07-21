@@ -3,25 +3,11 @@ import { useParams } from 'next/navigation';
 
 import React, { useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import {
-    User,
-    MapPin,
-    Phone,
-    Calendar,
-    FileText,
-    Heart,
-    Camera,
-    Upload,
-    Users,
-    AlertCircle,
-    ClipboardList,
-    CheckCircle,
-    Shield,
-    RotateCcw,
-    Lock, Plus, X, Check,
-    Home
-} from 'lucide-react';
-// import './form.css';
+import API from '@/lib/axios';
+import { User, Phone, Calendar, FileText, Heart, Camera, Users, AlertCircle, ClipboardList, CheckCircle, Shield, RotateCcw, Lock, Plus, } from 'lucide-react';
+
+
+const API_BASE = API.defaults.baseURL;
 
 interface District {
     id: number
@@ -159,7 +145,7 @@ export default function HospitalRegistrationForm() {
     useEffect(() => {
         const fetchCategories = async () => {
             try {
-                const response = await fetch("https://localhost:7112/api/PatientCategories");
+                const response = await fetch(`${API_BASE}/api/PatientCategories`);
                 if (response.ok) {
                     const data: PatientCategory[] = await response.json();
                     setCategories(Array.isArray(data) ? data : []);
@@ -199,7 +185,7 @@ export default function HospitalRegistrationForm() {
         setCategoryError("");
 
         try {
-            const response = await fetch("https://localhost:7112/api/PatientCategories", {
+            const response = await fetch(`${API_BASE}/api/PatientCategories`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -261,20 +247,14 @@ export default function HospitalRegistrationForm() {
         const fetchLocations = async () => {
             try {
                 const [dRes, pRes] = await Promise.all([
-                    fetch('https://localhost:7112/api/Districts'),
-                    fetch('https://localhost:7112/api/Panchayaths'),
+                    API.get<District[]>('/api/Districts'),
+                    API.get<Panchayath[]>('/api/Panchayaths'),
                 ]);
 
-                if (dRes.ok && pRes.ok) {
-                    const dData = await dRes.json();
-                    const pData = await pRes.json();
-                    setDistricts(dData);
-                    setPanchayaths(pData);
-                } else {
-                    console.error('Failed to fetch districts/panchayaths - API response not OK');
-                }
-            } catch (err) {
-                console.error('Failed to fetch districts/panchayaths', err);
+                setDistricts(dRes.data);
+                setPanchayaths(pRes.data);
+            } catch (error) {
+                console.error('Failed to fetch districts/panchayaths', error);
             }
         };
 
@@ -286,13 +266,13 @@ export default function HospitalRegistrationForm() {
         if (!isEditMode) {
             const fetchRegNumber = async () => {
                 try {
-                    const response = await fetch('https://localhost:7112/api/Hpforms/get-patient-id');
-                    if (response.ok) {
-                        const regNumber = await response.text();
-                        setFormData(prev => ({ ...prev, patientId: regNumber }));
-                    } else {
-                        console.error('Failed to fetch Registration Number - API response not OK');
-                    }
+                    const response = await API.get<string>('/api/Hpforms/get-patient-id'); // Plain string expected
+                    const regNumber = response.data;
+
+                    setFormData(prev => ({
+                        ...prev,
+                        patientId: regNumber,
+                    }));
                 } catch (err) {
                     console.error('Failed to fetch Registration Number', err);
                 }
@@ -318,7 +298,7 @@ export default function HospitalRegistrationForm() {
                 setIsLoading(true);
                 try {
                     console.log('Fetching data for PatientId:', PatientId);
-                    const response = await fetch(`https://localhost:7112/api/Hpforms/patient/${PatientId}`);
+                    const response = await fetch(`${API_BASE}/api/Hpforms/patient/${PatientId}`);
 
                     if (response.ok) {
                         const patientData = await response.json();
@@ -540,8 +520,8 @@ export default function HospitalRegistrationForm() {
 
         try {
             const url = isEditMode
-                ? `https://localhost:7112/api/Hpforms/patient/${PatientId}`
-                : "https://localhost:7112/api/Hpforms";
+                ? `${API_BASE}/api/Hpforms/patient/${PatientId}`
+                : `${API_BASE}/api/Hpforms`;
 
             const method = isEditMode ? "PUT" : "POST";
 

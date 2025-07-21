@@ -3,7 +3,7 @@
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
-import { Home, ClipboardList, Settings, BarChart, Pill } from "lucide-react";
+import { Home, ClipboardList, Settings, Layers, Pill} from "lucide-react";
 
 
 type MenuItem = {
@@ -81,7 +81,7 @@ const menuItems: MenuItem[] = [
       {
         id: "purchases",
         label: "Medicine Purchases",
-        href: "/purchasebill"
+        href: "/Purchasebill"
       }
     ]
   },
@@ -89,7 +89,7 @@ const menuItems: MenuItem[] = [
     id: "masters",
     label: "MASTERS",
     isDropdown: true,
-    icon: <BarChart className="w-5 h-5" />,
+    icon: <Layers className="w-5 h-5" />,
     children: [
       {
         id: "view-districts",

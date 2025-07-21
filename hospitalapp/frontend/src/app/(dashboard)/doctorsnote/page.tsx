@@ -1,7 +1,8 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { useSearchParams, useRouter } from 'next/navigation'
+import { useSearchParams, useRouter } from 'next/navigation';
+import API from '@/lib/axios';
 import { User, Heart, Calendar, VenetianMask, FileText, Activity, Stethoscope, Eye, Plus, X, Check, Trash2 } from 'lucide-react';
 
 interface PatientInfo {
@@ -68,11 +69,16 @@ export default function DoctorsNoteForm() {
         const assignment = searchParams.get('assignmentId');
         if (!assignment) return;
 
+        if (assignmentId === assignment) return;
+
         setAssignmentId(assignment);
 
-        fetch(`https://localhost:7112/api/PatientAssignments/byAssignmentId/${assignment}`)
-            .then(res => res.json())
-            .then(assignmentData => {
+        const fetchAssignmentAndPatient = async () => {
+            try {
+                // ✅ Fetch assignment info
+                const assignmentRes = await API.get(`/api/PatientAssignments/byAssignmentId/${assignment}`);
+                const assignmentData = assignmentRes.data as any;
+
                 if (!assignmentData?.patientId) return;
 
                 setPatientId(assignmentData.patientId);
@@ -82,10 +88,10 @@ export default function DoctorsNoteForm() {
                     patientId: assignmentData.patientId
                 }));
 
-                return fetch(`https://localhost:7112/api/Hpforms/patient/${assignmentData.patientId}`);
-            })
-            .then(res => res?.json())
-            .then(patientData => {
+                // ✅ Fetch patient info using patientId
+                const patientRes = await API.get(`/api/Hpforms/patient/${assignmentData.patientId}`);
+                const patientData = patientRes.data as any;
+
                 if (!patientData) return;
 
                 setPatientInfo({
@@ -93,52 +99,46 @@ export default function DoctorsNoteForm() {
                     age: patientData.age || '',
                     gender: patientData.gender || ''
                 });
-            })
-            .catch(() => { });
-    }, [searchParams]);
+            } catch (err) {
+                console.error('Failed to fetch assignment or patient data:', err);
+            }
+        };
 
+        fetchAssignmentAndPatient();
+    }, [searchParams, assignmentId]);
 
     useEffect(() => {
         const assignment = searchParams.get("assignmentId");
-
         if (!assignment) return;
 
-        console.log("🧠 Checking for existing DoctorNote using reviewId:", assignment);
+        const fetchDoctorNote = async () => {
+            try {
+                const res = await API.get(`/api/DoctorsNotes/review/${assignment}`);
 
-        fetch(`https://localhost:7112/api/DoctorsNotes/review/${assignment}`)
-            .then(async res => {
-                if (res.status === 404) {
+                if (res.status === 204 || !res.data) {
                     console.log("🆕 No DoctorNote found — this is a new entry.");
-                    return null; // No data to prefill
+                    return;
                 }
-                if (!res.ok) {
-                    const err = await res.text();
-                    throw new Error(`❌ Error fetching DoctorNote: ${res.status} - ${err}`);
-                }
-                return res.json();
-            })
-            .then((data) => {
-                if (!data) return; // No data to prefill
 
-                console.log("✅ Prefilling DoctorNote:", data);
+                const data = res.data as any;
 
                 const formattedDate = data.date?.split('T')[0] || '';
 
-                setFormData(prev => ({
+                setFormData((prev) => ({
                     ...prev,
                     reviewId: data.reviewId,
                     patientId: data.patientId,
                     date: formattedDate,
-                    historyOfIllness: data.historyOfIllness,
-                    presentMedications: data.presentMedications,
-                    associatedIllness: data.associatedIllness,
-                    pulse: data.pulse,
-                    bp: data.bp,
-                    height: data.height,
-                    weight: data.weight,
-                    generalExamination: data.generalExamination,
-                    systematicExamination: data.systematicExamination,
-                    additionalNotes: data.additionalNotes
+                    historyOfIllness: data.historyOfIllness || '',
+                    presentMedications: data.presentMedications || '',
+                    associatedIllness: data.associatedIllness || '',
+                    pulse: data.pulse || '',
+                    bp: data.bp || '',
+                    height: data.height || '',
+                    weight: data.weight || '',
+                    generalExamination: data.generalExamination || '',
+                    systematicExamination: data.systematicExamination || '',
+                    additionalNotes: data.additionalNotes || ''
                 }));
 
                 if (Array.isArray(data.symptoms)) {
@@ -148,10 +148,16 @@ export default function DoctorsNoteForm() {
                     }));
                     setSymptoms(mappedSymptoms);
                 }
-            })
-            .catch(err => {
-                console.error("❌ Unexpected error fetching DoctorNote:", err.message);
-            });
+            } catch (err: any) {
+                if (err.response?.status === 404) {
+                    console.log("🆕 No DoctorNote found — this is a new entry.");
+                } else {
+                    console.error("❌ Unexpected error fetching DoctorNote:", err.message);
+                }
+            }
+        };
+
+        fetchDoctorNote();
     }, [searchParams]);
 
 
@@ -202,29 +208,19 @@ export default function DoctorsNoteForm() {
         };
 
         try {
-            const isEditMode = !!reviewId && symptoms.length > 0; // adjust condition if needed
+            const isEditMode = !!reviewId && symptoms.length > 0;
 
             const url = isEditMode
-                ? `https://localhost:7112/api/DoctorsNotes/review/${reviewId}`  // Assuming PUT by reviewId is supported
-                : `https://localhost:7112/api/DoctorsNotes`;
+                ? `/api/DoctorsNotes/review/${reviewId}`  // Axios uses baseURL
+                : `/api/DoctorsNotes`;
 
-            const method = isEditMode ? 'PUT' : 'POST';
+            const response = isEditMode
+                ? await API.put(url, dataToSend)
+                : await API.post(url, dataToSend);
 
-            const response = await fetch(url, {
-                method,
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(dataToSend)
-            });
-
-            if (!response.ok) {
-                const errorText = await response.text();
-                console.error("❌ Submission failed:", errorText);
-                throw new Error('Submission failed');
-            }
-
-            setSubmitMessage(isEditMode ? "Doctor's Note updated successfully!" : "Doctor's Note created successfully!");
+            setSubmitMessage(isEditMode
+                ? "Doctor's Note updated successfully!"
+                : "Doctor's Note created successfully!");
             setSubmitStatus('success');
 
             setTimeout(() => {
@@ -232,10 +228,8 @@ export default function DoctorsNoteForm() {
                 router.push(`/doctorsreview?assignmentId=${formData.reviewId}`);
             }, 1000);
 
-
-
-        } catch (error) {
-            console.error(error);
+        } catch (error: any) {
+            console.error("❌ Submission error:", error.response?.data || error.message);
             setSubmitMessage('An error occurred while submitting the form.');
             setSubmitStatus('error');
         }
@@ -245,6 +239,7 @@ export default function DoctorsNoteForm() {
             setSubmitStatus('');
         }, 3000);
     };
+
 
     return (
         <div className="min-h-screen w-full bg-gradient-to-br from-blue-50 to-blue-100 px-2 sm:px-4 lg:px-8 py-4">

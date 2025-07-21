@@ -1,7 +1,7 @@
 'use client';
 import React, { useState, useEffect, useRef } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation'
-
+import API from '@/lib/axios';
 import { Combobox } from '@headlessui/react';
 
 import { User, Calendar, Heart, Plus, Trash2, Check, VenetianMask, ChevronDown } from 'lucide-react';
@@ -21,17 +21,6 @@ interface Investigation {
     id: number;
     [key: string]: any;
 }
-interface MedicationEntry {
-    medicine: string;
-    prescription: string;
-    remarks: string;
-}
-
-interface InvestigationEntry {
-    investigationName: string;
-    findings: string;
-}
-
 
 // Medication Types
 interface Medication {
@@ -61,7 +50,6 @@ const DoctorsReviewForm = () => {
 
     const [assignmentId, setAssignmentId] = useState<string | null>(null);
 
-    const [reviewId, setReviewId] = useState('');
     const [patientId, setPatientId] = useState('');
     const [patientInfo, setPatientInfo] = useState<PatientInfo>({
         name: '',
@@ -73,10 +61,6 @@ const DoctorsReviewForm = () => {
     const [medicines, setMedicines] = useState<Medicine[]>([]);
     const [medicineDropdownOpen, setMedicineDropdownOpen] = useState<{ [key: number]: boolean }>({});
     const [medicineSearchTerm, setMedicineSearchTerm] = useState<{ [key: number]: string }>({});
-
-    const [dropdownPosition, setDropdownPosition] = useState<{ top: number; left: number; width: number } | null>(null);
-    const inputRefs = useRef<{ [key: number]: HTMLInputElement | null }>({});
-
 
     // Prescription dropdown options
     const prescriptionOptions = [
@@ -103,17 +87,17 @@ const DoctorsReviewForm = () => {
     const [submitStatus, setSubmitStatus] = useState<'success' | 'error' | ''>('');
 
     // ✅ Fetch medicines from API
-    // Fetch medicines from API
     useEffect(() => {
         const fetchMedicines = async () => {
             try {
-                const res = await fetch('https://localhost:7112/api/Medicines/dropdown');
+                const response = await API.get('/api/Medicines/dropdown');
+                const data = response.data as any[];
 
-                if (!res.ok) {
-                    throw new Error('Failed to fetch medicines');
+                if (Array.isArray(data)) {
+                    setMedicines(data);
+                } else {
+                    console.warn('Invalid medicine data format', data);
                 }
-                const medicineData = await res.json();
-                setMedicines(medicineData);
             } catch (error) {
                 console.error('Error fetching medicines:', error);
             }
@@ -186,16 +170,18 @@ const DoctorsReviewForm = () => {
     // ✅ Fetch assignmentId + patientId + basic info
     useEffect(() => {
         const assignment = searchParams.get('assignmentId');
-        if (!assignment) return; // skip if not yet available
+        if (!assignment) return;
 
-        // Prevent re-triggering fetch if already fetched
         if (assignmentId === assignment) return;
 
         setAssignmentId(assignment);
 
-        fetch(`https://localhost:7112/api/PatientAssignments/byAssignmentId/${assignment}`)
-            .then(res => res.json())
-            .then(assignmentData => {
+        const fetchAssignmentAndPatient = async () => {
+            try {
+                // ✅ Fetch assignment info
+                const assignmentRes = await API.get(`/api/PatientAssignments/byAssignmentId/${assignment}`);
+                const assignmentData = assignmentRes.data as any;
+
                 if (!assignmentData?.patientId) return;
 
                 setPatientId(assignmentData.patientId);
@@ -205,10 +191,10 @@ const DoctorsReviewForm = () => {
                     patientId: assignmentData.patientId
                 }));
 
-                return fetch(`https://localhost:7112/api/Hpforms/patient/${assignmentData.patientId}`);
-            })
-            .then(res => res?.json())
-            .then(patientData => {
+                // ✅ Fetch patient info using patientId
+                const patientRes = await API.get(`/api/Hpforms/patient/${assignmentData.patientId}`);
+                const patientData = patientRes.data as any;
+
                 if (!patientData) return;
 
                 setPatientInfo({
@@ -216,26 +202,24 @@ const DoctorsReviewForm = () => {
                     age: patientData.age || '',
                     gender: patientData.gender || ''
                 });
-            })
-            .catch(() => { });
+            } catch (err) {
+                console.error('Failed to fetch assignment or patient data:', err);
+            }
+        };
+
+        fetchAssignmentAndPatient();
     }, [searchParams, assignmentId]);
+
     useEffect(() => {
         const reviewIdFromUrl = searchParams.get("assignmentId");
         if (!reviewIdFromUrl) return;
 
-        // Set form reviewId and fetch from backend
-        setFormData((prev) => ({
-            ...prev,
-            reviewId: reviewIdFromUrl,
-        }));
+        const fetchReview = async () => {
+            try {
+                const response = await API.get(`/api/DoctorsReviews/review/${reviewIdFromUrl}`);
 
-        fetch(`https://localhost:7112/api/DoctorsReviews/review/${reviewIdFromUrl}`)
-            .then((res) => {
-                if (!res.ok) throw new Error("Failed to fetch review data");
-                return res.json();
-            })
-            .then((data) => {
-                // Set basic form data
+                const data = response.data as any; // 👈 forcefully treat data as any
+
                 setFormData((prev) => ({
                     ...prev,
                     reviewId: data.reviewId || "",
@@ -243,32 +227,35 @@ const DoctorsReviewForm = () => {
                     date: data.date?.split("T")[0] || "",
                 }));
 
-                // ✅ Set investigations with 'id'
-                setInvestigations(
-                    (data.investigations || []).map((inv: any) => ({
-                        id: inv.id || 0,
-                        investigation: inv.investigationName || "",
-                        findings: inv.findings || "",
-                    }))
-                );
+                // Set investigations
+                if (Array.isArray(data.investigations)) {
+                    setInvestigations(
+                        data.investigations.map((inv: any) => ({
+                            id: inv?.id ?? 0,
+                            investigation: inv?.investigationName ?? "",
+                            findings: inv?.findings ?? "",
+                        }))
+                    );
+                }
 
-                // ✅ Set medications with 'id'
-                setMedications(
-                    (data.medications || []).map((med: any) => ({
-                        id: med.id || 0,
-                        medicine: med.medicine || "",
-                        prescription: med.prescription || "",
-                        remarks: med.remarks || "",
-                    }))
-                );
-            })
-            .catch((err) => {
+                // Set medications
+                if (Array.isArray(data.medications)) {
+                    setMedications(
+                        data.medications.map((med: any) => ({
+                            id: med?.id ?? 0,
+                            medicine: med?.medicine ?? "",
+                            prescription: med?.prescription ?? "",
+                            remarks: med?.remarks ?? "",
+                        }))
+                    );
+                }
+            } catch (err) {
                 console.error("Error loading review data:", err);
-            });
+            }
+        };
+
+        fetchReview();
     }, [searchParams]);
-
-
-
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -291,24 +278,12 @@ const DoctorsReviewForm = () => {
         };
 
         try {
-            const url = isEditMode
-                ? `https://localhost:7112/api/DoctorsReviews/byReviewId/${reviewId}`
-                : `https://localhost:7112/api/DoctorsReviews`;
-
-            const method = isEditMode ? 'PUT' : 'POST';
-
-            const response = await fetch(url, {
-                method,
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(dataToSend),
-            });
-
-            if (!response.ok) {
-                const errorText = await response.text();
-                console.error('❌ Submission failed:', errorText);
-                throw new Error('Submission failed');
+            if (isEditMode) {
+                // PUT for update
+                await API.put(`/api/DoctorsReviews/byReviewId/${reviewId}`, dataToSend);
+            } else {
+                // POST for create
+                await API.post(`/api/DoctorsReviews`, dataToSend);
             }
 
             setSubmitMessage(`Doctor's Review ${isEditMode ? 'updated' : 'created'} successfully!`);
@@ -318,7 +293,7 @@ const DoctorsReviewForm = () => {
                 router.push(`/viewAssignments`);
             }, 1000);
 
-        } catch (error) {
+        } catch (error: any) {
             console.error("Submit error:", error);
             setSubmitMessage('An error occurred while submitting the form.');
             setSubmitStatus('error');

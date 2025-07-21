@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import API from '@/lib/axios';
 import { Search, FilePen, Trash2, PlusCircle } from 'lucide-react';
 
 interface SupplierItem {
@@ -20,29 +21,25 @@ export default function SuppliersList() {
     const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
-        async function fetchSuppliers() {
+        const fetchSuppliers = async () => {
             setLoading(true);
             setError(null);
             try {
-                const res = await fetch('https://localhost:7112/api/Suppliers');
-                if (!res.ok) throw new Error(`Error fetching suppliers: ${res.statusText}`);
-                const data = await res.json();
-
-                const mapped = data.map((s: any) => ({
+                const { data } = await API.get<Record<string, any>[]>('/api/Suppliers');
+                const mapped: SupplierItem[] = data.map(s => ({
                     id: s.id,
                     name: s.name,
                     supplierTypeName: s.supplierTypeName || '—',
                     location: s.location || '',
-                    phone: s.phone || ''
+                    phone: s.phone || '',
                 }));
-
                 setSuppliers(mapped);
             } catch (err: any) {
                 setError(err.message || 'Unknown error');
             } finally {
                 setLoading(false);
             }
-        }
+        };
 
         fetchSuppliers();
     }, []);
@@ -60,10 +57,7 @@ export default function SuppliersList() {
         if (!confirmDelete) return;
 
         try {
-            const res = await fetch(`https://localhost:7112/api/Suppliers/${id}`, {
-                method: 'DELETE'
-            });
-            if (!res.ok) throw new Error('Delete failed');
+            await API.delete(`/api/Suppliers/${id}`);
             setSuppliers(prev => prev.filter(s => s.id !== id));
         } catch (error) {
             alert('Failed to delete supplier');
@@ -72,13 +66,12 @@ export default function SuppliersList() {
     };
 
     const filteredSuppliers = suppliers.filter(supplier =>
-  supplier.name
-    .toLowerCase()
-    .split(' ') // split the name into words
-    .some(word => word.startsWith(searchTerm.toLowerCase()))
-);
-
-
+        supplier.name
+            .toLowerCase()
+            .split(' ')
+            .some(word => word.startsWith(searchTerm.toLowerCase()))
+    );
+    
     return (
         <div className="min-h-screen bg-gray-100 p-6">
             {/* Top Bar */}

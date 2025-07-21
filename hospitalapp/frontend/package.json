@@ -9,11 +9,8 @@
     "lint": "next lint"
   },
   "dependencies": {
-<<<<<<< HEAD
     "@headlessui/react": "^2.2.4",
     "axios": "^1.10.0",
-=======
->>>>>>> 05d2ae34a0e7678004ff706fcf4df00e640b4c27
     "lucide-react": "^0.515.0",
     "next": "15.3.3",
     "react": "^19.0.0",

@@ -4,6 +4,8 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import API from '@/lib/axios';
 import { Building2, User, MapPin, Phone, Mail, FileText, Percent, Hash, CreditCard, MessageCircle, Home, Navigation } from 'lucide-react';
 
+const API_BASE = API.defaults.baseURL;
+
 interface FormData {
     name: string;
     accNo: string;
@@ -326,54 +328,44 @@ const SupplierForm = () => {
         fetchSupplierTypesAndSupplierData();
     }, [editId]);
 
+    // Add Supplier Type
     const handleAddType = async () => {
         const trimmed = newType.trim();
-
         if (!trimmed) {
             alert('Please enter a valid supplier type.');
             return;
         }
 
         try {
-            const response = await fetch('https://localhost:7112/api/Suppliers/types', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ TypeName: trimmed }) // ✅ use capitalized key matching backend DTO
+            const response = await API.post<SupplierType>('/api/Suppliers/types', {
+                TypeName: trimmed,
             });
 
-            if (!response.ok) {
-                const errText = await response.text();
-                console.error('Failed to add type:', errText);
-                alert(`Failed to add type: ${errText}`);
-                return;
-            }
-
-            const newTypeData = await response.json();
+            const data = response.data;
 
             const newEntry = {
-                id: newTypeData.supplierTypeId, // ✅ correct property name from backend response
-                name: newTypeData.typeName
+                id: data.supplierTypeId,
+                name: data.typeName,
             };
 
-            // Add new type to list
-            setTypes(prev => [...prev, newEntry]);
+            setTypes((prev) => [...prev, newEntry]);
 
-            // Set it as selected
-            setFormData(prev => ({
+            setFormData((prev) => ({
                 ...prev,
-                type: newEntry.id.toString()
+                type: newEntry.id.toString(),
             }));
 
-            // Reset modal state
             setNewType('');
             setShowTypeModal(false);
-
-        } catch (error) {
+        } catch (error: any) {
             console.error('Error adding type:', error);
-            alert('Something went wrong while adding the type.');
+            alert(
+                error?.response?.data || 'Something went wrong while adding the type.'
+            );
         }
     };
-
+    
+    // Submit Supplier Form
     const handleSubmit = async (): Promise<void> => {
         if (!validateForm()) return;
 
@@ -396,8 +388,8 @@ const SupplierForm = () => {
 
         try {
             const endpoint = editId
-                ? `https://localhost:7112/api/Suppliers/${editId}`
-                : 'https://localhost:7112/api/Suppliers';
+                ? `${API_BASE}/api/Suppliers/${editId}`
+                : `${API_BASE}/api/Suppliers`;
 
             const response = await fetch(endpoint, {
                 method: editId ? 'PUT' : 'POST',

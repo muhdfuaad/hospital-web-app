@@ -3,6 +3,9 @@
 import React, { useState, useCallback, useEffect } from 'react';
 import { Camera, User, MapPin, Briefcase, Calendar, Phone, Mail, Stethoscope, GraduationCap, Shield, Lock, CheckCircle } from 'lucide-react';
 import { useRouter, useSearchParams } from 'next/navigation';
+import API from '@/lib/axios';
+
+const API_BASE = API.defaults.baseURL;
 
 interface District {
     id: number;
@@ -14,12 +17,6 @@ interface Panchayath {
     panchayathName: string;
     dstId: number;
     dstName: string;
-}
-
-interface ApiResponse {
-    success: boolean;
-    message: string;
-    data?: any;
 }
 
 interface DoctorData {
@@ -90,7 +87,7 @@ const DoctorRegistrationForm: React.FC = () => {
             const fetchDoctorData = async () => {
                 setIsLoading(true);
                 try {
-                    const response = await fetch(`https://localhost:7112/api/Doctors/${doctorId}`);
+                    const response = await fetch(`${API_BASE}/api/Doctors/${doctorId}`);
                     if (response.ok) {
                         const doctorData = await response.json();
 
@@ -121,7 +118,7 @@ const DoctorRegistrationForm: React.FC = () => {
 
                         // Set existing photo URL if available
                         if (doctorData.photo) {
-                            setExistingPhotoUrl(`https://localhost:7112/uploads/${doctorData.photo}`);
+                            setExistingPhotoUrl(`${API_BASE}/uploads/${doctorData.photo}`);
                             setPhotoFileName(doctorData.photo);
                         }
 
@@ -148,18 +145,19 @@ const DoctorRegistrationForm: React.FC = () => {
         }
     }, [isEditMode, doctorId, districts]);
 
+
     // Fetch Doc_Id from API (only for new registrations)
     useEffect(() => {
         if (!isEditMode) {
             const fetchDocId = async () => {
                 try {
-                    const response = await fetch('https://localhost:7112/api/Doctors/get-id');
-                    if (response.ok) {
-                        const docId = await response.text();
-                        setFormData(prev => ({ ...prev, Doc_Id: docId }));
-                    } else {
-                        console.error('Failed to fetch Doc_Id - API response not OK');
-                    }
+                    const response = await API.get<string>('/api/Doctors/get-id'); // expecting plain text
+                    const docId = response.data;
+
+                    setFormData(prev => ({
+                        ...prev,
+                        Doc_Id: docId
+                    }));
                 } catch (err) {
                     console.error('Failed to fetch Doc_Id', err);
                 }
@@ -174,20 +172,14 @@ const DoctorRegistrationForm: React.FC = () => {
         const fetchLocations = async () => {
             try {
                 const [dRes, pRes] = await Promise.all([
-                    fetch('https://localhost:7112/api/Districts'),
-                    fetch('https://localhost:7112/api/Panchayaths'),
+                    API.get<District[]>('/api/Districts'),
+                    API.get<Panchayath[]>('/api/Panchayaths'),
                 ]);
 
-                if (dRes.ok && pRes.ok) {
-                    const dData = await dRes.json();
-                    const pData = await pRes.json();
-                    setDistricts(dData);
-                    setPanchayaths(pData);
-                } else {
-                    console.error('Failed to fetch districts/panchayaths - API response not OK');
-                }
-            } catch (err) {
-                console.error('Failed to fetch districts/panchayaths', err);
+                setDistricts(dRes.data);
+                setPanchayaths(pRes.data);
+            } catch (error) {
+                console.error('Failed to fetch districts/panchayaths', error);
             }
         };
 
@@ -357,8 +349,8 @@ const DoctorRegistrationForm: React.FC = () => {
 
             // Determine API endpoint and method based on mode
             const apiUrl = isEditMode
-                ? `https://localhost:7112/api/Doctors/${doctorId}`
-                : 'https://localhost:7112/api/Doctors';
+                ? `${API_BASE}/api/Doctors/${doctorId}`
+                : `${API_BASE}/api/Doctors`;
 
             const method = isEditMode ? 'PUT' : 'POST';
 
@@ -400,7 +392,7 @@ const DoctorRegistrationForm: React.FC = () => {
 
                     // Fetch new Doc_Id after successful submission
                     try {
-                        const docIdResponse = await fetch('https://localhost:7112/api/Doctors/get-id');
+                        const docIdResponse = await fetch(`${API_BASE}/api/Doctors/get-id`);
                         if (docIdResponse.ok) {
                             const newDocId = await docIdResponse.text();
                             setFormData(prev => ({ ...prev, Doc_Id: newDocId }));

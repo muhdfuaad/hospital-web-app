@@ -1,6 +1,7 @@
 'use client';
 import React, { useState, useEffect } from 'react';
-import { useSearchParams, useRouter } from 'next/navigation'
+import { useSearchParams, useRouter } from 'next/navigation';
+import API from '@/lib/axios';
 import { User, Heart, Pencil, Trash2, Plus, Check, VenetianMask, Calendar, Users } from 'lucide-react';
 
 interface PatientInfo {
@@ -23,36 +24,39 @@ interface FormData {
     customProcedures: string[];
 }
 
+interface Procedure {
+    name: string;
+}
+
 const VolunteersReviewForm: React.FC = () => {
 
     const handleAddCustomProcedure = async () => {
         if (newProcedureName.trim()) {
             const trimmedName = newProcedureName.trim();
 
-            setFormData(prev => ({
+            // ✅ Update local state
+            setFormData((prev) => ({
                 ...prev,
                 customProcedures: [...prev.customProcedures, trimmedName],
                 cells: { ...prev.cells, [trimmedName]: false },
-                descriptions: { ...prev.descriptions, [trimmedName]: '' }
+                descriptions: { ...prev.descriptions, [trimmedName]: '' },
             }));
 
-            setAllProcedures(prev => [...prev, trimmedName]);
+            setAllProcedures((prev) => [...prev, trimmedName]);
             setNewProcedureName('');
             setShowAddInput(false);
 
-            // ✅ Send to backend
+            // ✅ Send to backend using Axios
             try {
-                const res = await fetch('https://localhost:7112/api/VolunteersNotes/procedures', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ name: trimmedName })
+                await API.post('/api/VolunteersNotes/procedures', {
+                    name: trimmedName,
                 });
-
-                if (!res.ok && res.status !== 409) {
-                    console.error('Failed to add procedure to backend:', await res.text());
+            } catch (err: any) {
+                if (err?.response?.status !== 409) {
+                    console.error('❌ Failed to add procedure to backend:', err?.response?.data || err.message);
+                } else {
+                    console.warn('⚠️ Procedure already exists.');
                 }
-            } catch (err) {
-                console.error('Error adding procedure:', err);
             }
         }
     };
@@ -70,16 +74,18 @@ const VolunteersReviewForm: React.FC = () => {
         const newName = prompt("Edit procedure name:", column);
         if (!newName || newName.trim() === '' || newName === column) return;
 
-        // Update state first
+        const trimmedName = newName.trim();
+
+        // ✅ Update local state
         setFormData(prev => {
             const updatedCells = { ...prev.cells };
             const updatedDescriptions = { ...prev.descriptions };
             const updatedProcedures = prev.customProcedures.map(p =>
-                p === column ? newName : p
+                p === column ? trimmedName : p
             );
 
-            updatedCells[newName] = updatedCells[column];
-            updatedDescriptions[newName] = updatedDescriptions[column];
+            updatedCells[trimmedName] = updatedCells[column];
+            updatedDescriptions[trimmedName] = updatedDescriptions[column];
             delete updatedCells[column];
             delete updatedDescriptions[column];
 
@@ -92,28 +98,30 @@ const VolunteersReviewForm: React.FC = () => {
         });
 
         setAllProcedures(prev =>
-            prev.map(proc => (proc === column ? newName : proc))
+            prev.map(proc => (proc === column ? trimmedName : proc))
         );
 
-        // ✅ Send rename to backend
+        // ✅ Correct Axios PUT request with raw string payload
         try {
-            const res = await fetch(`https://localhost:7112/api/VolunteersNotes/procedures/${encodeURIComponent(column)}`, {
-                method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(newName)
-            });
-
-            if (!res.ok) {
-                console.error('Failed to rename procedure:', await res.text());
-            }
-        } catch (err) {
-            console.error('Error renaming procedure:', err);
+            await API.put(
+                `/api/VolunteersNotes/procedures/${encodeURIComponent(column)}`,
+                JSON.stringify(trimmedName), // send as raw string
+                {
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                }
+            );
+        } catch (err: any) {
+            console.error('❌ Failed to rename procedure:', err?.response?.data || err.message);
         }
     };
+
 
     const handleDeleteProcedure = async (column: string) => {
         if (!confirm(`Are you sure you want to delete "${column}"?`)) return;
 
+        // ✅ Update local state
         setFormData(prev => {
             const updatedCells = { ...prev.cells };
             const updatedDescriptions = { ...prev.descriptions };
@@ -131,19 +139,30 @@ const VolunteersReviewForm: React.FC = () => {
 
         setAllProcedures(prev => prev.filter(proc => proc !== column));
 
-        // ✅ Send delete to backend
+        // ✅ Axios DELETE call
         try {
-            const res = await fetch(`https://localhost:7112/api/VolunteersNotes/procedures/${encodeURIComponent(column)}`, {
-                method: 'DELETE'
-            });
-
-            if (!res.ok && res.status !== 404) {
-                console.error('Failed to delete procedure from backend:', await res.text());
+            await API.delete(`/api/VolunteersNotes/procedures/${encodeURIComponent(column)}`);
+        } catch (err: any) {
+            if (err?.response?.status !== 404) {
+                console.error('❌ Failed to delete procedure from backend:', err?.response?.data || err.message);
             }
-        } catch (err) {
-            console.error('Error deleting procedure:', err);
         }
     };
+
+    // 🔁 Fetch all available procedures from backend
+    useEffect(() => {
+        const fetchProcedures = async () => {
+            try {
+                const { data } = await API.get<Procedure[]>("/api/VolunteersNotes/procedures");
+                const names = data.map(proc => proc.name);
+                setAllProcedures(names);
+            } catch (err) {
+                console.error("Failed to fetch procedures", err);
+            }
+        };
+
+        fetchProcedures();
+    }, []);
 
     const [formData, setFormData] = useState<FormData>({
         patientId: '',
@@ -193,17 +212,6 @@ const VolunteersReviewForm: React.FC = () => {
         }));
     };
 
-    // 🔁 Fetch all available procedures from backend
-    useEffect(() => {
-        fetch("https://localhost:7112/api/VolunteersNotes/procedures")
-            .then((res) => res.ok ? res.json() : Promise.reject())
-            .then((data) => {
-                const names = data.map((proc: { name: string }) => proc.name);
-                setAllProcedures(names);
-            })
-            .catch(() => { });
-    }, []);
-
 
 
     useEffect(() => {
@@ -229,61 +237,85 @@ const VolunteersReviewForm: React.FC = () => {
         const assignment = searchParams.get('assignmentId');
         if (!assignment) return;
 
+        if (assignmentId === assignment) return;
+
         setAssignmentId(assignment);
 
-        fetch(`https://localhost:7112/api/PatientAssignments/byAssignmentId/${assignment}`)
-            .then(res => res.ok ? res.json() : Promise.reject())
-            .then((assignmentData) => {
+        const fetchAssignmentAndPatient = async () => {
+            try {
+                // ✅ Fetch assignment info
+                const assignmentRes = await API.get(`/api/PatientAssignments/byAssignmentId/${assignment}`);
+                const assignmentData = assignmentRes.data as any;
+
+                if (!assignmentData?.patientId) return;
+
                 setPatientId(assignmentData.patientId);
                 setFormData(prev => ({
                     ...prev,
                     reviewId: assignment,
                     patientId: assignmentData.patientId
                 }));
-                return fetch(`https://localhost:7112/api/Hpforms/patient/${assignmentData.patientId}`);
-            })
-            .then(res => res.ok ? res.json() : Promise.reject())
-            .then((patientData) => {
+
+                // ✅ Fetch patient info using patientId
+                const patientRes = await API.get(`/api/Hpforms/patient/${assignmentData.patientId}`);
+                const patientData = patientRes.data as any;
+
+                if (!patientData) return;
+
                 setPatientInfo({
                     name: patientData.name || '',
                     age: patientData.age || '',
                     gender: patientData.gender || ''
                 });
-            })
-            .catch(() => { });
-    }, [searchParams]);
+            } catch (err) {
+                console.error('Failed to fetch assignment or patient data:', err);
+            }
+        };
+
+        fetchAssignmentAndPatient();
+    }, [searchParams, assignmentId]);
 
 
     // to prefill data in form when Edit mode
     useEffect(() => {
-        const assignment = searchParams.get("assignmentId");
-        if (!assignment) return;
+        const assignmentId = searchParams.get('assignmentId');
+        if (!assignmentId) return;
 
-        fetch(`https://localhost:7112/api/VolunteersNotes/review/${assignment}`)
-            .then(res => res.status === 404 ? null : res.ok ? res.json() : Promise.reject())
-            .then((data) => {
-                if (!data) return;
-                const formattedDate = data.date ? data.date.split("T")[0] : new Date().toISOString().split('T')[0];
+        const fetchData = async () => {
+            try {
+                const res = await API.get(`/api/VolunteersNotes/review/${assignmentId}`);
+                const data: Record<string, any> = res?.data || {};
+
+                const formattedDate = data?.date?.split?.('T')?.[0] || new Date().toISOString().split('T')[0];
+
                 setFormData(prev => ({
                     ...prev,
-                    id: data.id,
-                    patientId: data.patientId,
-                    reviewId: data.reviewId,
+                    id: data?.id ?? null,
+                    patientId: data?.patientId ?? null,
+                    reviewId: data?.reviewId ?? null,
                     date: formattedDate,
-                    cells: data.cells || {},
-                    descriptions: data.descriptions || {},
-                    customProcedures: data.customProcedures || [],
+                    cells: data?.cells || {},
+                    descriptions: data?.descriptions || {},
+                    customProcedures: data?.customProcedures || [],
                 }));
-            })
-            .catch(() => { });
+            } catch (err: any) {
+                if (err?.response?.status === 404) {
+                    console.log('No review found. Prefill skipped.');
+                } else {
+                    console.error('Error fetching review:', err?.message || err);
+                }
+            }
+        };
+
+        fetchData();
     }, [searchParams]);
 
-    
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
         const payload = {
-            id: formData.id, // <-- include id if in edit mode
+            id: formData.id,
             patientId: formData.patientId,
             reviewId: formData.reviewId,
             date: formData.date,
@@ -293,41 +325,22 @@ const VolunteersReviewForm: React.FC = () => {
         };
 
         try {
-            const method = formData.id ? "PUT" : "POST";
-            const url = formData.id
-                ? `https://localhost:7112/api/VolunteersNotes/${formData.id}`
-                : "https://localhost:7112/api/VolunteersNotes";
-
-            const response = await fetch(url, {
-                method,
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify(payload),
-            });
-
-            if (!response.ok) {
-                const errorText = await response.text();
-                throw new Error(errorText || "Failed to submit form.");
-            }
-
-            // ✅ Only parse if there is content
-            if (response.status !== 204) {
-                const result = await response.json();
-                console.log("✅ Submission successful:", result);
+            if (formData.id) {
+                // PUT for edit mode
+                await API.put(`/api/VolunteersNotes/${formData.id}`, payload);
             } else {
-                console.log("✅ Submission successful with no content (204)");
+                // POST for create mode
+                await API.post("/api/VolunteersNotes", payload);
             }
 
             setSubmitStatus("success");
             setSubmitMessage("Volunteer’s note submitted successfully.");
 
-            // ✅ Wait 1 second and redirect
             setTimeout(() => {
                 router.push("/viewAssignments");
             }, 1000);
         } catch (error: any) {
-            console.error("❌ Submission error:", error.message);
+            console.error("❌ Submission error:", error?.response?.data || error.message);
             setSubmitStatus("error");
             setSubmitMessage("Failed to submit the volunteer’s note. Please try again.");
         }

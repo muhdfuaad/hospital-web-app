@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { FilePen, Trash2 } from 'lucide-react';
 import Link from 'next/link';
+import API from '@/lib/axios';
 
 interface District {
     id: number;
@@ -17,9 +18,12 @@ export default function DistrictPage() {
     const [error, setError] = useState('');
 
     const fetchDistricts = async () => {
-        const res = await fetch('https://localhost:7112/api/Districts');
-        const data = await res.json();
-        setDistricts(data);
+        try {
+            const res = await API.get<District[]>('/api/Districts');
+            setDistricts(res.data);
+        } catch (error) {
+            console.error('Failed to fetch districts:', error);
+        }
     };
 
     useEffect(() => {
@@ -44,27 +48,43 @@ export default function DistrictPage() {
             return;
         }
 
-        const method = editingId ? 'PUT' : 'POST';
-        const url = editingId
-            ? `https://localhost:7112/api/Districts/${editingId}`
-            : `https://localhost:7112/api/Districts`;
 
-        await fetch(url, {
-            method,
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ id: editingId || 0, name: districtName.trim() }),
-        });
+        const districtData = {
+            id: editingId || 0,
+            name: districtName.trim()
+        };
 
-        setDistrictName('');
-        setEditingId(null);
-        setShowModal(false);
-        setError('');
-        fetchDistricts();
+        try {
+            if (editingId) {
+                await API.put(`/api/Districts/${editingId}`, districtData);
+            } else {
+                await API.post('/api/Districts', districtData);
+            }
+
+            // Reset state after success
+            setDistrictName('');
+            setEditingId(null);
+            setShowModal(false);
+            setError('');
+            fetchDistricts();
+
+        } catch (error) {
+            console.error('Failed to save district:', error);
+            setError('Failed to save district. Please try again.');
+        }
     };
 
     const handleDelete = async (id: number) => {
-        await fetch(`https://localhost:7112/api/Districts/${id}`, { method: 'DELETE' });
-        fetchDistricts();
+        const confirmed = confirm('Are you sure you want to delete this district? This action cannot be undone.');
+        if (!confirmed) return;
+
+        try {
+            await API.delete(`/api/Districts/${id}`);
+            fetchDistricts(); // Refresh the list
+        } catch (error) {
+            console.error('Failed to delete district:', error);
+            alert('Error deleting district. Please try again.');
+        }
     };
 
     return (
