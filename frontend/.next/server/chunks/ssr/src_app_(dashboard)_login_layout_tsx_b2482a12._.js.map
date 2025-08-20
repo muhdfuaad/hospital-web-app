@@ -1,0 +1,6 @@
+{
+  "version": 3,
+  "sources": [],
+  "sections": [
+    {"offset": {"line": 7, "column": 0}, "map": {"version":3,"sources":["file:///D:/Projects/HOSPITALAPP/hospitalapp/src/app/%28dashboard%29/login/layout.tsx"],"sourcesContent":["// app/login/layout.tsx\r\n\r\nexport const metadata = {\r\n  title: 'Login | HealthCare Admin Panel',\r\n};\r\n\r\nexport default function LoginLayout({ children }: { children: React.ReactNode }) {\r\n  return <>{children}</>;\r\n}\r\n"],"names":[],"mappings":"AAAA,uBAAuB;;;;;;;AAEhB,MAAM,WAAW;IACtB,OAAO;AACT;AAEe,SAAS,YAAY,EAAE,QAAQ,EAAiC;IAC7E,qBAAO;kBAAG;;AACZ","debugId":null}}]
+}

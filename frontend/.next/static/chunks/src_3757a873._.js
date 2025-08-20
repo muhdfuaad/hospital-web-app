@@ -1,0 +1,677 @@
+(globalThis.TURBOPACK = globalThis.TURBOPACK || []).push([typeof document === "object" ? document.currentScript : undefined, {
+
+"[project]/src/lib/axios.ts [app-client] (ecmascript)": ((__turbopack_context__) => {
+"use strict";
+
+var { g: global, __dirname, k: __turbopack_refresh__, m: module } = __turbopack_context__;
+{
+__turbopack_context__.s({
+    "default": (()=>__TURBOPACK__default__export__)
+});
+var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$axios$2f$lib$2f$axios$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/axios/lib/axios.js [app-client] (ecmascript)");
+;
+const API = __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$axios$2f$lib$2f$axios$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["default"].create({
+    baseURL: "https://localhost:7112"
+});
+const __TURBOPACK__default__export__ = API;
+if (typeof globalThis.$RefreshHelpers$ === 'object' && globalThis.$RefreshHelpers !== null) {
+    __turbopack_context__.k.registerExports(module, globalThis.$RefreshHelpers$);
+}
+}}),
+"[project]/src/app/(dashboard)/doctor-consultations/page.tsx [app-client] (ecmascript)": ((__turbopack_context__) => {
+"use strict";
+
+var { g: global, __dirname, k: __turbopack_refresh__, m: module } = __turbopack_context__;
+{
+__turbopack_context__.s({
+    "default": (()=>__TURBOPACK__default__export__)
+});
+var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/next/dist/compiled/react/jsx-dev-runtime.js [app-client] (ecmascript)");
+var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/next/dist/compiled/react/index.js [app-client] (ecmascript)");
+var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$navigation$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/next/navigation.js [app-client] (ecmascript)");
+var __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$axios$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/src/lib/axios.ts [app-client] (ecmascript)");
+var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$date$2d$fns$2f$format$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$locals$3e$__ = __turbopack_context__.i("[project]/node_modules/date-fns/format.js [app-client] (ecmascript) <locals>");
+var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$notebook$2d$pen$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__NotebookPen$3e$__ = __turbopack_context__.i("[project]/node_modules/lucide-react/dist/esm/icons/notebook-pen.js [app-client] (ecmascript) <export default as NotebookPen>");
+;
+var _s = __turbopack_context__.k.signature();
+'use client';
+;
+;
+;
+;
+;
+const DoctorConsultationsPage = ()=>{
+    _s();
+    const [patients, setPatients] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])([]);
+    const [selectedDate, setSelectedDate] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])({
+        "DoctorConsultationsPage.useState": ()=>(0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$date$2d$fns$2f$format$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$locals$3e$__["format"])(new Date(), 'yyyy-MM-dd')
+    }["DoctorConsultationsPage.useState"]);
+    const [userRole, setUserRole] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])('doctor'); // You may want to get this from auth context
+    const [searchTerm, setSearchTerm] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])("");
+    const [currentPage, setCurrentPage] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])(1);
+    const recordsPerPage = 10;
+    const searchParams = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$navigation$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useSearchParams"])();
+    const router = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$navigation$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useRouter"])();
+    const filteredPatients = patients.filter((patient)=>patient.name?.toLowerCase().includes(searchTerm.toLowerCase()) || patient.patientId?.toString().toLowerCase().includes(searchTerm.toLowerCase()) || patient.diagnosis?.toLowerCase().includes(searchTerm.toLowerCase()) || patient.phoneNumber1?.toLowerCase().includes(searchTerm.toLowerCase()));
+    const totalPages = Math.ceil(filteredPatients.length / recordsPerPage);
+    const startIndex = (currentPage - 1) * recordsPerPage;
+    const currentRecords = filteredPatients.slice(startIndex, startIndex + recordsPerPage);
+    const fetchData = async (date)=>{
+        try {
+            const res = await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$axios$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["default"].get('/api/PatientAssignments/AssignedPatients', {
+                params: {
+                    date
+                }
+            });
+            // Process the data to add status based on hasReview/hasNote flags
+            const processedPatients = res.data.map((patient)=>{
+                let status = 'Scheduled';
+                // Determine status based on user role
+                if (userRole === 'doctor') {
+                    status = patient.hasReview ? 'Completed' : 'Scheduled';
+                } else if (userRole === 'nurse') {
+                    status = patient.hasNote ? 'Completed' : 'Scheduled';
+                }
+                return {
+                    ...patient,
+                    hasReview: Boolean(patient.hasReview),
+                    hasNote: Boolean(patient.hasNote),
+                    status
+                };
+            });
+            setPatients(processedPatients);
+        } catch (err) {
+            console.error('Error fetching assigned patients', err);
+        }
+    };
+    const handleEditButton = (assignmentId, patientId)=>{
+        router.push(`/doctor-consultations/details?assignmentId=${assignmentId}&patientId=${patientId}`);
+    };
+    const getStatusBadge = (status)=>{
+        if (status === 'Completed') {
+            return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                className: "inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800",
+                children: "Completed"
+            }, void 0, false, {
+                fileName: "[project]/src/app/(dashboard)/doctor-consultations/page.tsx",
+                lineNumber: 83,
+                columnNumber: 17
+            }, this);
+        } else {
+            return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                className: "inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800",
+                children: "Scheduled"
+            }, void 0, false, {
+                fileName: "[project]/src/app/(dashboard)/doctor-consultations/page.tsx",
+                lineNumber: 89,
+                columnNumber: 17
+            }, this);
+        }
+    };
+    (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useEffect"])({
+        "DoctorConsultationsPage.useEffect": ()=>{
+            fetchData(selectedDate);
+        }
+    }["DoctorConsultationsPage.useEffect"], [
+        selectedDate,
+        userRole
+    ]);
+    // You might want to add a role selector or get this from your auth context
+    const handleRoleChange = (role)=>{
+        setUserRole(role);
+    };
+    return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+        className: "min-h-screen w-full max-w-screen bg-gradient-to-br from-blue-50 to-blue-100 px-0 sm:px-0 py-0 grid-background",
+        children: [
+            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                className: "bg-gradient-to-r from-blue-700 to-blue-500 text-white py-3 px-4 text-center shadow-md",
+                children: [
+                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h1", {
+                        className: "text-3xl font-light mb-1",
+                        children: "Daily Consultations"
+                    }, void 0, false, {
+                        fileName: "[project]/src/app/(dashboard)/doctor-consultations/page.tsx",
+                        lineNumber: 109,
+                        columnNumber: 17
+                    }, this),
+                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
+                        className: "text-sm text-blue-100 font-normal",
+                        children: "Manage and view patient consultations"
+                    }, void 0, false, {
+                        fileName: "[project]/src/app/(dashboard)/doctor-consultations/page.tsx",
+                        lineNumber: 110,
+                        columnNumber: 17
+                    }, this)
+                ]
+            }, void 0, true, {
+                fileName: "[project]/src/app/(dashboard)/doctor-consultations/page.tsx",
+                lineNumber: 108,
+                columnNumber: 13
+            }, this),
+            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                className: "p-5",
+                children: [
+                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                        className: "flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4",
+                        children: [
+                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                className: "flex flex-col sm:flex-row items-start sm:items-center gap-4",
+                                children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                    className: "flex flex-col sm:flex-row items-start sm:items-center gap-2",
+                                    children: [
+                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("label", {
+                                            htmlFor: "date",
+                                            className: "text-sm font-medium text-gray-700",
+                                            children: "Select Date:"
+                                        }, void 0, false, {
+                                            fileName: "[project]/src/app/(dashboard)/doctor-consultations/page.tsx",
+                                            lineNumber: 119,
+                                            columnNumber: 29
+                                        }, this),
+                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                            className: "relative w-full sm:w-[200px]",
+                                            children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("input", {
+                                                id: "date",
+                                                type: "date",
+                                                value: selectedDate,
+                                                onChange: (e)=>setSelectedDate(e.target.value),
+                                                className: "w-full sm:w-[200px] appearance-none border border-gray-300 rounded-md px-4 py-2 text-sm text-gray-700 shadow-sm focus:ring-2 focus:ring-blue-500 transition-all",
+                                                style: {
+                                                    WebkitAppearance: 'none',
+                                                    MozAppearance: 'none',
+                                                    appearance: 'none'
+                                                }
+                                            }, void 0, false, {
+                                                fileName: "[project]/src/app/(dashboard)/doctor-consultations/page.tsx",
+                                                lineNumber: 123,
+                                                columnNumber: 33
+                                            }, this)
+                                        }, void 0, false, {
+                                            fileName: "[project]/src/app/(dashboard)/doctor-consultations/page.tsx",
+                                            lineNumber: 122,
+                                            columnNumber: 29
+                                        }, this)
+                                    ]
+                                }, void 0, true, {
+                                    fileName: "[project]/src/app/(dashboard)/doctor-consultations/page.tsx",
+                                    lineNumber: 118,
+                                    columnNumber: 25
+                                }, this)
+                            }, void 0, false, {
+                                fileName: "[project]/src/app/(dashboard)/doctor-consultations/page.tsx",
+                                lineNumber: 117,
+                                columnNumber: 21
+                            }, this),
+                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                className: "flex flex-col items-center sm:items-end w-full sm:w-auto gap-2",
+                                children: [
+                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                        className: "flex items-center gap-2 w-full sm:w-auto",
+                                        children: [
+                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                                className: "text-xl",
+                                                children: "🔍"
+                                            }, void 0, false, {
+                                                fileName: "[project]/src/app/(dashboard)/doctor-consultations/page.tsx",
+                                                lineNumber: 143,
+                                                columnNumber: 29
+                                            }, this),
+                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("input", {
+                                                type: "text",
+                                                placeholder: "Search by name, reg no, mobile no or diagnosis...",
+                                                value: searchTerm,
+                                                onChange: (e)=>{
+                                                    setSearchTerm(e.target.value);
+                                                    setCurrentPage(1);
+                                                },
+                                                className: "py-2 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 w-full max-w-md"
+                                            }, void 0, false, {
+                                                fileName: "[project]/src/app/(dashboard)/doctor-consultations/page.tsx",
+                                                lineNumber: 144,
+                                                columnNumber: 29
+                                            }, this)
+                                        ]
+                                    }, void 0, true, {
+                                        fileName: "[project]/src/app/(dashboard)/doctor-consultations/page.tsx",
+                                        lineNumber: 142,
+                                        columnNumber: 25
+                                    }, this),
+                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                        className: "text-sm text-gray-600 mt-1 text-center sm:text-right py-4",
+                                        children: [
+                                            "Showing ",
+                                            currentRecords.length,
+                                            " of ",
+                                            filteredPatients.length,
+                                            " patients"
+                                        ]
+                                    }, void 0, true, {
+                                        fileName: "[project]/src/app/(dashboard)/doctor-consultations/page.tsx",
+                                        lineNumber: 157,
+                                        columnNumber: 25
+                                    }, this)
+                                ]
+                            }, void 0, true, {
+                                fileName: "[project]/src/app/(dashboard)/doctor-consultations/page.tsx",
+                                lineNumber: 140,
+                                columnNumber: 21
+                            }, this)
+                        ]
+                    }, void 0, true, {
+                        fileName: "[project]/src/app/(dashboard)/doctor-consultations/page.tsx",
+                        lineNumber: 115,
+                        columnNumber: 17
+                    }, this),
+                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                        className: "hidden md:block bg-white rounded-lg shadow overflow-x-auto",
+                        children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("table", {
+                            className: "min-w-full border border-gray-300 border-collapse",
+                            children: [
+                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("thead", {
+                                    className: "bg-gradient-to-r from-blue-600 to-blue-600 text-white",
+                                    children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("tr", {
+                                        children: [
+                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
+                                                className: "w-10 px-4 py-3 text-left text-sm font-semibold text-white-700 border border-gray-300",
+                                                children: "ID"
+                                            }, void 0, false, {
+                                                fileName: "[project]/src/app/(dashboard)/doctor-consultations/page.tsx",
+                                                lineNumber: 169,
+                                                columnNumber: 33
+                                            }, this),
+                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
+                                                className: "w-35 px-4 py-3 text-left text-sm font-semibold text-white-700 border border-gray-300",
+                                                children: "Name"
+                                            }, void 0, false, {
+                                                fileName: "[project]/src/app/(dashboard)/doctor-consultations/page.tsx",
+                                                lineNumber: 170,
+                                                columnNumber: 33
+                                            }, this),
+                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
+                                                className: "w-5 px-4 py-3 text-left text-sm font-semibold text-white-700 border border-gray-300",
+                                                children: "Age"
+                                            }, void 0, false, {
+                                                fileName: "[project]/src/app/(dashboard)/doctor-consultations/page.tsx",
+                                                lineNumber: 171,
+                                                columnNumber: 33
+                                            }, this),
+                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
+                                                className: "w-5 px-4 py-3 text-left text-sm font-semibold text-white-700 border border-gray-300",
+                                                children: "Gender"
+                                            }, void 0, false, {
+                                                fileName: "[project]/src/app/(dashboard)/doctor-consultations/page.tsx",
+                                                lineNumber: 172,
+                                                columnNumber: 33
+                                            }, this),
+                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
+                                                className: "w-35 px-4 py-3 text-left text-sm font-semibold text-white-700 border border-gray-300",
+                                                children: "Diagnosis"
+                                            }, void 0, false, {
+                                                fileName: "[project]/src/app/(dashboard)/doctor-consultations/page.tsx",
+                                                lineNumber: 173,
+                                                columnNumber: 33
+                                            }, this),
+                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
+                                                className: "w-35 px-4 py-3 text-left text-sm font-semibold text-white-700 border border-gray-300",
+                                                children: "Mobile"
+                                            }, void 0, false, {
+                                                fileName: "[project]/src/app/(dashboard)/doctor-consultations/page.tsx",
+                                                lineNumber: 174,
+                                                columnNumber: 33
+                                            }, this),
+                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
+                                                className: "w-20 px-4 py-3 text-left text-sm font-semibold text-white-700 border border-gray-300",
+                                                children: "Status"
+                                            }, void 0, false, {
+                                                fileName: "[project]/src/app/(dashboard)/doctor-consultations/page.tsx",
+                                                lineNumber: 175,
+                                                columnNumber: 33
+                                            }, this),
+                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
+                                                className: "w-35 px-4 py-3 text-left text-sm font-semibold text-white-700 border border-gray-300",
+                                                children: "Actions"
+                                            }, void 0, false, {
+                                                fileName: "[project]/src/app/(dashboard)/doctor-consultations/page.tsx",
+                                                lineNumber: 176,
+                                                columnNumber: 33
+                                            }, this)
+                                        ]
+                                    }, void 0, true, {
+                                        fileName: "[project]/src/app/(dashboard)/doctor-consultations/page.tsx",
+                                        lineNumber: 168,
+                                        columnNumber: 29
+                                    }, this)
+                                }, void 0, false, {
+                                    fileName: "[project]/src/app/(dashboard)/doctor-consultations/page.tsx",
+                                    lineNumber: 167,
+                                    columnNumber: 25
+                                }, this),
+                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("tbody", {
+                                    children: filteredPatients.length === 0 ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("tr", {
+                                        children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
+                                            colSpan: 8,
+                                            className: "text-center text-gray-500 py-4",
+                                            children: searchTerm ? "No patients found matching your search" : "No patient records available"
+                                        }, void 0, false, {
+                                            fileName: "[project]/src/app/(dashboard)/doctor-consultations/page.tsx",
+                                            lineNumber: 182,
+                                            columnNumber: 37
+                                        }, this)
+                                    }, void 0, false, {
+                                        fileName: "[project]/src/app/(dashboard)/doctor-consultations/page.tsx",
+                                        lineNumber: 181,
+                                        columnNumber: 33
+                                    }, this) : filteredPatients.map((p, idx)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("tr", {
+                                            className: "hover:bg-cyan-100",
+                                            children: [
+                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
+                                                    className: "px-4 py-2 text-sm border border-gray-300",
+                                                    children: p.assignmentId
+                                                }, void 0, false, {
+                                                    fileName: "[project]/src/app/(dashboard)/doctor-consultations/page.tsx",
+                                                    lineNumber: 189,
+                                                    columnNumber: 41
+                                                }, this),
+                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
+                                                    className: "px-4 py-2 text-sm border border-gray-300",
+                                                    children: p.name
+                                                }, void 0, false, {
+                                                    fileName: "[project]/src/app/(dashboard)/doctor-consultations/page.tsx",
+                                                    lineNumber: 190,
+                                                    columnNumber: 41
+                                                }, this),
+                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
+                                                    className: "px-4 py-2 text-sm border border-gray-300",
+                                                    children: p.age
+                                                }, void 0, false, {
+                                                    fileName: "[project]/src/app/(dashboard)/doctor-consultations/page.tsx",
+                                                    lineNumber: 191,
+                                                    columnNumber: 41
+                                                }, this),
+                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
+                                                    className: "px-4 py-2 text-sm border border-gray-300",
+                                                    children: p.gender
+                                                }, void 0, false, {
+                                                    fileName: "[project]/src/app/(dashboard)/doctor-consultations/page.tsx",
+                                                    lineNumber: 192,
+                                                    columnNumber: 41
+                                                }, this),
+                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
+                                                    className: "px-4 py-2 text-sm border border-gray-300",
+                                                    children: p.diagnosis
+                                                }, void 0, false, {
+                                                    fileName: "[project]/src/app/(dashboard)/doctor-consultations/page.tsx",
+                                                    lineNumber: 193,
+                                                    columnNumber: 41
+                                                }, this),
+                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
+                                                    className: "px-4 py-2 text-sm border border-gray-300",
+                                                    children: p.phoneNumber1
+                                                }, void 0, false, {
+                                                    fileName: "[project]/src/app/(dashboard)/doctor-consultations/page.tsx",
+                                                    lineNumber: 194,
+                                                    columnNumber: 41
+                                                }, this),
+                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
+                                                    className: "px-4 py-2 text-sm border border-gray-300",
+                                                    children: getStatusBadge(p.status || 'Scheduled')
+                                                }, void 0, false, {
+                                                    fileName: "[project]/src/app/(dashboard)/doctor-consultations/page.tsx",
+                                                    lineNumber: 195,
+                                                    columnNumber: 41
+                                                }, this),
+                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
+                                                    className: "px-4 py-2 text-sm border border-gray-300",
+                                                    children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
+                                                        onClick: ()=>{
+                                                            handleEditButton(p.assignmentId, p.patientId.toString());
+                                                        },
+                                                        className: "inline-flex items-center gap-1 text-sm text-green-600 hover:text-green-800 hover:bg-green-100 px-3 py-1 rounded transition-all",
+                                                        children: [
+                                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$notebook$2d$pen$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__NotebookPen$3e$__["NotebookPen"], {
+                                                                className: "w-4 h-4"
+                                                            }, void 0, false, {
+                                                                fileName: "[project]/src/app/(dashboard)/doctor-consultations/page.tsx",
+                                                                lineNumber: 203,
+                                                                columnNumber: 49
+                                                            }, this),
+                                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                                                children: "Consultations"
+                                                            }, void 0, false, {
+                                                                fileName: "[project]/src/app/(dashboard)/doctor-consultations/page.tsx",
+                                                                lineNumber: 204,
+                                                                columnNumber: 49
+                                                            }, this)
+                                                        ]
+                                                    }, void 0, true, {
+                                                        fileName: "[project]/src/app/(dashboard)/doctor-consultations/page.tsx",
+                                                        lineNumber: 199,
+                                                        columnNumber: 45
+                                                    }, this)
+                                                }, void 0, false, {
+                                                    fileName: "[project]/src/app/(dashboard)/doctor-consultations/page.tsx",
+                                                    lineNumber: 198,
+                                                    columnNumber: 41
+                                                }, this)
+                                            ]
+                                        }, p.patientId, true, {
+                                            fileName: "[project]/src/app/(dashboard)/doctor-consultations/page.tsx",
+                                            lineNumber: 188,
+                                            columnNumber: 37
+                                        }, this))
+                                }, void 0, false, {
+                                    fileName: "[project]/src/app/(dashboard)/doctor-consultations/page.tsx",
+                                    lineNumber: 179,
+                                    columnNumber: 25
+                                }, this)
+                            ]
+                        }, void 0, true, {
+                            fileName: "[project]/src/app/(dashboard)/doctor-consultations/page.tsx",
+                            lineNumber: 166,
+                            columnNumber: 21
+                        }, this)
+                    }, void 0, false, {
+                        fileName: "[project]/src/app/(dashboard)/doctor-consultations/page.tsx",
+                        lineNumber: 165,
+                        columnNumber: 17
+                    }, this),
+                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                        className: "block md:hidden space-y-4",
+                        children: filteredPatients.length === 0 ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                            className: "text-center text-gray-500 py-4",
+                            children: searchTerm ? "No patients found matching your search" : "No patient records available"
+                        }, void 0, false, {
+                            fileName: "[project]/src/app/(dashboard)/doctor-consultations/page.tsx",
+                            lineNumber: 216,
+                            columnNumber: 25
+                        }, this) : filteredPatients.map((p, idx)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                className: "bg-white shadow-md rounded-lg p-4 border border-gray-200",
+                                children: [
+                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                        className: "flex justify-between items-start mb-2",
+                                        children: [
+                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                children: [
+                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h3", {
+                                                        className: "text-base font-semibold text-gray-800",
+                                                        children: p.name
+                                                    }, void 0, false, {
+                                                        fileName: "[project]/src/app/(dashboard)/doctor-consultations/page.tsx",
+                                                        lineNumber: 224,
+                                                        columnNumber: 41
+                                                    }, this),
+                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                                        className: "text-sm text-gray-500",
+                                                        children: [
+                                                            "#",
+                                                            p.patientId
+                                                        ]
+                                                    }, void 0, true, {
+                                                        fileName: "[project]/src/app/(dashboard)/doctor-consultations/page.tsx",
+                                                        lineNumber: 225,
+                                                        columnNumber: 41
+                                                    }, this)
+                                                ]
+                                            }, void 0, true, {
+                                                fileName: "[project]/src/app/(dashboard)/doctor-consultations/page.tsx",
+                                                lineNumber: 223,
+                                                columnNumber: 37
+                                            }, this),
+                                            getStatusBadge(p.status || 'Scheduled')
+                                        ]
+                                    }, void 0, true, {
+                                        fileName: "[project]/src/app/(dashboard)/doctor-consultations/page.tsx",
+                                        lineNumber: 222,
+                                        columnNumber: 33
+                                    }, this),
+                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                        className: "text-sm text-gray-700 mb-1",
+                                        children: [
+                                            "🧾 Diagnosis: ",
+                                            p.diagnosis
+                                        ]
+                                    }, void 0, true, {
+                                        fileName: "[project]/src/app/(dashboard)/doctor-consultations/page.tsx",
+                                        lineNumber: 229,
+                                        columnNumber: 33
+                                    }, this),
+                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                        className: "text-sm text-gray-700 mb-1",
+                                        children: [
+                                            "👤 Age: ",
+                                            p.age,
+                                            " | ",
+                                            p.gender
+                                        ]
+                                    }, void 0, true, {
+                                        fileName: "[project]/src/app/(dashboard)/doctor-consultations/page.tsx",
+                                        lineNumber: 230,
+                                        columnNumber: 33
+                                    }, this),
+                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                        className: "text-sm text-gray-700 mb-1",
+                                        children: [
+                                            "📞 ",
+                                            p.phoneNumber1
+                                        ]
+                                    }, void 0, true, {
+                                        fileName: "[project]/src/app/(dashboard)/doctor-consultations/page.tsx",
+                                        lineNumber: 231,
+                                        columnNumber: 33
+                                    }, this),
+                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                        className: "text-right",
+                                        children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
+                                            onClick: ()=>{
+                                                handleEditButton(p.assignmentId, p.patientId.toString());
+                                            },
+                                            className: "inline-flex items-center gap-1 text-sm text-green-600 hover:text-green-800 hover:bg-green-100 px-3 py-1 rounded transition-all",
+                                            children: [
+                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$notebook$2d$pen$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__NotebookPen$3e$__["NotebookPen"], {
+                                                    className: "w-4 h-4"
+                                                }, void 0, false, {
+                                                    fileName: "[project]/src/app/(dashboard)/doctor-consultations/page.tsx",
+                                                    lineNumber: 237,
+                                                    columnNumber: 41
+                                                }, this),
+                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                                    children: "Consultations"
+                                                }, void 0, false, {
+                                                    fileName: "[project]/src/app/(dashboard)/doctor-consultations/page.tsx",
+                                                    lineNumber: 238,
+                                                    columnNumber: 41
+                                                }, this)
+                                            ]
+                                        }, void 0, true, {
+                                            fileName: "[project]/src/app/(dashboard)/doctor-consultations/page.tsx",
+                                            lineNumber: 233,
+                                            columnNumber: 37
+                                        }, this)
+                                    }, void 0, false, {
+                                        fileName: "[project]/src/app/(dashboard)/doctor-consultations/page.tsx",
+                                        lineNumber: 232,
+                                        columnNumber: 33
+                                    }, this)
+                                ]
+                            }, p.patientId, true, {
+                                fileName: "[project]/src/app/(dashboard)/doctor-consultations/page.tsx",
+                                lineNumber: 221,
+                                columnNumber: 29
+                            }, this))
+                    }, void 0, false, {
+                        fileName: "[project]/src/app/(dashboard)/doctor-consultations/page.tsx",
+                        lineNumber: 214,
+                        columnNumber: 17
+                    }, this)
+                ]
+            }, void 0, true, {
+                fileName: "[project]/src/app/(dashboard)/doctor-consultations/page.tsx",
+                lineNumber: 113,
+                columnNumber: 13
+            }, this),
+            totalPages > 1 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                className: "pagination",
+                children: [
+                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
+                        className: "pagination-btn",
+                        onClick: ()=>setCurrentPage((prev)=>Math.max(prev - 1, 1)),
+                        disabled: currentPage === 1,
+                        children: "Previous"
+                    }, void 0, false, {
+                        fileName: "[project]/src/app/(dashboard)/doctor-consultations/page.tsx",
+                        lineNumber: 250,
+                        columnNumber: 21
+                    }, this),
+                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                        className: "pagination-info",
+                        children: [
+                            "Page ",
+                            currentPage,
+                            " of ",
+                            totalPages
+                        ]
+                    }, void 0, true, {
+                        fileName: "[project]/src/app/(dashboard)/doctor-consultations/page.tsx",
+                        lineNumber: 257,
+                        columnNumber: 21
+                    }, this),
+                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
+                        className: "pagination-btn",
+                        onClick: ()=>setCurrentPage((prev)=>Math.min(prev + 1, totalPages)),
+                        disabled: currentPage === totalPages,
+                        children: "Next"
+                    }, void 0, false, {
+                        fileName: "[project]/src/app/(dashboard)/doctor-consultations/page.tsx",
+                        lineNumber: 260,
+                        columnNumber: 21
+                    }, this)
+                ]
+            }, void 0, true, {
+                fileName: "[project]/src/app/(dashboard)/doctor-consultations/page.tsx",
+                lineNumber: 249,
+                columnNumber: 17
+            }, this)
+        ]
+    }, void 0, true, {
+        fileName: "[project]/src/app/(dashboard)/doctor-consultations/page.tsx",
+        lineNumber: 106,
+        columnNumber: 9
+    }, this);
+};
+_s(DoctorConsultationsPage, "DW8QQkHCAruW9G3zPoQ6+ACWPfA=", false, function() {
+    return [
+        __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$navigation$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useSearchParams"],
+        __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$navigation$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useRouter"]
+    ];
+});
+_c = DoctorConsultationsPage;
+const __TURBOPACK__default__export__ = DoctorConsultationsPage;
+var _c;
+__turbopack_context__.k.register(_c, "DoctorConsultationsPage");
+if (typeof globalThis.$RefreshHelpers$ === 'object' && globalThis.$RefreshHelpers !== null) {
+    __turbopack_context__.k.registerExports(module, globalThis.$RefreshHelpers$);
+}
+}}),
+}]);
+
+//# sourceMappingURL=src_3757a873._.js.map

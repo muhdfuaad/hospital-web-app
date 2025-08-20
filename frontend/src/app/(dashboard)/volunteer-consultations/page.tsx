@@ -1,0 +1,226 @@
+'use client';
+
+import React, { useEffect, useState } from 'react';
+import { useSearchParams, useRouter } from 'next/navigation';
+import API from '@/lib/axios';
+import { format } from 'date-fns';
+import { NotebookPen, FilePen, Trash2 } from 'lucide-react';
+import Link from 'next/link';
+
+interface AssignedPatient {
+    assignmentId: string;
+    patientId: number;
+    name: string;
+    age: number;
+    gender: string;
+    diagnosis: string;
+    phoneNumber1: string;
+}
+
+const DailyConsultationsPage = () => {
+    const [patients, setPatients] = useState<AssignedPatient[]>([]);
+    const [selectedDate, setSelectedDate] = useState(() => format(new Date(), 'yyyy-MM-dd'));
+
+    const [searchTerm, setSearchTerm] = useState("");
+    const [currentPage, setCurrentPage] = useState(1);
+    const recordsPerPage = 10;
+
+    const searchParams = useSearchParams();
+    const router = useRouter();
+
+
+
+    const filteredPatients = patients.filter(patient =>
+        patient.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        patient.patientId?.toString().toLowerCase().includes(searchTerm.toLowerCase()) ||
+        patient.diagnosis?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        patient.phoneNumber1?.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+
+    const totalPages = Math.ceil(filteredPatients.length / recordsPerPage);
+    const startIndex = (currentPage - 1) * recordsPerPage;
+    const currentRecords = filteredPatients.slice(startIndex, startIndex + recordsPerPage);
+
+
+    const fetchData = async (date: string) => {
+        try {
+            const res = await API.get<AssignedPatient[]>('/api/PatientAssignments/AssignedPatients', {
+                params: { date }
+            });
+            setPatients(res.data);
+        } catch (err) {
+            console.error('Error fetching assigned patients', err);
+        }
+    };
+
+    const handleEditButton = (assignmentId: string, patientId: string) => {
+        router.push(`/volunteer-consultations/details?assignmentId=${assignmentId}&patientId=${patientId}`);
+    };
+
+    useEffect(() => {
+        fetchData(selectedDate);
+    }, [selectedDate]);
+
+    return (
+        <div className="min-h-screen w-full max-w-screen bg-gradient-to-br from-blue-50 to-blue-100 px-0 sm:px-0 py-0 grid-background">
+            {/* Header Section */}
+            <div className="bg-gradient-to-r from-blue-700 to-blue-500 text-white py-3 px-4 text-center shadow-md">
+                <h1 className="text-3xl font-light mb-1">Volunteer Assignments</h1>
+                <p className="text-sm text-blue-100 font-normal">Manage and view volunteer assignments</p>
+            </div>
+
+            <div className="p-5">
+                {/* Header Actions Row */}
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4">
+                    {/* Left: Current Date*/}
+                    <div className="mb-4 w-full sm:w-auto flex flex-col sm:flex-row items-start sm:items-center gap-2">
+                        <label htmlFor="date" className="text-sm font-medium text-gray-700">
+                            Select Date:
+                        </label>
+                        <div className="relative w-full sm:w-[200px]">
+                            <input
+                                id="date"
+                                type="date"
+                                value={selectedDate}
+                                onChange={(e) => setSelectedDate(e.target.value)}
+                                className="w-full sm:w-[200px] appearance-none border border-gray-300 rounded-md px-4 py-2 text-sm text-gray-700 shadow-sm focus:ring-2 focus:ring-blue-500 transition-all"
+                                style={{
+                                    // This hides the browser's default calendar icon
+                                    WebkitAppearance: 'none',
+                                    MozAppearance: 'none',
+                                    appearance: 'none',
+                                }}
+                            />
+                        </div>
+                    </div>
+
+                    {/* Right Side: Search and Info */}
+                    <div className="flex flex-col items-center sm:items-end w-full sm:w-auto gap-2">
+                        {/* Search Input */}
+                        <div className="flex items-center gap-2 w-full sm:w-auto">
+                            <span className="text-xl">🔍</span>
+                            <input
+                                type="text"
+                                placeholder="Search by name, reg no, mobile no or diagnosis..."
+                                value={searchTerm}
+                                onChange={(e) => {
+                                    setSearchTerm(e.target.value);
+                                    setCurrentPage(1);
+                                }}
+                                className="py-2 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 w-full max-w-md"
+                            />
+                        </div>
+
+                        {/* Records Info */}
+                        <div className="text-sm text-gray-600 mt-1 text-center sm:text-right py-4">
+                            Showing {currentRecords.length} of {filteredPatients.length} patients
+                        </div>
+                    </div>
+                </div>
+
+                {/* Table Section */}
+                {/* ✅ Desktop Table View */}
+                <div className="hidden md:block bg-white rounded-lg shadow overflow-x-auto">
+                    <table className="min-w-full border border-gray-300 border-collapse">
+                        <thead className="bg-gradient-to-r from-blue-600 to-blue-600 text-white">
+                            <tr>
+                                <th className="w-10 px-4 py-3 text-left text-sm font-semibold text-white-700 border border-gray-300">ID</th>
+                                <th className="w-35 px-4 py-3 text-left text-sm font-semibold text-white-700 border border-gray-300">Name</th>
+                                <th className="w-5 px-4 py-3 text-left text-sm font-semibold text-white-700 border border-gray-300">Age</th>
+                                <th className="w-5 px-4 py-3 text-left text-sm font-semibold text-white-700 border border-gray-300">Gender</th>
+                                <th className="w-35 px-4 py-3 text-left text-sm font-semibold text-white-700 border border-gray-300">Diagnosis</th>
+                                <th className="w-35 px-4 py-3 text-left text-sm font-semibold text-white-700 border border-gray-300">Mobile</th>
+                                <th className="w-35 px-4 py-3 text-left text-sm font-semibold text-white-700 border border-gray-300">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {filteredPatients.length === 0 ? (
+                                <tr>
+                                    <td colSpan={7} className="text-center text-gray-500 py-4">
+                                        {searchTerm ? "No patients found matching your search" : "No patient records available"}
+                                    </td>
+                                </tr>
+                            ) : (
+                                filteredPatients.map((p, idx) => (
+                                    <tr key={p.patientId} className="hover:bg-cyan-100">
+                                        <td className="px-4 py-2 text-sm border border-gray-300">{p.assignmentId}</td>
+                                        <td className="px-4 py-2 text-sm border border-gray-300">{p.name}</td>
+                                        <td className="px-4 py-2 text-sm border border-gray-300">{p.age}</td>
+                                        <td className="px-4 py-2 text-sm border border-gray-300">{p.gender}</td>
+                                        <td className="px-4 py-2 text-sm border border-gray-300">{p.diagnosis}</td>
+                                        <td className="px-4 py-2 text-sm border border-gray-300">{p.phoneNumber1}</td>
+                                        <td className="px-4 py-2 text-sm border border-gray-300">
+                                            <button
+                                                onClick={() => { handleEditButton(p.assignmentId, p.patientId.toString()) }}
+                                                className="inline-flex items-center gap-1 text-sm text-green-600 hover:text-green-800 hover:bg-green-100 px-3 py-1 rounded transition-all"
+                                            >
+                                                <NotebookPen className="w-4 h-4" />
+                                                <span>Consultations</span>
+                                            </button>
+
+                                        </td>
+                                    </tr>
+                                ))
+                            )}
+                        </tbody>
+                    </table>
+                </div>
+                {/* ✅ Mobile Card View */}
+                <div className="block md:hidden space-y-4">
+                    {filteredPatients.length === 0 ? (
+                        <div className="text-center text-gray-500 py-4">
+                            {searchTerm ? "No patients found matching your search" : "No patient records available"}
+                        </div>
+                    ) : (
+                        filteredPatients.map((p, idx) => (
+                            <div key={p.patientId} className="bg-white shadow-md rounded-lg p-4 border border-gray-200">
+                                <div className="flex justify-between items-center mb-2">
+                                    <h3 className="text-base font-semibold text-gray-800">{p.name}</h3>
+                                    <span className="text-sm text-gray-500">#{p.patientId}</span>
+                                </div>
+                                <div className="text-sm text-gray-700 mb-1">🧾 Diagnosis: {p.diagnosis}</div>
+                                <div className="text-sm text-gray-700 mb-1">👤 Age: {p.age} | {p.gender}</div>
+                                <div className="text-sm text-gray-700 mb-1">📞 {p.phoneNumber1}</div>
+                                <div className="text-right">
+                                    <Link
+                                        href={`/Volunteer-consultations/details?patientId=${p.patientId}&assignmentId=${p.assignmentId}`}
+                                        className="inline-flex items-center gap-1 text-sm text-green-600 hover:text-green-800 hover:bg-green-100 px-3 py-1 rounded transition-all"
+                                    >
+                                        <NotebookPen className="w-4 h-4" />
+                                        <span>Consultations</span>
+                                    </Link>
+
+                                </div>
+                            </div>
+                        ))
+                    )}
+                </div>
+            </div>
+
+            {/* Pagination */}
+            {totalPages > 1 && (
+                <div className="pagination">
+                    <button
+                        className="pagination-btn"
+                        onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                        disabled={currentPage === 1}
+                    >
+                        Previous
+                    </button>
+                    <span className="pagination-info">
+                        Page {currentPage} of {totalPages}
+                    </span>
+                    <button
+                        className="pagination-btn"
+                        onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                        disabled={currentPage === totalPages}
+                    >
+                        Next
+                    </button>
+                </div>
+            )}
+        </div>
+    );
+};
+
+export default DailyConsultationsPage;

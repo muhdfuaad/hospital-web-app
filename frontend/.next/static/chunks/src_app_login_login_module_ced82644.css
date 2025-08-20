@@ -1,0 +1,549 @@
+/* [project]/src/app/login/login.module.css [app-client] (css) */
+.login-module__WEZH7G__hospital-dashboard {
+  background-color: #f8fafc;
+  min-height: 100vh;
+  font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif;
+}
+
+.login-module__WEZH7G__dashboard-header {
+  color: #fff;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 2rem 0;
+  box-shadow: 0 4px 20px #0000001a;
+}
+
+.login-module__WEZH7G__dashboard-header.login-module__WEZH7G__full-width {
+  width: 100vw;
+  margin: 0 -50vw 2rem;
+  position: relative;
+  left: 50%;
+  right: 50%;
+}
+
+.login-module__WEZH7G__header-content {
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 2rem;
+  display: flex;
+}
+
+.login-module__WEZH7G__title-section h1 {
+  text-shadow: 0 2px 4px #0000001a;
+  margin: 0;
+  font-size: 2.5rem;
+  font-weight: 700;
+}
+
+.login-module__WEZH7G__subtitle {
+  opacity: .9;
+  margin: .5rem 0 0;
+  font-size: 1.1rem;
+  font-weight: 400;
+}
+
+.login-module__WEZH7G__new-registration-btn {
+  color: #fff;
+  cursor: pointer;
+  backdrop-filter: blur(10px);
+  background: #fff3;
+  border: 2px solid #ffffff4d;
+  border-radius: 8px;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 24px;
+  font-size: 1rem;
+  font-weight: 600;
+  transition: all .3s;
+  display: flex;
+}
+
+.login-module__WEZH7G__new-registration-btn:hover {
+  background: #ffffff4d;
+  border-color: #ffffff80;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 16px #0003;
+}
+
+.login-module__WEZH7G__btn-icon {
+  font-size: 1.2rem;
+  font-weight: bold;
+}
+
+.login-module__WEZH7G__controls-section {
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 24px;
+  display: flex;
+}
+
+.login-module__WEZH7G__search-container {
+  flex: 1;
+  max-width: 400px;
+}
+
+.login-module__WEZH7G__search-input {
+  background: #fff;
+  border: 2px solid #e1e5e9;
+  border-radius: 8px;
+  width: 100%;
+  padding: 12px 16px;
+  font-size: 1rem;
+  transition: all .3s;
+}
+
+.login-module__WEZH7G__search-input:focus {
+  border-color: #667eea;
+  outline: none;
+  box-shadow: 0 0 0 3px #667eea1a;
+}
+
+.login-module__WEZH7G__records-info {
+  color: #64748b;
+  background: #fff;
+  border-radius: 8px;
+  padding: 12px 16px;
+  font-weight: 500;
+  box-shadow: 0 2px 4px #0000000d;
+}
+
+.login-module__WEZH7G__table-container {
+  background: #fff;
+  border-radius: 12px;
+  margin-bottom: 24px;
+  overflow: hidden;
+  box-shadow: 0 4px 6px #0000001a;
+}
+
+.login-module__WEZH7G__patients-table {
+  border-collapse: collapse;
+  width: 100%;
+  font-size: .95rem;
+}
+
+.login-module__WEZH7G__patients-table thead {
+  color: #fff;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.login-module__WEZH7G__patients-table th {
+  text-align: left;
+  text-transform: uppercase;
+  letter-spacing: .5px;
+  padding: 16px 12px;
+  font-size: .85rem;
+  font-weight: 600;
+}
+
+.login-module__WEZH7G__patients-table tbody tr {
+  border-bottom: 1px solid #f1f5f9;
+  transition: all .2s;
+}
+
+.login-module__WEZH7G__patients-table tbody tr:hover {
+  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+  transform: translateX(2px);
+  box-shadow: 0 2px 8px #0000001a;
+}
+
+.login-module__WEZH7G__patients-table td {
+  vertical-align: middle;
+  padding: 16px 12px;
+}
+
+.login-module__WEZH7G__id-cell {
+  color: #64748b;
+  font-family: Courier New, monospace;
+  font-weight: 600;
+}
+
+.login-module__WEZH7G__reg-cell {
+  color: #475569;
+  font-weight: 500;
+}
+
+.login-module__WEZH7G__patient-name-btn {
+  color: #667eea;
+  cursor: pointer;
+  background: none;
+  border: none;
+  padding: 0;
+  font-size: 1rem;
+  font-weight: 600;
+  text-decoration: underline;
+  transition: color .2s;
+}
+
+.login-module__WEZH7G__patient-name-btn:hover {
+  color: #5a67d8;
+}
+
+.login-module__WEZH7G__gender-badge {
+  text-transform: uppercase;
+  border-radius: 12px;
+  padding: 4px 8px;
+  font-size: .8rem;
+  font-weight: 600;
+}
+
+.login-module__WEZH7G__gender-badge.login-module__WEZH7G__male {
+  color: #1e40af;
+  background: #dbeafe;
+}
+
+.login-module__WEZH7G__gender-badge.login-module__WEZH7G__female {
+  color: #be185d;
+  background: #fce7f3;
+}
+
+.login-module__WEZH7G__diagnosis-cell {
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 200px;
+  font-weight: 500;
+  overflow: hidden;
+}
+
+.login-module__WEZH7G__actions-cell {
+  gap: 8px;
+  display: flex;
+}
+
+.login-module__WEZH7G__action-btn {
+  cursor: pointer;
+  border: none;
+  border-radius: 6px;
+  padding: 6px 12px;
+  font-size: .85rem;
+  font-weight: 500;
+  transition: all .2s;
+}
+
+.login-module__WEZH7G__edit-btn {
+  color: #fff;
+  background: #10b981;
+}
+
+.login-module__WEZH7G__edit-btn:hover {
+  background: #059669;
+  transform: translateY(-1px);
+}
+
+.login-module__WEZH7G__delete-btn {
+  color: #fff;
+  background: #ef4444;
+}
+
+.login-module__WEZH7G__delete-btn:hover {
+  background: #dc2626;
+  transform: translateY(-1px);
+}
+
+.login-module__WEZH7G__no-records {
+  text-align: center;
+  color: #64748b;
+  padding: 48px;
+  font-style: italic;
+}
+
+.login-module__WEZH7G__pagination {
+  justify-content: center;
+  align-items: center;
+  gap: 16px;
+  margin-top: 24px;
+  display: flex;
+}
+
+.login-module__WEZH7G__pagination-btn {
+  cursor: pointer;
+  background: #fff;
+  border: 2px solid #e2e8f0;
+  border-radius: 6px;
+  padding: 8px 16px;
+  font-weight: 500;
+  transition: all .2s;
+}
+
+.login-module__WEZH7G__pagination-btn:hover:not(:disabled) {
+  color: #667eea;
+  border-color: #667eea;
+}
+
+.login-module__WEZH7G__pagination-btn:disabled {
+  opacity: .5;
+  cursor: not-allowed;
+}
+
+.login-module__WEZH7G__pagination-info {
+  color: #475569;
+  font-weight: 500;
+}
+
+.login-module__WEZH7G__modal-overlay {
+  z-index: 1000;
+  backdrop-filter: blur(4px);
+  background: #0009;
+  justify-content: center;
+  align-items: center;
+  display: flex;
+  position: fixed;
+  inset: 0;
+}
+
+.login-module__WEZH7G__patient-details-modal {
+  background: #fff;
+  border-radius: 16px;
+  width: 90%;
+  max-width: 800px;
+  max-height: 90vh;
+  animation: .3s ease-out login-module__WEZH7G__modalSlideIn;
+  overflow-y: auto;
+  box-shadow: 0 20px 40px #0003;
+}
+
+@keyframes login-module__WEZH7G__modalSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px)scale(.95);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0)scale(1);
+  }
+}
+
+.login-module__WEZH7G__modal-header {
+  color: #fff;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-bottom: 2px solid #f1f5f9;
+  border-radius: 16px 16px 0 0;
+  justify-content: space-between;
+  align-items: center;
+  padding: 24px 32px;
+  display: flex;
+}
+
+.login-module__WEZH7G__modal-header h2 {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+.login-module__WEZH7G__modal-close-btn {
+  color: #fff;
+  cursor: pointer;
+  background: #fff3;
+  border: none;
+  border-radius: 50%;
+  justify-content: center;
+  align-items: center;
+  width: 32px;
+  height: 32px;
+  font-size: 1.5rem;
+  transition: background .2s;
+  display: flex;
+}
+
+.login-module__WEZH7G__modal-close-btn:hover {
+  background: #ffffff4d;
+}
+
+.login-module__WEZH7G__modal-content {
+  padding: 32px;
+}
+
+.login-module__WEZH7G__patient-photo-section {
+  justify-content: center;
+  margin-bottom: 32px;
+  display: flex;
+}
+
+.login-module__WEZH7G__patient-photo {
+  object-fit: cover;
+  border: 4px solid #e2e8f0;
+  border-radius: 50%;
+  width: 180px;
+  height: 180px;
+  box-shadow: 0 4px 8px #0000001a;
+}
+
+.login-module__WEZH7G__patient-info-grid {
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 24px;
+  margin-bottom: 32px;
+  display: grid;
+}
+
+.login-module__WEZH7G__info-section {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 20px;
+}
+
+.login-module__WEZH7G__info-section h3 {
+  color: #1e293b;
+  border-bottom: 2px solid #e2e8f0;
+  margin: 0 0 16px;
+  padding-bottom: 8px;
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.login-module__WEZH7G__info-row {
+  border-bottom: 1px solid #f1f5f9;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+  display: flex;
+}
+
+.login-module__WEZH7G__info-row:last-child {
+  border-bottom: none;
+}
+
+.login-module__WEZH7G__label {
+  color: #64748b;
+  flex-shrink: 0;
+  margin-right: 16px;
+  font-weight: 500;
+}
+
+.login-module__WEZH7G__value {
+  color: #1e293b;
+  text-align: right;
+  word-break: break-word;
+  font-weight: 600;
+}
+
+.login-module__WEZH7G__diagnosis-highlight {
+  color: #dc2626;
+  background: #fef2f2;
+  border-radius: 6px;
+  padding: 4px 8px;
+}
+
+.login-module__WEZH7G__documents-section {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 20px;
+}
+
+.login-module__WEZH7G__documents-section h3 {
+  color: #1e293b;
+  margin: 0 0 16px;
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.login-module__WEZH7G__document-item {
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 0;
+  display: flex;
+}
+
+.login-module__WEZH7G__document-label {
+  color: #64748b;
+  font-weight: 500;
+}
+
+.login-module__WEZH7G__document-link {
+  color: #fff;
+  background: #667eea;
+  border-radius: 6px;
+  padding: 8px 16px;
+  font-weight: 500;
+  text-decoration: none;
+  transition: background .2s;
+}
+
+.login-module__WEZH7G__document-link:hover {
+  background: #5a67d8;
+}
+
+.login-module__WEZH7G__loading-container {
+  color: #64748b;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  min-height: 400px;
+  display: flex;
+}
+
+.login-module__WEZH7G__loading-spinner {
+  border: 4px solid #f3f4f6;
+  border-top-color: #667eea;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  margin-bottom: 16px;
+  animation: 1s linear infinite login-module__WEZH7G__spin;
+}
+
+@keyframes login-module__WEZH7G__spin {
+  0% {
+    transform: rotate(0);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.login-module__WEZH7G__error-container {
+  justify-content: center;
+  align-items: center;
+  min-height: 400px;
+  display: flex;
+}
+
+.login-module__WEZH7G__error-message {
+  text-align: center;
+  color: #dc2626;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: 8px;
+  padding: 24px;
+}
+
+.login-module__WEZH7G__error-message h3 {
+  color: #991b1b;
+  margin: 0 0 8px;
+}
+
+.login-module__WEZH7G__error-message button {
+  color: #fff;
+  cursor: pointer;
+  background: #dc2626;
+  border: none;
+  border-radius: 6px;
+  margin-top: 16px;
+  padding: 8px 16px;
+}
+
+.login-module__WEZH7G__error-message button:hover {
+  background: #b91c1c;
+}
+
+@media (width <= 768px) {
+  .login-module__WEZH7G__hospital-dashboard {
+    padding: 12px;
+  }
+}
+
+.login-module__WEZH7G__header-content {
+  text-align: center;
+  flex-direction: column;
+  gap: 16px;
+  padding: 24px;
+}
+
+
+/*# sourceMappingURL=src_app_login_login_module_ced82644.css.map*/

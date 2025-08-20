@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": [],
+  "sections": [
+    {"offset": {"line": 7, "column": 0}, "map": {"version":3,"sources":["file:///D:/Projects/HOSPITALAPP/hospitalapp/src/app/page.tsx"],"sourcesContent":["// app/page.tsx\r\n'use client';\r\nimport { useEffect } from 'react';\r\nimport { useRouter } from 'next/navigation';\r\n\r\nexport default function HomeRedirect() {\r\n  const router = useRouter();\r\n\r\n  useEffect(() => {\r\n    router.replace('/login'); // or /dashboard if user is already logged in\r\n  }, [router]);\r\n\r\n  return null; // no UI, just redirect\r\n}\r\n"],"names":[],"mappings":"AAAA,eAAe;;;;AAEf;AACA;;AAFA;;;AAIe,SAAS;;IACtB,MAAM,SAAS,CAAA,GAAA,qIAAA,CAAA,YAAS,AAAD;IAEvB,CAAA,GAAA,6JAAA,CAAA,YAAS,AAAD;kCAAE;YACR,OAAO,OAAO,CAAC,WAAW,6CAA6C;QACzE;iCAAG;QAAC;KAAO;IAEX,OAAO,MAAM,uBAAuB;AACtC;GARwB;;QACP,qIAAA,CAAA,YAAS;;;KADF","debugId":null}},
+    {"offset": {"line": 45, "column": 0}, "map": {"version":3,"sources":["file:///D:/Projects/HOSPITALAPP/hospitalapp/node_modules/next/navigation.js"],"sourcesContent":["module.exports = require('./dist/client/components/navigation')\n"],"names":[],"mappings":"AAAA,OAAO,OAAO","ignoreList":[0],"debugId":null}}]
+}
