@@ -362,26 +362,24 @@ const NursesNoteView = () => {
                             </div>
                         </div>
 
-                        <div className="p-6 print:p-2 space-y-4 print:space-y-2">
-                            {/* Patient and Review Info */}
-                            <div className="text-sm font-medium text-blue-900 mb-4 print:mb-2">
-                                <div className="flex justify-between items-start gap-4">
-                                    <div className="flex flex-col gap-2 print:gap-1">
-                                        <div className="flex items-center gap-2 bg-blue-50 text-blue-900 px-3 py-1.5 print:px-2 print:py-1 rounded-lg print:bg-blue-50">
-                                            <span className="font-semibold print:text-xs">Patient ID:</span>
-                                            <span className="text-sm print:text-xs">{nursesNoteData.patientId || '-'}</span>
-                                        </div>
-                                        <div className="flex items-center gap-2 bg-white text-blue-900 px-3 py-1.5 print:px-2 print:py-1 rounded-lg border border-gray-200">
-                                            <span className="font-semibold print:text-xs">Name:</span>
-                                            <span className="text-sm print:text-xs text-blue-600">
-                                                {patientInfo.name + " / " + patientInfo.age + " / " + patientInfo.gender}
-                                            </span>
-                                        </div>
+                        <div className="p-4 print:p-3 space-y-4 print:space-y-2">
+                            {/* Patient Info Header */}
+                            <div className="flex flex-wrap justify-between items-start gap-4 mb-4 print:mb-2">
+                                <div className="flex flex-col gap-2">
+                                    <div className="flex items-center gap-2 bg-blue-50 text-blue-900 px-3 py-1.5 rounded-lg print:px-2 print:py-1">
+                                        <span className="font-semibold text-sm print:text-xs">Patient ID:</span>
+                                        <span className="text-sm print:text-xs">{nursesNoteData.patientId || '-'}</span>
                                     </div>
-                                    <div className="flex items-center gap-2 bg-blue-50 text-blue-900 px-3 py-1.5 print:px-2 print:py-1 rounded-lg">
-                                        <span className="font-semibold print:text-xs">Date:</span>
-                                        <span className="text-sm print:text-xs">{formatDate(nursesNoteData.date)}</span>
+                                    <div className="flex items-center gap-2 bg-white text-blue-900 px-3 py-1.5 print:px-2 print:py-1 rounded-lg border border-gray-200 whitespace-nowrap overflow-hidden text-ellipsis">
+                                        <span className="font-semibold print:text-xs">Name:</span>
+                                        <span className="text-sm print:text-xs text-blue-600">
+                                            {patientInfo.name + " / " + patientInfo.age + " / " + patientInfo.gender}
+                                        </span>
                                     </div>
+                                </div>
+                                <div className="flex items-center gap-2 bg-blue-50 text-blue-900 px-3 py-1.5 print:px-2 print:py-1 rounded-lg">
+                                    <span className="font-semibold print:text-xs">Date:</span>
+                                    <span className="text-sm print:text-xs">{formatDate(nursesNoteData.date)}</span>
                                 </div>
                             </div>
 
@@ -390,24 +388,31 @@ const NursesNoteView = () => {
                                 <h3 className="text-base print:text-xs font-semibold text-blue-900 mb-2 print:mb-1 flex items-center gap-2 uppercase">
                                     1. Diagnosis and Condition
                                 </h3>
-                                <div className="space-y-2 print:space-y-1 text-sm print:text-xs">
-                                    <div>
-                                        <span className="font-semibold text-blue-900">Diagnosis:</span>
-                                        <p className="ml-2">{nursesNoteData.diagnosis}</p>
+
+                                {/* Subheadings slightly indented */}
+                                <div className="space-y-2 print:space-y-1 text-sm print:text-xs ml-4">
+                                    <div className="flex">
+                                        <span className="font-semibold text-blue-900 w-40">Diagnosis:</span>
+                                        <p>{nursesNoteData.diagnosis}</p>
                                     </div>
-                                    <div>
-                                        <span className="font-semibold text-blue-900">Situation:</span>
-                                        <p className="ml-2">{nursesNoteData.situation}</p>
+
+                                    <div className="flex">
+                                        <span className="font-semibold text-blue-900 w-40">Situation:</span>
+                                        <p>{nursesNoteData.situation}</p>
                                     </div>
-                                    <div>
-                                        <span className="font-semibold text-blue-900">Consciousness:</span>
-                                        <span className="ml-2">
-                                            {nursesNoteData.consciousness === 'normal' ? 'Normal' : `Different: ${nursesNoteData.consciousnesGenderPlain}`}
+
+                                    <div className="flex">
+                                        <span className="font-semibold text-blue-900 w-40">Consciousness:</span>
+                                        <span>
+                                            {nursesNoteData.consciousness === 'normal'
+                                                ? 'Normal'
+                                                : `Different: ${nursesNoteData.consciousnesGenderPlain}`}
                                         </span>
                                     </div>
-                                    <div>
-                                        <span className="font-semibold text-blue-900">Assistance Required:</span>
-                                        <span className="ml-2">
+
+                                    <div className="flex">
+                                        <span className="font-semibold text-blue-900 w-40">Assistance Required:</span>
+                                        <span>
                                             {nursesNoteData.assistance === 'no' ? 'No' : 'Yes'}
                                             {nursesNoteData.assistance === 'yes' && nursesNoteData.assistanceDetails && (
                                                 <span className="ml-2">- {nursesNoteData.assistanceDetails}</span>
@@ -419,42 +424,53 @@ const NursesNoteView = () => {
 
                             {/* Physical Condition */}
                             <div className="bg-blue-50 print:bg-blue-50 p-3 print:p-2 rounded-lg">
-                                <h3 className="text-base print:text-xs font-semibold text-blue-900 mb-2 print:mb-1 flex items-center gap-2 uppercase">
+                                <h3 className="text-base print:text-xs font-semibold text-blue-900 mb-2 print:mb-1 uppercase">
                                     2. Physical Difficulties
                                 </h3>
-                                <p className="text-sm print:text-xs ml-2">{nursesNoteData.physicalDifficulties}</p>
+                                <p className="text-sm print:text-xs ml-6">
+                                    {nursesNoteData.physicalDifficulties || '-'}
+                                </p>
                             </div>
+
 
                             {/* Basic Information */}
                             <div className="bg-blue-50 print:bg-blue-50 p-3 print:p-2 rounded-lg">
-                                <h3 className="text-base print:text-xs font-semibold text-blue-900 mb-2 print:mb-1 uppercase">3. Basic Information</h3>
-                                <div className="grid grid-cols-2 gap-2 print:gap-1 text-sm print:text-xs">
-                                    <div>
-                                        <span className="font-semibold text-blue-900">Food:</span>
-                                        <span className="ml-1">
+                                <h3 className="text-base print:text-xs font-semibold text-blue-900 mb-2 print:mb-1 uppercase">
+                                    3. Basic Information
+                                </h3>
+
+                                {/* Subheadings slightly indented */}
+                                <div className="grid grid-cols-2 gap-2 print:gap-1 text-sm print:text-xs ml-4">
+                                    <div className="flex">
+                                        <span className="font-semibold text-blue-900 w-36">Food:</span>
+                                        <span>
                                             {nursesNoteData.food === 'normal' ? 'Normal' : `Different: ${nursesNoteData.foodDetails}`}
                                         </span>
                                     </div>
-                                    <div>
-                                        <span className="font-semibold text-blue-900">Sleep:</span>
-                                        <span className="ml-1">
+
+                                    <div className="flex">
+                                        <span className="font-semibold text-blue-900 w-36">Sleep:</span>
+                                        <span>
                                             {nursesNoteData.sleep === 'normal' ? 'Normal' : `Different: ${nursesNoteData.sleepDetails}`}
                                         </span>
                                     </div>
-                                    <div>
-                                        <span className="font-semibold text-blue-900">Bowel Movements:</span>
-                                        <span className="ml-1">
+
+                                    <div className="flex">
+                                        <span className="font-semibold text-blue-900 w-36">Bowel Movements:</span>
+                                        <span>
                                             {nursesNoteData.bowelMovements === 'normal' ? 'Normal' : `Different: ${nursesNoteData.bowelDetails}`}
                                         </span>
                                     </div>
-                                    <div>
-                                        <span className="font-semibold text-blue-900">Urination:</span>
-                                        <span className="ml-1">
+
+                                    <div className="flex">
+                                        <span className="font-semibold text-blue-900 w-36">Urination:</span>
+                                        <span>
                                             {nursesNoteData.urination === 'normal' ? 'Normal' : `Different: ${nursesNoteData.urinationDetails}`}
                                         </span>
                                     </div>
                                 </div>
                             </div>
+
 
                             {/* Emotional Factors */}
                             {nursesNoteData.emotionalFactors && (
@@ -503,7 +519,7 @@ const NursesNoteView = () => {
                                         </div>
                                     )}
                                 </div>
-                                
+
                                 {/* Hygiene Inspection */}
                                 <div className="text-sm print:text-xs">
                                     <span className="font-semibold text-blue-900">Hygiene Inspection:</span>
@@ -537,26 +553,26 @@ const NursesNoteView = () => {
                                     <h3 className="text-base print:text-xs font-semibold text-blue-900 mb-2 print:mb-1 flex items-center gap-2 uppercase">
                                         6. Special Conditions
                                     </h3>
-                                    <p className="text-sm print:text-xs ml-2">{nursesNoteData.specialConditions}</p>
+                                    <p className="text-sm print:text-xs ml-6">{nursesNoteData.specialConditions}</p>
                                 </div>
                             )}
 
                             {/* Treatments and Medications */}
                             <div className="bg-blue-50 print:bg-blue-50 p-3 print:p-2 rounded-lg">
-                                <h3 className="text-base print:text-xs font-semibold text-blue-900 mb-2 print:mb-1 flex items-center gap-2 uppercase">
+                                <h3 className="text-base print:text-xs font-semibold text-blue-900 mb-2 print:mb-1 uppercase">
                                     7. Treatments and Medications
                                 </h3>
-                                <div className="space-y-2 print:space-y-1 text-sm print:text-xs">
+                                <div className="space-y-2 print:space-y-1 text-sm print:text-xs ml-4">
                                     {nursesNoteData.otherTreatments && (
-                                        <div>
-                                            <span className="font-semibold text-blue-900">Other Treatments:</span>
-                                            <p className="ml-2">{nursesNoteData.otherTreatments}</p>
+                                        <div className="flex">
+                                            <span className="font-semibold text-blue-900 w-44">Other Treatments:</span>
+                                            <p>{nursesNoteData.otherTreatments}</p>
                                         </div>
                                     )}
                                     {nursesNoteData.medications && (
-                                        <div>
-                                            <span className="font-semibold text-blue-900">Available Medications:</span>
-                                            <p className="ml-2">{nursesNoteData.medications}</p>
+                                        <div className="flex">
+                                            <span className="font-semibold text-blue-900 w-44">Available Medications:</span>
+                                            <p>{nursesNoteData.medications}</p>
                                         </div>
                                     )}
                                 </div>
@@ -564,19 +580,19 @@ const NursesNoteView = () => {
 
                             {/* Plan & Assistance */}
                             <div className="bg-blue-50 print:bg-blue-50 p-3 print:p-2 rounded-lg">
-                                <h3 className="text-base print:text-xs font-semibold text-blue-900 mb-2 print:mb-1 flex items-center gap-2 uppercase">
+                                <h3 className="text-base print:text-xs font-semibold text-blue-900 mb-2 print:mb-1 uppercase">
                                     8. Plan & Assistance
                                 </h3>
-                                <div className="space-y-2 print:space-y-1 text-sm print:text-xs">
+                                <div className="space-y-2 print:space-y-1 text-sm print:text-xs ml-4">
                                     {nursesNoteData.planSuggestions && (
                                         <div>
-                                            <span className="font-semibold text-blue-900">Plans & Suggestions:</span>
+                                            <span className="font-semibold text-blue-900 w-44">Plans & Suggestions:</span>
                                             <p className="ml-2">{nursesNoteData.planSuggestions}</p>
                                         </div>
                                     )}
                                     {nursesNoteData.rehabilitationDetails && (
                                         <div>
-                                            <span className="font-semibold text-blue-900">Rehabilitation Details:</span>
+                                            <span className="font-semibold text-blue-900 w-44">Rehabilitation Details:</span>
                                             <p className="ml-2">{nursesNoteData.rehabilitationDetails}</p>
                                         </div>
                                     )}

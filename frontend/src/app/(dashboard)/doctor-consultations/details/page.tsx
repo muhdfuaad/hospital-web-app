@@ -1,7 +1,7 @@
 'use client';
 import React, { useState, useEffect } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
-import { User, Calendar, VenetianMask, Heart, Plus, FileText, Clipboard, AlertCircle, Edit, FilePen,Printer } from 'lucide-react';
+import { User, Calendar, VenetianMask, Heart, Plus, FileText, Clipboard, AlertCircle, Edit, FilePen, Printer } from 'lucide-react';
 import API from '@/lib/axios';
 
 interface PatientInfo {
@@ -386,7 +386,7 @@ const PatientVisitHistoryPage = () => {
                                 <div>
                                     <div className="flex justify-between items-center mb-4">
                                         <h3 className="text-lg font-bold text-blue-900 uppercase tracking-wide">
-                                            Investigations & Medications by Visit
+                                            Medical Prescriptions by Visit
                                         </h3>
                                         <button
                                             onClick={handleNewReview}
@@ -406,70 +406,132 @@ const PatientVisitHistoryPage = () => {
                                     </div>
 
                                     {assignmentsWithReviews.length > 0 ? (
-                                        <div className="overflow-x-auto">
-                                            <table className="w-full border-collapse border border-gray-300">
-                                                <thead>
-                                                    <tr className="bg-blue-50">
-                                                        <th className="border border-gray-300 px-3 py-2 text-left font-semibold text-blue-900 w-[12%]">
-                                                            Assignment ID
-                                                        </th>
-                                                        <th className="border border-gray-300 px-3 py-2 text-left font-semibold text-blue-900 w-[12%]">
-                                                            Visit Date
-                                                        </th>
-                                                        <th className="border border-gray-300 px-3 py-2 text-left font-semibold text-blue-900 w-[20%]">
-                                                            Diagnosis
-                                                        </th>
-                                                        <th className="border border-gray-300 px-3 py-2 text-center font-semibold text-blue-900 w-[18%]">
-                                                            Actions
-                                                        </th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    {assignmentsWithReviews.map((item) => (
-                                                        <tr key={item.assignment.assignmentId} className="hover:bg-gray-50">
-                                                            <td className="border border-gray-300 px-3 py-2 text-sm">
-                                                                {item.assignment.assignmentId}
-                                                            </td>
-                                                            <td className="border border-gray-300 px-3 py-2 text-sm">
-                                                                {new Date(item.assignment.date).toLocaleDateString()}
-                                                            </td>
-                                                            <td className="border border-gray-300 px-3 py-2 text-sm">
-                                                                {item.notes.length > 0 ? (
-                                                                    <div className="space-y-1">
-                                                                        {item.notes.map((note, index) => (
-                                                                            <div key={index} className="text-xs">
-                                                                                {note.historyOfIllness}
-                                                                            </div>
-                                                                        ))}
-                                                                    </div>
+                                        <>
+                                            {/* ✅ Desktop Table View */}
+                                            <div className="hidden md:block bg-white rounded-lg shadow overflow-x-auto">
+                                                <table className="min-w-full border border-gray-300 border-collapse">
+                                                    <thead>
+                                                        <tr className="bg-blue-50">
+                                                            <th className="border border-gray-300 px-3 py-2 text-left font-semibold text-blue-900 w-[12%]">
+                                                                Assignment ID
+                                                            </th>
+                                                            <th className="border border-gray-300 px-3 py-2 text-left font-semibold text-blue-900 w-[12%]">
+                                                                Visit Date
+                                                            </th>
+                                                            <th className="border border-gray-300 px-3 py-2 text-left font-semibold text-blue-900 w-[20%]">
+                                                                Diagnosis
+                                                            </th>
+                                                            <th className="border border-gray-300 px-3 py-2 text-center font-semibold text-blue-900 w-[18%]">
+                                                                Actions
+                                                            </th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        {assignmentsWithReviews.map((item) => (
+                                                            <tr key={item.assignment.assignmentId} className="hover:bg-gray-50">
+                                                                <td className="border border-gray-300 px-3 py-2 text-sm">
+                                                                    {item.assignment.assignmentId}
+                                                                </td>
+                                                                <td className="border border-gray-300 px-3 py-2 text-sm">
+                                                                    {new Date(item.assignment.date).toLocaleDateString()}
+                                                                </td>
+                                                                <td className="border border-gray-300 px-3 py-2 text-sm">
+                                                                    {item.notes.length > 0 ? (
+                                                                        <div className="space-y-1">
+                                                                            {item.notes.map((note, index) => (
+                                                                                <div key={index} className="text-xs">
+                                                                                    {note.historyOfIllness}
+                                                                                </div>
+                                                                            ))}
+                                                                        </div>
+                                                                    ) : (
+                                                                        <span className="text-gray-400">No diagnosis</span>
+                                                                    )}
+                                                                </td>
+                                                                <td className="border border-gray-300 px-3 py-2 text-center">
+                                                                    <button
+                                                                        onClick={() =>
+                                                                            handleEditReview(item.assignment.assignmentId)
+                                                                        }
+                                                                        className="text-blue-600 hover:text-blue-800 p-1.5 rounded hover:bg-blue-100 transition-all"
+                                                                        title="Edit Review"
+                                                                    >
+                                                                        <FilePen className="w-4 h-4" />
+                                                                    </button>
+                                                                    <button
+                                                                        onClick={() =>
+                                                                            handlePrintReview(item.assignment.assignmentId)
+                                                                        }
+                                                                        className="text-green-600 hover:text-green-800 p-1.5 rounded hover:bg-green-100 transition-all ml-2"
+                                                                        title="View / Print"
+                                                                    >
+                                                                        <Printer className="w-4 h-4" />
+                                                                    </button>
+                                                                </td>
+                                                            </tr>
+                                                        ))}
+                                                    </tbody>
+                                                </table>
+                                            </div>
+
+                                            {/* ✅ Mobile Card View with Shadow + Blue-200 Background for Reviews */}
+                                            <div className="block md:hidden space-y-4 p-2 bg-[#F2F3F2] rounded-lg">
+                                                {assignmentsWithReviews.map((item) => (
+                                                    <div
+                                                        key={item.assignment.assignmentId}
+                                                        className="bg-[#DAE7F8] rounded-lg shadow-[0_8px_16px_rgba(0,0,0,0.25)] p-4 transition-transform hover:scale-[1.01]"
+                                                    >
+                                                        {/* Header row */}
+                                                        <div className="flex justify-between items-start mb-2">
+                                                            <div>
+                                                                <span className="text-sm text-gray-600">
+                                                                    Assignment #{item.assignment.assignmentId}
+                                                                </span>
+                                                                <h3 className="text-base font-semibold text-gray-800">
+                                                                    {new Date(item.assignment.date).toLocaleDateString()}
+                                                                </h3>
+                                                            </div>
+                                                        </div>
+
+                                                        {/* Diagnosis */}
+                                                        <div className="text-sm text-gray-700 mb-2">
+                                                            🧾 Diagnosis:{" "}
+                                                            {item.notes.length > 0 ? (
+                                                                    item.notes.map((note, index) => (
+                                                                        <div
+                                                                            key={index}
+                                                                            className="text-xs bg-[#DAE7D8] border border-gray-200 rounded p-1 ml-6"
+                                                                        >
+                                                                            {note.historyOfIllness}
+                                                                        </div>
+                                                                    ))
                                                                 ) : (
                                                                     <span className="text-gray-400">No diagnosis</span>
                                                                 )}
-                                                            </td>
-                                                            <td className="border border-gray-300 px-3 py-2 text-center">
-                                                                {/* Edit Review */}
-                                                                <button
-                                                                    onClick={() => handleEditReview(item.assignment.assignmentId)}
-                                                                    className="text-blue-600 hover:text-blue-800 p-1.5 rounded hover:bg-blue-100 transition-all"
-                                                                    title="Edit Review"
-                                                                >
-                                                                    <FilePen className="w-4 h-4" />
-                                                                </button>
+                                                        </div>
 
-                                                                {/* View/Print */}
-                                                                <button
-                                                                    onClick={() => handlePrintReview(item.assignment.assignmentId)}
-                                                                    className="text-green-600 hover:text-green-800 p-1.5 rounded hover:bg-green-100 transition-all ml-2"
-                                                                    title="View / Print"
-                                                                >
-                                                                    <Printer className="w-4 h-4" />
-                                                                </button>
-                                                            </td>
-                                                        </tr>
-                                                    ))}
-                                                </tbody>
-                                            </table>
-                                        </div>
+                                                        {/* Actions */}
+                                                        <div className="flex gap-3 justify-end mt-2">
+                                                            <button
+                                                                onClick={() => handleEditReview(item.assignment.assignmentId)}
+                                                                className="flex items-center gap-1 text-sm text-blue-600 hover:text-blue-800 hover:bg-blue-100 px-3 py-1 rounded transition-all"
+                                                            >
+                                                                <FilePen className="w-4 h-4" />
+                                                                Edit
+                                                            </button>
+                                                            <button
+                                                                onClick={() => handlePrintReview(item.assignment.assignmentId)}
+                                                                className="flex items-center gap-1 text-sm text-green-600 hover:text-green-800 hover:bg-green-100 px-3 py-1 rounded transition-all"
+                                                            >
+                                                                <Printer className="w-4 h-4" />
+                                                                View
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                ))}
+                                            </div>
+
+                                        </>
                                     ) : (
                                         <div className="text-center py-8 text-gray-500">
                                             <Clipboard className="w-12 h-12 mx-auto mb-3 text-gray-300" />
@@ -504,75 +566,141 @@ const PatientVisitHistoryPage = () => {
                                     </div>
 
                                     {assignmentsWithNotes.length > 0 ? (
-                                        <div className="overflow-x-auto">
-                                            <table className="w-full border-collapse border border-gray-300">
-                                                <thead>
-                                                    <tr className="bg-blue-50">
-                                                        <th className="border border-gray-300 px-3 py-2 text-left font-semibold text-blue-900 w-[12%]">
-                                                            Assignment ID
-                                                        </th>
-                                                        <th className="border border-gray-300 px-3 py-2 text-left font-semibold text-blue-900 w-[12%]">
-                                                            Visit Date
-                                                        </th>
-                                                        <th className="border border-gray-300 px-3 py-2 text-left font-semibold text-blue-900 w-[20%]">
-                                                            Diagnosis
-                                                        </th>
-                                                        <th className="border border-gray-300 px-3 py-2 text-left font-semibold text-blue-900 w-[15%]">
-                                                            Doctor
-                                                        </th>
-                                                        <th className="border border-gray-300 px-3 py-2 text-center font-semibold text-blue-900 w-[18%]">
-                                                            Actions
-                                                        </th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    {assignmentsWithNotes.map((item) => (
-                                                        <tr key={item.assignment.assignmentId} className="hover:bg-gray-50">
-                                                            <td className="border border-gray-300 px-3 py-2 text-sm">
-                                                                {item.assignment.assignmentId}
-                                                            </td>
-                                                            <td className="border border-gray-300 px-3 py-2 text-sm">
-                                                                {new Date(item.assignment.date).toLocaleDateString()}
-                                                            </td>
-                                                            <td className="border border-gray-300 px-3 py-2 text-sm">
-                                                                {item.notes.length > 0 ? (
-                                                                    <div className="space-y-1">
-                                                                        {item.notes.map((note, index) => (
-                                                                            <div key={index} className="text-xs">
-                                                                                {note.historyOfIllness}
-                                                                            </div>
-                                                                        ))}
-                                                                    </div>
+                                        <>
+                                            {/* ✅ Desktop Table View */}
+                                            <div className="hidden md:block overflow-x-auto">
+                                                <table className="w-full border-collapse border border-gray-300">
+                                                    <thead>
+                                                        <tr className="bg-blue-50">
+                                                            <th className="border border-gray-300 px-3 py-2 text-left font-semibold text-blue-900 w-[12%]">
+                                                                Assignment ID
+                                                            </th>
+                                                            <th className="border border-gray-300 px-3 py-2 text-left font-semibold text-blue-900 w-[12%]">
+                                                                Visit Date
+                                                            </th>
+                                                            <th className="border border-gray-300 px-3 py-2 text-left font-semibold text-blue-900 w-[20%]">
+                                                                Diagnosis
+                                                            </th>
+                                                            <th className="border border-gray-300 px-3 py-2 text-left font-semibold text-blue-900 w-[15%]">
+                                                                Doctor
+                                                            </th>
+                                                            <th className="border border-gray-300 px-3 py-2 text-center font-semibold text-blue-900 w-[18%]">
+                                                                Actions
+                                                            </th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        {assignmentsWithNotes.map((item) => (
+                                                            <tr key={item.assignment.assignmentId} className="hover:bg-gray-50">
+                                                                <td className="border border-gray-300 px-3 py-2 text-sm">
+                                                                    {item.assignment.assignmentId}
+                                                                </td>
+                                                                <td className="border border-gray-300 px-3 py-2 text-sm">
+                                                                    {new Date(item.assignment.date).toLocaleDateString()}
+                                                                </td>
+                                                                <td className="border border-gray-300 px-3 py-2 text-sm">
+                                                                    {item.notes.length > 0 ? (
+                                                                        <div className="space-y-1">
+                                                                            {item.notes.map((note, index) => (
+                                                                                <div key={index} className="text-xs">
+                                                                                    {note.historyOfIllness}
+                                                                                </div>
+                                                                            ))}
+                                                                        </div>
+                                                                    ) : (
+                                                                        <span className="text-gray-400">No diagnosis</span>
+                                                                    )}
+                                                                </td>
+                                                                <td className="border border-gray-300 px-3 py-2 text-sm">
+                                                                    {item.assignment.doctorName || "-"}
+                                                                </td>
+                                                                <td className="border border-gray-300 px-3 py-2 text-center">
+                                                                    <button
+                                                                        onClick={() => handleEditNote(item.assignment.assignmentId)}
+                                                                        className="text-blue-600 hover:text-blue-800 p-1.5 rounded hover:bg-blue-100 transition-all"
+                                                                        title="Edit Note"
+                                                                    >
+                                                                        <FilePen className="w-4 h-4" />
+                                                                    </button>
+                                                                    <button
+                                                                        onClick={() => handlePrintNote(item.assignment.assignmentId)}
+                                                                        className="text-green-600 hover:text-green-800 p-1.5 rounded hover:bg-green-100 transition-all ml-2"
+                                                                        title="View / Print"
+                                                                    >
+                                                                        <Printer className="w-4 h-4" />
+                                                                    </button>
+                                                                </td>
+                                                            </tr>
+                                                        ))}
+                                                    </tbody>
+                                                </table>
+                                            </div>
+
+                                            {/* ✅ Mobile Card View with Shadow + Blue-200 Background */}
+                                            <div className="block md:hidden space-y-4 p-2 bg-[#F2F3F2] rounded-lg">
+                                                {assignmentsWithNotes.map((item) => (
+                                                    <div
+                                                        key={item.assignment.assignmentId}
+                                                        className="bg-[#DAE7F8] rounded-lg shadow-[0_8px_16px_rgba(0,0,0,0.25)] p-4 transition-transform hover:scale-[1.01]"
+                                                    >
+                                                        {/* Header */}
+                                                        <div className="flex justify-between items-start mb-2">
+                                                            <div>
+                                                                <span className="text-sm text-gray-600">
+                                                                    Assignment #{item.assignment.assignmentId}
+                                                                </span>
+                                                                <h3 className="text-base font-semibold text-gray-800">
+                                                                    {new Date(item.assignment.date).toLocaleDateString()}
+                                                                </h3>
+                                                            </div>
+                                                        </div>
+
+                                                        {/* Diagnosis */}
+                                                        <div className="text-sm text-gray-700 mb-2">
+                                                            🧾 Diagnosis:{" "}
+                                                            {item.notes.length > 0 ? (
+                                                                    item.notes.map((note, index) => (
+                                                                        <div
+                                                                            key={index}
+                                                                            className="text-xs bg-[#DAE7D8] border border-gray-200 rounded p-1 ml-6"
+                                                                        >
+                                                                            {note.historyOfIllness}
+                                                                        </div>
+                                                                    ))
                                                                 ) : (
                                                                     <span className="text-gray-400">No diagnosis</span>
                                                                 )}
-                                                            </td>
-                                                            <td className="border border-gray-300 px-3 py-2 text-sm">
-                                                                {item.assignment.doctorName || '-'}
-                                                            </td>
-                                                            <td className="border border-gray-300 px-3 py-2 text-center">
-                                                                <button
-                                                                    onClick={() => handleEditNote(item.assignment.assignmentId)}
-                                                                    className="text-blue-600 hover:text-blue-800 p-1.5 rounded hover:bg-blue-100 transition-all"
-                                                                    title="Edit Note"
-                                                                >
-                                                                    <FilePen className="w-4 h-4" />
-                                                                </button>
-                                                                {/* View/Print */}
-                                                                <button
-                                                                    onClick={() => handlePrintNote(item.assignment.assignmentId)}
-                                                                    className="text-green-600 hover:text-green-800 p-1.5 rounded hover:bg-green-100 transition-all ml-2"
-                                                                    title="View / Print"
-                                                                >
-                                                                    <Printer className="w-4 h-4" />
-                                                                </button>
-                                                            </td>
-                                                        </tr>
-                                                    ))}
-                                                </tbody>
-                                            </table>
+                                                        </div>
 
-                                        </div>
+                                                        {/* Doctor */}
+                                                        <div className="text-sm text-gray-700 mb-2">
+                                                            👨‍⚕️ Doctor:{" "}
+                                                            <span className="font-medium">
+                                                                {item.assignment.doctorName || "-"}
+                                                            </span>
+                                                        </div>
+
+                                                        {/* Actions */}
+                                                        <div className="flex gap-3 justify-end mt-2">
+                                                            <button
+                                                                onClick={() => handleEditNote(item.assignment.assignmentId)}
+                                                                className="flex items-center gap-1 text-sm text-blue-600 hover:text-blue-800 hover:bg-blue-100 px-3 py-1 rounded transition-all"
+                                                            >
+                                                                <FilePen className="w-4 h-4" />
+                                                                Edit
+                                                            </button>
+                                                            <button
+                                                                onClick={() => handlePrintNote(item.assignment.assignmentId)}
+                                                                className="flex items-center gap-1 text-sm text-green-600 hover:text-green-800 hover:bg-green-100 px-3 py-1 rounded transition-all"
+                                                            >
+                                                                <Printer className="w-4 h-4" />
+                                                                View
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </>
                                     ) : (
                                         <div className="text-center py-8 text-gray-500">
                                             <FileText className="w-12 h-12 mx-auto mb-3 text-gray-300" />
@@ -580,6 +708,7 @@ const PatientVisitHistoryPage = () => {
                                             <p className="text-sm">Complete a note form to see entries here.</p>
                                         </div>
                                     )}
+
                                 </div>
                             )}
                         </div>

@@ -183,7 +183,7 @@ const DailyConsultationsPage = () => {
                                 <div className="text-sm text-gray-700 mb-1">📞 {p.phoneNumber1}</div>
                                 <div className="text-right">
                                     <Link
-                                        href={`/Volunteer-consultations/details?patientId=${p.patientId}&assignmentId=${p.assignmentId}`}
+                                        href={`/volunteer-consultations/details?patientId=${p.patientId}&assignmentId=${p.assignmentId}`}
                                         className="inline-flex items-center gap-1 text-sm text-green-600 hover:text-green-800 hover:bg-green-100 px-3 py-1 rounded transition-all"
                                     >
                                         <NotebookPen className="w-4 h-4" />

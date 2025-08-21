@@ -302,41 +302,31 @@ const VolunteerNoteView = () => {
                             </div>
                         </div>
 
-                        <div className="p-6 print:p-4 space-y-6 print:space-y-4">
-                            {/* Patient and Review Info */}
-                            <div className="text-sm font-medium text-blue-900 mb-6 print:mb-4">
-                                <div className="flex justify-between items-start gap-4">
-                                    {/* Left Section: Patient ID + Name */}
-                                    <div className="flex flex-col gap-2">
-                                        {/* Patient ID */}
-                                        <div className="flex items-center gap-2 bg-blue-50 text-blue-900 px-3 py-1.5 rounded-lg print:bg-blue-50 print:border-blue-200">
-                                            <span className="font-semibold print:text-xs">Patient ID:</span>
-                                            <span className="text-sm print:text-xs">{volunteerNoteData.patientId || '-'}</span>
-                                        </div>
-
-                                        {/* Name / Age / Gender */}
-                                        <div className="flex items-center gap-2 bg-white text-blue-900 px-3 py-1.5 rounded-lg border border-gray-200">
-                                            <span className="font-semibold print:text-xs">Name:</span>
-                                            <span className="text-sm print:text-xs text-blue-600">
-                                                {patientInfo.name + " / " + patientInfo.age + " / " + patientInfo.gender}
-                                            </span>
-                                        </div>
+                        <div className="p-4 print:p-3 space-y-4 print:space-y-2">
+                            {/* Patient Info Header */}
+                            <div className="flex flex-wrap justify-between items-start gap-4 mb-4 print:mb-2">
+                                
+                                <div className="flex flex-col gap-2">
+                                    <div className="flex items-center gap-2 bg-blue-50 text-blue-900 px-3 py-1.5 rounded-lg print:px-2 print:py-1">
+                                        <span className="font-semibold text-sm print:text-xs">Patient ID:</span>
+                                        <span className="text-sm print:text-xs">{volunteerNoteData.patientId || '-'}</span>
                                     </div>
 
-                                    {/* Right Section: Review ID + Date */}
-                                    <div className="flex flex-col gap-2">
-                                        {/* Review ID */}
-                                        <div className="flex items-center gap-2 bg-blue-50 text-blue-900 px-3 py-1.5 rounded-lg print:bg-blue-50 print:border-blue-200">
-                                            <span className="font-semibold print:text-xs">Review ID:</span>
-                                            <span className="text-sm print:text-xs">{volunteerNoteData.reviewId || '-'}</span>
-                                        </div>
+                                    {/* Name / Age / Gender */}
+                                    <div className="flex items-center gap-2 bg-white text-blue-900 px-3 py-1.5 print:px-2 print:py-1 rounded-lg border border-gray-200 whitespace-nowrap overflow-hidden text-ellipsis">
+                                        <span className="font-semibold print:text-xs">Name:</span>
+                                        <span className="text-sm print:text-xs text-blue-600">
+                                            {patientInfo.name + " / " + patientInfo.age + " / " + patientInfo.gender}
+                                        </span>
+                                    </div>
+                                </div>
 
-                                        {/* Date */}
-                                        <div className="flex items-center gap-2 bg-blue-50 text-blue-900 px-3 py-1.5 rounded-lg print:bg-blue-50 print:border-blue-200">
-                                            <Calendar className="w-4 h-4 print:w-3 print:h-3" />
-                                            <span className="font-semibold print:text-xs">Date:</span>
-                                            <span className="text-sm print:text-xs">{formatDate(volunteerNoteData.date)}</span>
-                                        </div>
+                                {/* Right Section: Review ID + Date */}
+                                <div className="flex flex-col gap-2 print:gap-1 items-end">
+                                    {/* Date */}
+                                    <div className="flex items-center gap-2 bg-blue-50 text-blue-900 px-3 py-1.5 print:px-2 print:py-1 rounded-lg print:bg-blue-50 print:border-blue-200">
+                                        <span className="font-semibold">Date:</span>
+                                        <span className="text-sm print:text-xs">{formatDate(volunteerNoteData.date)}</span>
                                     </div>
                                 </div>
                             </div>
@@ -349,7 +339,7 @@ const VolunteerNoteView = () => {
                                         Description of Volunteer Activities
                                     </h2>
                                 </div>
-                                
+
                                 <div className="bg-white p-6 print:p-4 rounded-xl print:rounded shadow-sm">
                                     <div className="prose max-w-none">
                                         <div className="whitespace-pre-wrap text-gray-800 text-base print:text-sm leading-relaxed print:leading-normal">
@@ -397,7 +387,7 @@ const VolunteerNoteView = () => {
                                     <div>
                                         <h4 className="font-semibold text-blue-900 mb-1">About Volunteer Notes</h4>
                                         <p className="text-sm text-blue-800">
-                                            Volunteer notes document the non-medical activities and support provided to patients during homecare visits. 
+                                            Volunteer notes document the non-medical activities and support provided to patients during homecare visits.
                                             These notes help maintain continuity of care and highlight the important role volunteers play in patient wellbeing.
                                         </p>
                                     </div>

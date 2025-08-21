@@ -297,58 +297,22 @@ const PatientVisitHistoryPage = () => {
                         </div>
                     </div>
 
-                    {/* Patient Information Display */}
+                    {/* 👤 Patient Information Display */}
                     <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-200">
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+
                             {/* Name */}
                             <div>
-                                <label className="block text-xs font-semibold text-blue-900 mb-1 uppercase tracking-wide">
-                                    Name
+                                <label className="block text-s font-semibold mb-1 uppercase tracking-wide">
+                                    <span className="text-blue-900">Name :</span>{" "}
+                                    <span className="text-blue-600">
+                                        {patientInfo.name + " / " + patientInfo.age + " / " + patientInfo.gender}
+                                    </span>
                                 </label>
-                                <div className="flex items-center border border-gray-300 rounded-md bg-gray-100 px-2">
-                                    <User className="w-4 h-4 text-blue-700 mr-2" />
-                                    <input
-                                        type="text"
-                                        value={patientInfo.name || '-'}
-                                        readOnly
-                                        className="w-full py-2 bg-transparent text-sm text-blue-800 focus:outline-none"
-                                    />
-                                </div>
-                            </div>
-
-                            {/* Age */}
-                            <div>
-                                <label className="block text-xs font-semibold text-blue-900 mb-1 uppercase tracking-wide">
-                                    Age
-                                </label>
-                                <div className="flex items-center border border-gray-300 rounded-md bg-gray-100 px-2">
-                                    <Calendar className="w-4 h-4 text-blue-700 mr-2" />
-                                    <input
-                                        type="text"
-                                        value={patientInfo.age || '-'}
-                                        readOnly
-                                        className="w-full py-2 bg-transparent text-sm text-blue-800 focus:outline-none"
-                                    />
-                                </div>
-                            </div>
-
-                            {/* Gender */}
-                            <div>
-                                <label className="block text-xs font-semibold text-blue-900 mb-1 uppercase tracking-wide">
-                                    Gender
-                                </label>
-                                <div className="flex items-center border border-gray-300 rounded-md bg-gray-100 px-2">
-                                    <VenetianMask className="w-4 h-4 text-blue-700 mr-2" />
-                                    <input
-                                        type="text"
-                                        value={patientInfo.gender || '-'}
-                                        readOnly
-                                        className="w-full py-2 bg-transparent text-sm text-blue-800 focus:outline-none"
-                                    />
-                                </div>
                             </div>
                         </div>
                     </div>
+
 
                     {/* Tabs Navigation */}
                     <div className="bg-white rounded-lg shadow-lg overflow-hidden">
@@ -393,7 +357,8 @@ const PatientVisitHistoryPage = () => {
 
                                     {assignmentsWithNotes.length > 0 ? (
                                         <div className="overflow-x-auto">
-                                            <table className="w-full border-collapse border border-gray-300">
+                                            {/* Desktop Table */}
+                                            <table className="hidden sm:table w-full border-collapse border border-gray-300">
                                                 <thead>
                                                     <tr className="bg-blue-50">
                                                         <th className="border border-gray-300 px-3 py-2 text-left font-semibold text-blue-900 w-[12%]">
@@ -422,17 +387,17 @@ const PatientVisitHistoryPage = () => {
                                                             <td className="border border-gray-300 px-3 py-2 text-sm">
                                                                 {new Date(item.assignment.date).toLocaleDateString()}
                                                             </td>
-                                                            <td className="border border-gray-300 px-3 py-2 text-sm">
+                                                            <td className="border border-gray-300 px-3 py-2 text-sm max-w-[250px]">
                                                                 {item.notes.length > 0 ? (
                                                                     <div className="space-y-1">
                                                                         {item.notes.map((note, index) => (
-                                                                            <div key={index} className="text-xs">
+                                                                            <div key={index} className="text-xs line-clamp-2">
                                                                                 {note.volActivitiesDesc}
                                                                             </div>
                                                                         ))}
                                                                     </div>
                                                                 ) : (
-                                                                    <span className="text-gray-400">No diagnosis</span>
+                                                                    <span className="text-gray-400">No description</span>
                                                                 )}
                                                             </td>
                                                             <td className="border border-gray-300 px-3 py-2 text-sm">
@@ -446,7 +411,6 @@ const PatientVisitHistoryPage = () => {
                                                                 >
                                                                     <FilePen className="w-4 h-4" />
                                                                 </button>
-                                                                {/* View/Print */}
                                                                 <button
                                                                     onClick={() => handlePrintNote(item.assignment.assignmentId)}
                                                                     className="text-green-600 hover:text-green-800 p-1.5 rounded hover:bg-green-100 transition-all ml-2"
@@ -460,12 +424,66 @@ const PatientVisitHistoryPage = () => {
                                                 </tbody>
                                             </table>
 
+                                            {/* Mobile Cards */}
+                                            <div className="block md:hidden space-y-4 p-2 bg-[#F2F3F2] rounded-lg">
+                                                {assignmentsWithNotes.map((item) => (
+                                                    <div
+                                                        key={item.assignment.assignmentId}
+                                                        className="bg-[#DAE7F8] rounded-lg shadow-[0_8px_16px_rgba(0,0,0,0.25)] p-4 transition-transform hover:scale-[1.01]"
+                                                    >
+                                                        {/* Header */}
+                                                        <div className="flex justify-between items-start mb-2">
+                                                            <div>
+                                                                <span className="text-sm text-gray-500">
+                                                                    Assignment #{item.assignment.assignmentId}
+                                                                </span>
+                                                                <h3 className="text-base font-semibold text-gray-800">
+                                                                    {new Date(item.assignment.date).toLocaleDateString()}
+                                                                </h3>
+                                                            </div>
+                                                        </div>
+                                                        <div className="mb-2">
+                                                            <p className="text-xs text-gray-500">Description</p>
+                                                            <p className="text-sm line-clamp-2">
+                                                                {item.notes.length > 0
+                                                                    ? item.notes.map((note) => note.volActivitiesDesc).join(", ")
+                                                                    : "No description"}
+                                                            </p>
+                                                        </div>
+                                                        {/* volunteer */}
+                                                        <div className="text-sm text-gray-700 mb-2">
+                                                            Volunteer : {"  "}
+                                                            <span className="font-medium">
+                                                                {item.assignment.volunteerName || "-"}
+                                                            </span>
+                                                        </div>
+                                                        <div className="flex space-x-3 mt-3">
+                                                            <button
+                                                                onClick={() => handleEditNote(item.assignment.assignmentId)}
+                                                                className="flex items-center gap-1 text-sm text-blue-600 hover:text-blue-800 hover:bg-blue-100 px-3 py-1 rounded transition-all"
+                                                            >
+                                                                <FilePen className="w-4 h-4" />
+                                                                Edit
+                                                            </button>
+                                                            <button
+                                                                onClick={() => handlePrintNote(item.assignment.assignmentId)}
+                                                                className="flex items-center gap-1 text-sm text-green-600 hover:text-green-800 hover:bg-green-100 px-3 py-1 rounded transition-all"
+                                                            >
+                                                                <Printer className="w-4 h-4" />
+                                                                View
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                ))}
+                                            </div>
                                         </div>
                                     ) : (
                                         <div className="text-center py-8 text-gray-500">
                                             <FileText className="w-12 h-12 mx-auto mb-3 text-gray-300" />
                                             <p className="text-lg">No visits found for this patient.</p>
-                                            <p className="text-sm">This patient needs to be assigned first to create consultation notes.</p>
+                                            <p className="text-sm">
+                                                This patient needs to be assigned first to create consultation notes.
+                                            </p>
                                         </div>
                                     )}
                                 </div>

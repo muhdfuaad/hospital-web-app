@@ -276,35 +276,28 @@ const DoctorsPrescriptionView = () => {
                             </div>
                         </div>
 
-                        <div className="p-6 print:p-4 space-y-6 print:space-y-4">
-                            {/* Patient and Review IDs and Date */}
-                            <div className="text-sm sm:text-base font-medium text-blue-900 mb-4">
-                                {/* Removed px-2 sm:px-4 here */}
-                                <div className="flex justify-between items-start gap-4">
-                                    {/* Left Section: Patient ID + Name */}
-                                    <div className="flex flex-col gap-2">
-                                        {/* Patient ID */}
-                                        <div className="flex items-center gap-2 bg-blue-50 text-blue-900 px-3 py-1.5 rounded-lg print:bg-blue-50 print:border-blue-200">
-                                            <span className="font-semibold">Patient ID:</span>
+                         <div className="p-4 print:p-3 space-y-4 print:space-y-2">
+                            {/* Patient Info Header */}
+                           <div className="flex flex-wrap justify-between items-start gap-4 mb-4 print:mb-2">
+                                <div className="flex flex-col gap-2">
+                                    <div className="flex items-center gap-2 bg-blue-50 text-blue-900 px-3 py-1.5 rounded-lg print:px-2 print:py-1">
+                                        <span className="font-semibold text-sm print:text-xs">Patient ID:</span>
                                             <span className="text-sm">{formData.patientId || '-'}</span>
                                         </div>
 
                                         {/* Name / Age / Gender */}
-                                        <div className="flex items-center gap-2 bg-white text-blue-900 px-3 py-1.5 rounded-lg border border-gray-200">
-                                            <span className="font-semibold">Name:</span>
-                                            <span className="text-sm text-blue-600">
+                                        <div className="flex items-center gap-2 bg-white text-blue-900 px-3 py-1.5 print:px-2 print:py-1 rounded-lg border border-gray-200 whitespace-nowrap overflow-hidden text-ellipsis">
+                                            <span className="font-semibold print:text-xs">Name:</span>
+                                            <span className="text-sm print:text-xs text-blue-600">
                                                 {patientInfo.name + " / " + patientInfo.age + " / " + patientInfo.gender}
                                             </span>
                                         </div>
-                                    </div>
-
-                                    {/* Right Section: Date */}
-                                    <div className="flex items-center gap-2 bg-blue-50 text-blue-900 px-3 py-1.5 rounded-lg justify-center print:bg-blue-50 print:border-blue-200">
-                                        <span className="font-semibold">Date:</span>
+                                </div>
+                                <div className="flex items-center gap-2 bg-blue-50 text-blue-900 px-3 py-1.5 rounded-lg print:px-2 print:py-1">
+                                    <span className="font-semibold text-sm print:text-xs">Date:</span>
                                         <span className="text-sm">{formatDate(formData.date)}</span>
                                     </div>
                                 </div>
-                            </div>
 
                             {/* Investigations */}
                             <div className="bg-white print:rounded print:border-blue-200">
