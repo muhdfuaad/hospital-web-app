@@ -1,0 +1,41 @@
+{
+  "Files": [
+    {
+      "Id": "D:\\NEXT\\Backend\\testapi\\testapi\\wwwroot\\07f396fa-6a1b-4258-8495-efd9bf070d19_maintanance.jpg",
+      "PackagePath": "staticwebassets\\07f396fa-6a1b-4258-8495-efd9bf070d19_maintanance.jpg"
+    },
+    {
+      "Id": "D:\\NEXT\\Backend\\testapi\\testapi\\wwwroot\\0aa808d1-6baf-43da-9ee4-f71ac85a6f23_home4-slide1.jpg",
+      "PackagePath": "staticwebassets\\0aa808d1-6baf-43da-9ee4-f71ac85a6f23_home4-slide1.jpg"
+    },
+    {
+      "Id": "D:\\NEXT\\Backend\\testapi\\testapi\\wwwroot\\1e754e64-fa62-47b2-8888-a38880709a1e_interior.jpg",
+      "PackagePath": "staticwebassets\\1e754e64-fa62-47b2-8888-a38880709a1e_interior.jpg"
+    },
+    {
+      "Id": "D:\\NEXT\\Backend\\testapi\\testapi\\wwwroot\\38cee94c-6a37-46fa-bfa3-7851f6b19219_interior.jpg",
+      "PackagePath": "staticwebassets\\38cee94c-6a37-46fa-bfa3-7851f6b19219_interior.jpg"
+    },
+    {
+      "Id": "D:\\NEXT\\Backend\\testapi\\testapi\\wwwroot\\d26b28af-0e4b-4454-ab3e-7c2785a50e31_Green and Black Illustrated House Warming Party Invitation.png",
+      "PackagePath": "staticwebassets\\d26b28af-0e4b-4454-ab3e-7c2785a50e31_Green and Black Illustrated House Warming Party Invitation.png"
+    },
+    {
+      "Id": "obj\\Release\\net8.0\\staticwebassets\\msbuild.build.testapi.props",
+      "PackagePath": "build\\testapi.props"
+    },
+    {
+      "Id": "obj\\Release\\net8.0\\staticwebassets\\msbuild.buildMultiTargeting.testapi.props",
+      "PackagePath": "buildMultiTargeting\\testapi.props"
+    },
+    {
+      "Id": "obj\\Release\\net8.0\\staticwebassets\\msbuild.buildTransitive.testapi.props",
+      "PackagePath": "buildTransitive\\testapi.props"
+    },
+    {
+      "Id": "obj\\Release\\net8.0\\staticwebassets\\msbuild.testapi.Microsoft.AspNetCore.StaticWebAssets.props",
+      "PackagePath": "build\\Microsoft.AspNetCore.StaticWebAssets.props"
+    }
+  ],
+  "ElementsToRemove": []
+}
