@@ -211,14 +211,14 @@ const DoctorConsultationsPage = () => {
                     </table>
                 </div>
                 {/* ✅ Mobile Card View */}
-                <div className="block md:hidden space-y-4">
+                <div className="block md:hidden space-y-4 p-2 bg-[#F2F3F2] rounded-lg">
                     {filteredPatients.length === 0 ? (
                         <div className="text-center text-gray-500 py-4">
                             {searchTerm ? "No patients found matching your search" : "No patient records available"}
                         </div>
                     ) : (
                         filteredPatients.map((p, idx) => (
-                            <div key={p.patientId} className="bg-white shadow-md rounded-lg p-4 border border-gray-200">
+                            <div key={p.patientId}  className=" rounded-lg shadow-[0_8px_16px_rgba(0,0,0,0.25)] p-4 transition-transform hover:scale-[1.01]">
                                 <div className="flex justify-between items-start mb-2">
                                     <div>
                                         <h3 className="text-base font-semibold text-gray-800">{p.name}</h3>
