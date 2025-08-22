@@ -237,33 +237,36 @@ const NursesNoteView = () => {
             background: #fff !important;
             color: #000 !important;
             font-family: 'Times New Roman', serif !important;
-            font-size: 10pt !important;
-            line-height: 1.2 !important;
-          }
-         
-          nav, header, footer,
-          .no-print,
-          .menu-icon,
-          .user-icon,
-          .print\\:hidden {
+            font-size: 12pt !important; 
+            line-height: 1.3 !important; 
+           }
+            h1, h2, h3 {
+            font-size: 12pt !important; 
+            }
+
+            nav, header, footer,
+            .no-print,
+            .menu-icon,
+            .user-icon,
+            .print\\:hidden {
             display: none !important;
             visibility: hidden !important;
-          }
+            }
           
           .print\\:block {
             display: block !important;
           }
           
           .print\\:text-xs {
-            font-size: 8pt !important;
+            font-size: 10pt !important;
           }
           
           .print\\:text-sm {
-            font-size: 9pt !important;
+            font-size: 11pt !important;
           }
           
           .print\\:text-base {
-            font-size: 10pt !important;
+            font-size: 12pt !important;
           }
           
           .print\\:p-2 {
@@ -346,7 +349,7 @@ const NursesNoteView = () => {
                     <div className="text-red-600">No nurses note found for this assignment.</div>
                 </div>
             ) : (
-                <div className="nurses-note-content max-w-4xl mx-auto p-6 print:p-4 print:max-w-none print:mx-0">
+                <div className="note-content max-w-4xl mx-auto p-6 print:p-0 print:max-w-none print:mx-0">
                     <div className="bg-white rounded-lg print:rounded-none shadow-lg print:shadow-none print:text-xs">
 
                         {/* Header */}
@@ -385,7 +388,7 @@ const NursesNoteView = () => {
 
                             {/* Diagnosis and Condition */}
                             <div className="bg-blue-50 print:bg-blue-50 p-3 print:p-2 rounded-lg">
-                                <h3 className="text-base print:text-xs font-semibold text-blue-900 mb-2 print:mb-1 flex items-center gap-2 uppercase">
+                                <h3 className="text-base print:text-xs font-bold text-blue-900 mb-2 print:mb-1 flex items-center gap-2 uppercase">
                                     1. Diagnosis and Condition
                                 </h3>
 
@@ -424,7 +427,7 @@ const NursesNoteView = () => {
 
                             {/* Physical Condition */}
                             <div className="bg-blue-50 print:bg-blue-50 p-3 print:p-2 rounded-lg">
-                                <h3 className="text-base print:text-xs font-semibold text-blue-900 mb-2 print:mb-1 uppercase">
+                                <h3 className="text-base print:text-xs font-bold text-blue-900 mb-2 print:mb-1 uppercase">
                                     2. Physical Difficulties
                                 </h3>
                                 <p className="text-sm print:text-xs ml-6">
@@ -435,7 +438,7 @@ const NursesNoteView = () => {
 
                             {/* Basic Information */}
                             <div className="bg-blue-50 print:bg-blue-50 p-3 print:p-2 rounded-lg">
-                                <h3 className="text-base print:text-xs font-semibold text-blue-900 mb-2 print:mb-1 uppercase">
+                                <h3 className="text-base print:text-xs font-bold text-blue-900 mb-2 print:mb-1 uppercase">
                                     3. Basic Information
                                 </h3>
 
@@ -475,7 +478,7 @@ const NursesNoteView = () => {
                             {/* Emotional Factors */}
                             {nursesNoteData.emotionalFactors && (
                                 <div className="bg-blue-50 print:bg-blue-50 p-3 print:p-2 rounded-lg">
-                                    <h3 className="text-base print:text-xs font-semibold text-blue-900 mb-2 print:mb-1 flex items-center gap-2 uppercase">
+                                    <h3 className="text-base print:text-xs font-bold text-blue-900 mb-2 print:mb-1 flex items-center gap-2 uppercase">
                                         4. Emotional & Family Factors
                                     </h3>
                                     <p className="text-sm print:text-xs ml-2">{nursesNoteData.emotionalFactors}</p>
@@ -484,7 +487,7 @@ const NursesNoteView = () => {
 
                             {/* Examination */}
                             <div className="bg-blue-50 print:bg-blue-50 p-3 print:p-2 rounded-lg">
-                                <h3 className="text-base print:text-xs font-semibold text-blue-900 mb-2 print:mb-1 flex items-center gap-2 uppercase">
+                                <h3 className="text-base print:text-xs font-bold text-blue-900 mb-2 print:mb-1 flex items-center gap-2 uppercase">
                                     5. Examination
                                 </h3>
                                 <div className="grid grid-cols-5 gap-2 print:gap-1 text-sm print:text-xs mb-3">
@@ -550,7 +553,7 @@ const NursesNoteView = () => {
                             {/* Special Conditions */}
                             {nursesNoteData.specialConditions && (
                                 <div className="bg-blue-50 print:bg-blue-50 p-3 print:p-2 rounded-lg">
-                                    <h3 className="text-base print:text-xs font-semibold text-blue-900 mb-2 print:mb-1 flex items-center gap-2 uppercase">
+                                    <h3 className="text-base print:text-xs font-bold text-blue-900 mb-2 print:mb-1 flex items-center gap-2 uppercase">
                                         6. Special Conditions
                                     </h3>
                                     <p className="text-sm print:text-xs ml-6">{nursesNoteData.specialConditions}</p>
@@ -559,7 +562,7 @@ const NursesNoteView = () => {
 
                             {/* Treatments and Medications */}
                             <div className="bg-blue-50 print:bg-blue-50 p-3 print:p-2 rounded-lg">
-                                <h3 className="text-base print:text-xs font-semibold text-blue-900 mb-2 print:mb-1 uppercase">
+                                <h3 className="text-base print:text-xs font-bold text-blue-900 mb-2 print:mb-1 uppercase">
                                     7. Treatments and Medications
                                 </h3>
                                 <div className="space-y-2 print:space-y-1 text-sm print:text-xs ml-4">
@@ -580,7 +583,7 @@ const NursesNoteView = () => {
 
                             {/* Plan & Assistance */}
                             <div className="bg-blue-50 print:bg-blue-50 p-3 print:p-2 rounded-lg">
-                                <h3 className="text-base print:text-xs font-semibold text-blue-900 mb-2 print:mb-1 uppercase">
+                                <h3 className="text-base print:text-xs font-bold text-blue-900 mb-2 print:mb-1 uppercase">
                                     8. Plan & Assistance
                                 </h3>
                                 <div className="space-y-2 print:space-y-1 text-sm print:text-xs ml-4">

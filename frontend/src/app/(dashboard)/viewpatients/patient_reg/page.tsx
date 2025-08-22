@@ -239,7 +239,7 @@ export default function HospitalRegistrationForm() {
     const [photoFileName, setPhotoFileName] = useState('');
     const [aadharFileName, setAadharFileName] = useState('');
     const [isLoading, setIsLoading] = useState(false);
-    
+
     const [submitStatus, setSubmitStatus] = useState('');
     const [submitMessage, setSubmitMessage] = useState('');
 
@@ -574,10 +574,10 @@ export default function HospitalRegistrationForm() {
             // ✅ Conditional redirect logic
             setTimeout(() => {
                 const categoryId = Number(formData.categoryId);
-                const pid = formData.patientId?.trim();
+                const pid = formData.patientId ? Number(formData.patientId) : null;
 
                 if (categoryId === 3 && collectAdditionalDetails && pid) {
-                    router.push(`/patientdetails?patientId=${encodeURIComponent(pid)}`);
+                    router.push(`/patientdetails?patientId=${encodeURIComponent(pid.toString())}`);
                 } else {
                     router.push("/viewpatients");
                 }
@@ -942,8 +942,8 @@ export default function HospitalRegistrationForm() {
                                         value={
                                             // Map M, F, O from formData back to "male", "female", "other" for display
                                             formData.gender === 'M' ? 'male' :
-                                            formData.gender === 'F' ? 'female' :
-                                            formData.gender === 'O' ? 'other' : ''
+                                                formData.gender === 'F' ? 'female' :
+                                                    formData.gender === 'O' ? 'other' : ''
                                         }
                                         onChange={handleChange}
                                         className={inputClasses('gender')}
@@ -1563,7 +1563,7 @@ export default function HospitalRegistrationForm() {
                                 </button>
                             </div>
                         </div>
-                        
+
                         {/* Submit Status Message */}
                         <div className="flex justify-center">
                             {submitMessage && (

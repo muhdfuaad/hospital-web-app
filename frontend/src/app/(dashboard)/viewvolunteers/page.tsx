@@ -236,14 +236,14 @@ export default function VolunteerViewPage() {
                         onClick={() => handleEdit(volunteer)}
                         title="Edit volunteer record"
                       >
-                        <FilePen className="w-5 h-5" />
+                        <FilePen className="w-4 h-4" />
                       </button>
                       <button
                         className="text-red-600 hover:text-red-800 p-2 rounded hover:bg-red-100 transition-all"
                         onClick={() => handleDelete(volunteer.id, volunteer.volName)}
                         title="Delete volunteer record"
                       >
-                        <Trash2 className="w-5 h-5" />
+                        <Trash2 className="w-4 h-4" />
                       </button>
                     </td>
                   </tr>
