@@ -13,6 +13,7 @@ wwwroot\Uploads\AadharDocs\7b62015e-716e-4238-a937-c48cfe984b64.pdf
 wwwroot\Uploads\AadharDocs\93e9ab26-3948-4caa-825d-e65755ff66e0.pdf
 wwwroot\Uploads\AadharDocs\b63a6e92-8e32-4d06-a3b6-85ef969b3a33.pdf
 wwwroot\Uploads\AadharDocs\c70598b4-c08e-44b2-aed2-e9925d913765.pdf
+wwwroot\Uploads\AadharDocs\c7b747f1-4915-4483-a3b4-3441563aa870.pdf
 wwwroot\Uploads\AadharDocs\f1322d75-5db9-4955-af0e-af629ebc7263.pdf
 wwwroot\Uploads\d25c9f32-a4ff-4777-aa1c-c76ef3b21a38.pdf
 wwwroot\Uploads\e7939793-1254-45ea-b2af-33c2b4ecad58.jpg
@@ -21,6 +22,7 @@ wwwroot\Uploads\ef794cdd-6a5e-41be-8ac7-0ec939813a44.jpg
 wwwroot\Uploads\f55b5bec-8f03-4fc8-aff0-fa2294c42f2f.pdf
 wwwroot\Uploads\fd5ffd4d-5b10-4139-8f87-f18d454d48f6.jpg
 wwwroot\Uploads\Photographs\21957a4c-48f2-406b-b7c9-d109f276fc85.jpg
+wwwroot\Uploads\Photographs\30e2aee2-0c03-4f19-bd71-61b97ba5cb52.jpg
 wwwroot\Uploads\Photographs\348222ed-4ef0-4ef9-a9f1-615e56c46b37.jpg
 wwwroot\Uploads\Photographs\4f153c1a-e484-4503-ad2f-8850a996bc0e.jpg
 wwwroot\Uploads\Photographs\565cabc9-5348-4c9d-9c21-38ed97fdd167.jpg

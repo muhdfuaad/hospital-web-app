@@ -180,6 +180,18 @@
       <EndpointProperties><![CDATA[[{"Name":"fingerprint","Value":"ttnrfm9t17"},{"Name":"integrity","Value":"sha256-n/c/UlRvxsjrPhYyAsLlvkHmpR\u002BQh/\u002BarKLwhDryZOA="},{"Name":"label","Value":"_content/HmsApi/Uploads/AadharDocs/c70598b4-c08e-44b2-aed2-e9925d913765.pdf"}]]]></EndpointProperties>
       <ResponseHeaders><![CDATA[[{"Name":"Accept-Ranges","Value":"bytes"},{"Name":"Cache-Control","Value":"max-age=31536000, immutable"},{"Name":"Content-Length","Value":"84780"},{"Name":"Content-Type","Value":"application/pdf"},{"Name":"ETag","Value":"\u0022n/c/UlRvxsjrPhYyAsLlvkHmpR\u002BQh/\u002BarKLwhDryZOA=\u0022"},{"Name":"Last-Modified","Value":"Fri, 27 Jun 2025 06:48:56 GMT"}]]]></ResponseHeaders>
     </StaticWebAssetEndpoint>
+    <StaticWebAssetEndpoint Include="_content/HmsApi/Uploads/AadharDocs/c7b747f1-4915-4483-a3b4-3441563aa870.a3qajx7gmr.pdf">
+      <AssetFile>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\Uploads\AadharDocs\c7b747f1-4915-4483-a3b4-3441563aa870.pdf'))</AssetFile>
+      <Selectors><![CDATA[[]]]></Selectors>
+      <EndpointProperties><![CDATA[[{"Name":"fingerprint","Value":"a3qajx7gmr"},{"Name":"integrity","Value":"sha256-lintnpZ04kR5XkndpKsEIVta\u002B0IlxKAwO6Fdu/kcxRI="},{"Name":"label","Value":"_content/HmsApi/Uploads/AadharDocs/c7b747f1-4915-4483-a3b4-3441563aa870.pdf"}]]]></EndpointProperties>
+      <ResponseHeaders><![CDATA[[{"Name":"Accept-Ranges","Value":"bytes"},{"Name":"Cache-Control","Value":"max-age=31536000, immutable"},{"Name":"Content-Length","Value":"57110"},{"Name":"Content-Type","Value":"application/pdf"},{"Name":"ETag","Value":"\u0022lintnpZ04kR5XkndpKsEIVta\u002B0IlxKAwO6Fdu/kcxRI=\u0022"},{"Name":"Last-Modified","Value":"Fri, 22 Aug 2025 10:14:53 GMT"}]]]></ResponseHeaders>
+    </StaticWebAssetEndpoint>
+    <StaticWebAssetEndpoint Include="_content/HmsApi/Uploads/AadharDocs/c7b747f1-4915-4483-a3b4-3441563aa870.pdf">
+      <AssetFile>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\Uploads\AadharDocs\c7b747f1-4915-4483-a3b4-3441563aa870.pdf'))</AssetFile>
+      <Selectors><![CDATA[[]]]></Selectors>
+      <EndpointProperties><![CDATA[[{"Name":"integrity","Value":"sha256-lintnpZ04kR5XkndpKsEIVta\u002B0IlxKAwO6Fdu/kcxRI="}]]]></EndpointProperties>
+      <ResponseHeaders><![CDATA[[{"Name":"Accept-Ranges","Value":"bytes"},{"Name":"Cache-Control","Value":"no-cache"},{"Name":"Content-Length","Value":"57110"},{"Name":"Content-Type","Value":"application/pdf"},{"Name":"ETag","Value":"\u0022lintnpZ04kR5XkndpKsEIVta\u002B0IlxKAwO6Fdu/kcxRI=\u0022"},{"Name":"Last-Modified","Value":"Fri, 22 Aug 2025 10:14:53 GMT"}]]]></ResponseHeaders>
+    </StaticWebAssetEndpoint>
     <StaticWebAssetEndpoint Include="_content/HmsApi/Uploads/AadharDocs/f1322d75-5db9-4955-af0e-af629ebc7263.ewc2ca4p77.pdf">
       <AssetFile>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\Uploads\AadharDocs\f1322d75-5db9-4955-af0e-af629ebc7263.pdf'))</AssetFile>
       <Selectors><![CDATA[[]]]></Selectors>
@@ -275,6 +287,18 @@
       <Selectors><![CDATA[[]]]></Selectors>
       <EndpointProperties><![CDATA[[{"Name":"fingerprint","Value":"kt8cdn7v4h"},{"Name":"integrity","Value":"sha256-WC\u002BKcPKIcWfZsk79ziV3\u002Bi2E7XHZViO1VbreYGviflo="},{"Name":"label","Value":"_content/HmsApi/Uploads/Photographs/21957a4c-48f2-406b-b7c9-d109f276fc85.jpg"}]]]></EndpointProperties>
       <ResponseHeaders><![CDATA[[{"Name":"Accept-Ranges","Value":"bytes"},{"Name":"Cache-Control","Value":"max-age=31536000, immutable"},{"Name":"Content-Length","Value":"133096"},{"Name":"Content-Type","Value":"image/jpeg"},{"Name":"ETag","Value":"\u0022WC\u002BKcPKIcWfZsk79ziV3\u002Bi2E7XHZViO1VbreYGviflo=\u0022"},{"Name":"Last-Modified","Value":"Sat, 21 Jun 2025 10:17:55 GMT"}]]]></ResponseHeaders>
+    </StaticWebAssetEndpoint>
+    <StaticWebAssetEndpoint Include="_content/HmsApi/Uploads/Photographs/30e2aee2-0c03-4f19-bd71-61b97ba5cb52.jpg">
+      <AssetFile>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\Uploads\Photographs\30e2aee2-0c03-4f19-bd71-61b97ba5cb52.jpg'))</AssetFile>
+      <Selectors><![CDATA[[]]]></Selectors>
+      <EndpointProperties><![CDATA[[{"Name":"integrity","Value":"sha256-w8xaRib49t\u002BOjsXqn/STwo9sdgbpP20b2KghqcK0sW4="}]]]></EndpointProperties>
+      <ResponseHeaders><![CDATA[[{"Name":"Accept-Ranges","Value":"bytes"},{"Name":"Cache-Control","Value":"max-age=3600, must-revalidate"},{"Name":"Content-Length","Value":"11592"},{"Name":"Content-Type","Value":"image/jpeg"},{"Name":"ETag","Value":"\u0022w8xaRib49t\u002BOjsXqn/STwo9sdgbpP20b2KghqcK0sW4=\u0022"},{"Name":"Last-Modified","Value":"Fri, 22 Aug 2025 10:14:53 GMT"}]]]></ResponseHeaders>
+    </StaticWebAssetEndpoint>
+    <StaticWebAssetEndpoint Include="_content/HmsApi/Uploads/Photographs/30e2aee2-0c03-4f19-bd71-61b97ba5cb52.luvktqjhie.jpg">
+      <AssetFile>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\Uploads\Photographs\30e2aee2-0c03-4f19-bd71-61b97ba5cb52.jpg'))</AssetFile>
+      <Selectors><![CDATA[[]]]></Selectors>
+      <EndpointProperties><![CDATA[[{"Name":"fingerprint","Value":"luvktqjhie"},{"Name":"integrity","Value":"sha256-w8xaRib49t\u002BOjsXqn/STwo9sdgbpP20b2KghqcK0sW4="},{"Name":"label","Value":"_content/HmsApi/Uploads/Photographs/30e2aee2-0c03-4f19-bd71-61b97ba5cb52.jpg"}]]]></EndpointProperties>
+      <ResponseHeaders><![CDATA[[{"Name":"Accept-Ranges","Value":"bytes"},{"Name":"Cache-Control","Value":"max-age=31536000, immutable"},{"Name":"Content-Length","Value":"11592"},{"Name":"Content-Type","Value":"image/jpeg"},{"Name":"ETag","Value":"\u0022w8xaRib49t\u002BOjsXqn/STwo9sdgbpP20b2KghqcK0sW4=\u0022"},{"Name":"Last-Modified","Value":"Fri, 22 Aug 2025 10:14:53 GMT"}]]]></ResponseHeaders>
     </StaticWebAssetEndpoint>
     <StaticWebAssetEndpoint Include="_content/HmsApi/Uploads/Photographs/348222ed-4ef0-4ef9-a9f1-615e56c46b37.jpg">
       <AssetFile>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\Uploads\Photographs\348222ed-4ef0-4ef9-a9f1-615e56c46b37.jpg'))</AssetFile>

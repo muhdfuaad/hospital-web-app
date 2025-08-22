@@ -163,5 +163,6 @@ namespace HmsApi.Data
         public DbSet<SalesBill> SalesBills => Set<SalesBill>();
         public DbSet<SalesItem> SalesItems => Set<SalesItem>();
         public DbSet<BillSequence> BillSequences => Set<BillSequence>();
+        public DbSet<HpformsCategory> HpformsCategories => Set<HpformsCategory>();
     }
 }

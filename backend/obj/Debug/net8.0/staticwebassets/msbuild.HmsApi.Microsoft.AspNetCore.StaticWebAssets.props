@@ -270,6 +270,24 @@
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
       <OriginalItemSpec>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\Uploads\AadharDocs\c70598b4-c08e-44b2-aed2-e9925d913765.pdf'))</OriginalItemSpec>
     </StaticWebAsset>
+    <StaticWebAsset Include="$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\Uploads\AadharDocs\c7b747f1-4915-4483-a3b4-3441563aa870.pdf'))">
+      <SourceType>Package</SourceType>
+      <SourceId>HmsApi</SourceId>
+      <ContentRoot>$(MSBuildThisFileDirectory)..\staticwebassets\</ContentRoot>
+      <BasePath>_content/HmsApi</BasePath>
+      <RelativePath>Uploads/AadharDocs/c7b747f1-4915-4483-a3b4-3441563aa870.pdf</RelativePath>
+      <AssetKind>All</AssetKind>
+      <AssetMode>All</AssetMode>
+      <AssetRole>Primary</AssetRole>
+      <RelatedAsset></RelatedAsset>
+      <AssetTraitName></AssetTraitName>
+      <AssetTraitValue></AssetTraitValue>
+      <Fingerprint>a3qajx7gmr</Fingerprint>
+      <Integrity>lintnpZ04kR5XkndpKsEIVta+0IlxKAwO6Fdu/kcxRI=</Integrity>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      <OriginalItemSpec>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\Uploads\AadharDocs\c7b747f1-4915-4483-a3b4-3441563aa870.pdf'))</OriginalItemSpec>
+    </StaticWebAsset>
     <StaticWebAsset Include="$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\Uploads\AadharDocs\f1322d75-5db9-4955-af0e-af629ebc7263.pdf'))">
       <SourceType>Package</SourceType>
       <SourceId>HmsApi</SourceId>
@@ -413,6 +431,24 @@
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
       <OriginalItemSpec>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\Uploads\Photographs\21957a4c-48f2-406b-b7c9-d109f276fc85.jpg'))</OriginalItemSpec>
+    </StaticWebAsset>
+    <StaticWebAsset Include="$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\Uploads\Photographs\30e2aee2-0c03-4f19-bd71-61b97ba5cb52.jpg'))">
+      <SourceType>Package</SourceType>
+      <SourceId>HmsApi</SourceId>
+      <ContentRoot>$(MSBuildThisFileDirectory)..\staticwebassets\</ContentRoot>
+      <BasePath>_content/HmsApi</BasePath>
+      <RelativePath>Uploads/Photographs/30e2aee2-0c03-4f19-bd71-61b97ba5cb52.jpg</RelativePath>
+      <AssetKind>All</AssetKind>
+      <AssetMode>All</AssetMode>
+      <AssetRole>Primary</AssetRole>
+      <RelatedAsset></RelatedAsset>
+      <AssetTraitName></AssetTraitName>
+      <AssetTraitValue></AssetTraitValue>
+      <Fingerprint>luvktqjhie</Fingerprint>
+      <Integrity>w8xaRib49t+OjsXqn/STwo9sdgbpP20b2KghqcK0sW4=</Integrity>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      <OriginalItemSpec>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\Uploads\Photographs\30e2aee2-0c03-4f19-bd71-61b97ba5cb52.jpg'))</OriginalItemSpec>
     </StaticWebAsset>
     <StaticWebAsset Include="$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\Uploads\Photographs\348222ed-4ef0-4ef9-a9f1-615e56c46b37.jpg'))">
       <SourceType>Package</SourceType>

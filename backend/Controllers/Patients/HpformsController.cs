@@ -415,10 +415,12 @@ namespace HmsApi.Controllers.Patients
                 }
             }
 
+            int PT_Id = getPatientId();
+
             // Map DTO to Entity model
             var hpform = new Hpform
             {
-                PatientId = getPatientId(),
+                PatientId = PT_Id,
                 DistrictId = hpformDto.DistrictId,
                 PanchayathId = hpformDto.PanchayathId,
                 Ward = hpformDto.Ward,
@@ -460,7 +462,22 @@ namespace HmsApi.Controllers.Patients
             _context.Hpforms.Add(hpform);
             await _context.SaveChangesAsync();
 
+     
+           await saveCategory(PT_Id, hpformDto.CategoryId);
+
             return CreatedAtAction("GetHpform", new { id = hpform.Id }, hpform);
+        }
+
+        private async Task saveCategory(int patientId, int? categoryId)
+        {
+            var newCategory = new HpformsCategory
+            {
+                PatientId = patientId,
+                CategoryId = categoryId
+            };
+
+            _context.HpformsCategories.Add(newCategory);
+            await _context.SaveChangesAsync();
         }
 
         // DELETE: api/Hpforms/5
@@ -468,6 +485,8 @@ namespace HmsApi.Controllers.Patients
         public async Task<IActionResult> DeleteHpform(int id)
         {
             var hpform = await _context.Hpforms.FindAsync(id);
+            var hpformCategory = await _context.HpformsCategories.Where(c => c.PatientId == hpform.PatientId).ToListAsync();
+
             if (hpform == null)
             {
                 return NotFound();
@@ -496,6 +515,7 @@ namespace HmsApi.Controllers.Patients
             }
 
             _context.Hpforms.Remove(hpform);
+            _context.HpformsCategories.RemoveRange(hpformCategory);
             await _context.SaveChangesAsync();
 
             return NoContent();

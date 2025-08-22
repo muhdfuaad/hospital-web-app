@@ -117,4 +117,11 @@ namespace HmsApi.Models.Patients
         public IFormFile? AadharDoc { get; set; } = null;
     }
 
+    public class HpformsCategory
+    {
+        public int Id { get; set; }
+        public int PatientId { get; set; }
+        public int? CategoryId { get; set; }
+    }
+
 }
