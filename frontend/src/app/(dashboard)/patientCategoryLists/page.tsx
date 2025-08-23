@@ -61,6 +61,7 @@ export default function ViewPage() {
   const [districts, setDistricts] = useState<{ id: number; districtName: string }[]>([]);
   const [panchayaths, setPanchayaths] = useState<{ id: number; panchayathName: string }[]>([]);
   const [categories, setCategories] = useState<{ id: number; categoryName: string }[]>([]);
+  const [selectedCategory, setSelectedCategory] = useState<number | "">("");
 
 
   const getDistrictName = (id: number | null | undefined) => {
@@ -176,12 +177,21 @@ export default function ViewPage() {
     }
   };
 
-  const filteredForms = forms.filter(form =>
-    form.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    form.patientId?.toString().toLowerCase().includes(searchTerm.toLowerCase()) ||
-    form.diagnosis?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    form.phoneNumber1?.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredForms = forms.filter(form => {
+    const names = form.name?.split(" ") || [];
+    const firstName = names[0]?.toLowerCase() || "";
+    const secondName = names[1]?.toLowerCase() || "";
+    const term = searchTerm.toLowerCase();
+
+    const matchesName = firstName.startsWith(term) || secondName.startsWith(term);
+    const matchesOtherFields =
+      form.patientId?.toString().toLowerCase().startsWith(term) || // patientId start
+      form.diagnosis?.toLowerCase().startsWith(term) ||           // diagnosis start
+      form.phoneNumber1?.toLowerCase().startsWith(term);          // phone start
+
+    return (matchesName || matchesOtherFields) &&
+      (selectedCategory === "" || form.categoryId === selectedCategory);
+  });
 
 
   const totalPages = Math.ceil(filteredForms.length / recordsPerPage);
@@ -228,6 +238,24 @@ export default function ViewPage() {
               New Registration
             </span>
           </button>
+
+          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2">
+            <label className="text-sm font-medium text-gray-700">
+              Filter by Category:
+            </label>
+            <select
+              value={selectedCategory}
+              onChange={(e) => setSelectedCategory(e.target.value === "" ? "" : Number(e.target.value))}
+              className="border border-gray-300 rounded-md px-3 py-2 text-sm text-gray-700 shadow-sm focus:ring-2 focus:ring-blue-500 transition-all"
+            >
+              <option value="">All Categories</option>
+              {categories.map((cat) => (
+                <option key={cat.id} value={cat.id}>
+                  {cat.categoryName}
+                </option>
+              ))}
+            </select>
+          </div>
 
           {/* Right Side: Search and Info */}
           <div className="flex flex-col items-center sm:items-end w-full sm:w-auto gap-2">

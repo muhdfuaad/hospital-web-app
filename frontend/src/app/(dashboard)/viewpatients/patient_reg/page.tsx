@@ -44,8 +44,11 @@ interface FormDataType {
     diagnosis: string;
     status: string;
     name: string;
+    dob: string;
     age: string;
-    gender: string; // This will now store 'M', 'F', or 'O'
+    gender: string;
+    profession: string;
+    religion: string;
     financialStatus: string;
     spouseName: string;
     fatherName: string;
@@ -54,6 +57,7 @@ interface FormDataType {
     currentAddress: string;
     phoneNumber1: string;
     phoneNumber2: string;
+    email: string;
     adhaarNumber: string;
     contactPerson: string;
     relation: string;
@@ -99,8 +103,11 @@ export default function HospitalRegistrationForm() {
         diagnosis: '',
         status: '',
         name: '',
+        dob: "",
         age: '',
         gender: '',
+        profession: '',
+        religion: '',
         financialStatus: '',
         spouseName: '',
         fatherName: '',
@@ -109,6 +116,7 @@ export default function HospitalRegistrationForm() {
         currentAddress: '',
         phoneNumber1: '',
         phoneNumber2: '',
+        email: '',
         adhaarNumber: '',
         contactPerson: '',
         relation: '',
@@ -243,6 +251,8 @@ export default function HospitalRegistrationForm() {
     const [submitStatus, setSubmitStatus] = useState('');
     const [submitMessage, setSubmitMessage] = useState('');
 
+    const [doctors, setDoctors] = useState([]);
+
     // Fetch districts and panchayaths from API first
     useEffect(() => {
         const fetchLocations = async () => {
@@ -260,6 +270,13 @@ export default function HospitalRegistrationForm() {
         };
 
         fetchLocations();
+    }, []);
+
+    useEffect(() => {
+        fetch(`${API_BASE}/api/doctors`) // your .NET Core backend endpoint
+            .then((res) => res.json())
+            .then((data) => setDoctors(data))
+            .catch((err) => console.error("Error fetching doctors:", err));
     }, []);
 
     // Fetch Registration Number from API (only for new registrations)
@@ -292,7 +309,7 @@ export default function HospitalRegistrationForm() {
     };
 
     useEffect(() => {
-        const isPersonalCare = Number(formData.categoryId) === 3; // Assuming category ID 3 is "Personal Care"
+        const isPersonalCare = Number(formData.categoryId) === 1; // Assuming category ID 3 is "Home Care"
         setShowAdditionalDetailsCheckbox(isPersonalCare);
     }, [formData.categoryId]);
 
@@ -318,15 +335,8 @@ export default function HospitalRegistrationForm() {
                         const panchayathId = patientData.panchayathId ?? null;
                         const categoryId = patientData.categoryId ?? null;
 
-                        // Map backend gender (M, F, O) to display gender (male, female, other)
-                        let displayGender = '';
-                        if (patientData.gender === 'M') {
-                            displayGender = 'male';
-                        } else if (patientData.gender === 'F') {
-                            displayGender = 'female';
-                        } else if (patientData.gender === 'O') {
-                            displayGender = 'other';
-                        }
+                        // Format the date for the input field
+                        const formattedDob = patientData.dob ? new Date(patientData.dob).toISOString().split('T')[0] : '';
 
                         // Build formData
                         setFormData({
@@ -340,9 +350,16 @@ export default function HospitalRegistrationForm() {
                             diagnosis: patientData.diagnosis || '',
                             status: patientData.status || '',
                             name: patientData.name || '',
+                            dob: formattedDob,
                             age: patientData.age?.toString() || '',
-                            gender: displayGender, // Set the display gender
-                            financialStatus: patientData.financialStatus || '',
+
+                            // ✅ IMPORTANT: codes only
+                            gender: patientData.gender ?? '',                                  // 'M' | 'F' | 'O'
+                            financialStatus: patientData.financialStatus != null
+                                ? String(patientData.financialStatus)                            // '1'..'5'
+                                : '',
+                            profession: patientData.profession || '',
+                            religion: patientData.religion || '',
                             spouseName: patientData.spouseName || '',
                             fatherName: patientData.fatherName || '',
                             motherName: patientData.motherName || '',
@@ -350,6 +367,7 @@ export default function HospitalRegistrationForm() {
                             currentAddress: patientData.currentAddress || '',
                             phoneNumber1: patientData.phoneNumber1 || '',
                             phoneNumber2: patientData.phoneNumber2 || '',
+                            email: patientData.email || '',
                             adhaarNumber: patientData.adhaarNumber || '',
                             contactPerson: patientData.contactPerson || '',
                             relation: patientData.relation || '',
@@ -372,7 +390,7 @@ export default function HospitalRegistrationForm() {
                         // Show checkbox if category is already Personal Care
                         // This uses categoryName directly from the patientData. You might need to adjust based on API response.
                         const patientCategory = categories.find(cat => cat.id === patientData.categoryId);
-                        if (patientCategory?.categoryName.toLowerCase().trim() === "personal care") {
+                        if (patientCategory?.categoryName.toLowerCase().trim() === "Home Care") {
                             setShowAdditionalDetailsCheckbox(true);
                             setCollectAdditionalDetails(true); // Assuming if it's personal care, we collect details
                         }
@@ -425,64 +443,81 @@ export default function HospitalRegistrationForm() {
         }
     }, [formData.districtId, districts, isEditMode]);
 
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
-        const { name, value } = e.target; // Removed 'files' from destructuring
+    const handleChange = (e: React.ChangeEvent<any>) => {
+        const { name, value, files } = e.target;
 
-        if (e.target instanceof HTMLInputElement && e.target.type === 'file') {
-            const inputFiles = e.target.files; // Access files here
-            if (inputFiles && inputFiles[0]) {
-                // Handle photo upload
-                if (name === "photograph") {
-                    setFormData(prev => ({
-                        ...prev,
-                        photograph: inputFiles[0],
-                        previewPhotoUrl: URL.createObjectURL(inputFiles[0]),
-                    }));
-                    setPhotoFileName(inputFiles[0].name);
-                    setExistingPhotoUrl(''); // Clear existing URL when new file is selected
-                }
-                // Handle aadhar upload
-                if (name === "aadharDoc") {
-                    setFormData(prev => ({
-                        ...prev,
-                        aadharDoc: inputFiles[0],
-                        previewAadharName: inputFiles[0].name,
-                    }));
-                    setAadharFileName(inputFiles[0].name);
-                    setExistingAadharDocUrl(''); // Clear existing URL when new file is selected
-                }
+        if (files) {
+            // Handle photo upload
+            if (name === "photograph" && files[0]) {
+                setFormData(prev => ({
+                    ...prev,
+                    photograph: files[0],
+                    previewPhotoUrl: URL.createObjectURL(files[0]),
+                }));
+                setPhotoFileName(files[0].name);
+                setExistingPhotoUrl('');
+            }
+
+            // Handle aadhar upload
+            if (name === "aadharDoc" && files[0]) {
+                setFormData(prev => ({
+                    ...prev,
+                    aadharDoc: files[0],
+                    previewAadharName: files[0].name,
+                }));
+                setAadharFileName(files[0].name);
+                setExistingAadharDocUrl('');
             }
         } else {
-            let fieldValue: string | number | null = value;
+            const fieldValue = name.endsWith("Id") ? parseInt(value, 10) || null : value;
 
-            // Handle Gender selection to send M, F, O
-            if (name === 'gender') {
-                if (value === 'male') {
-                    fieldValue = 'M';
-                } else if (value === 'female') {
-                    fieldValue = 'F';
-                } else if (value === 'other') {
-                    fieldValue = 'O';
+            setFormData(prev => {
+                let updated = { ...prev, [name]: fieldValue };
+
+                // 🔹 DOB → auto calculate Age
+                if (name === "dob" && value) {
+                    const dobDate = new Date(value);
+                    const today = new Date();
+                    let age = today.getFullYear() - dobDate.getFullYear();
+                    const monthDiff = today.getMonth() - dobDate.getMonth();
+                    if (
+                        monthDiff < 0 ||
+                        (monthDiff === 0 && today.getDate() < dobDate.getDate())
+                    ) {
+                        age--;
+                    }
+                    updated.age = age.toString();
                 }
-            } else if (name.endsWith("Id")) {
-                fieldValue = parseInt(value, 10) || null;
-            }
 
-            setFormData(prev => ({
-                ...prev,
-                [name]: fieldValue,
-            }));
+                // 🔹 Age → auto calculate DOB
+                if (name === "age" && value) {
+                    const ageNum = parseInt(value, 10);
+                    if (!isNaN(ageNum)) {
+                        const today = new Date();
+                        const dobDate = new Date(
+                            today.getFullYear() - ageNum,
+                            today.getMonth(),
+                            today.getDate()
+                        );
+                        updated.dob = dobDate.toISOString().split("T")[0]; // yyyy-mm-dd
+                    }
+                }
+
+                return updated;
+            });
 
             if (name === "categoryId") {
-                const selected = categories.find(c => c.id === parseInt(value));
-                setShowAdditionalDetailsCheckbox(selected?.categoryName.toLowerCase() === "personal care");
-                setCollectAdditionalDetails(false); // Reset when category changes
+                const selected = categories.find((c) => c.id === parseInt(value));
+                setShowAdditionalDetailsCheckbox(
+                    selected?.categoryName.toLowerCase() === "home care"
+                );
+                setCollectAdditionalDetails(false);
             }
 
             if (name === "districtId") {
                 const selectedId = parseInt(value, 10);
                 setSelectedDistrictId(selectedId);
-                setFormData(prev => ({
+                setFormData((prev) => ({
                     ...prev,
                     panchayathId: null,
                 }));
@@ -495,7 +530,7 @@ export default function HospitalRegistrationForm() {
         }
 
         if (errors[name]) {
-            setErrors(prev => ({ ...prev, [name]: '' }));
+            setErrors((prev) => ({ ...prev, [name]: "" }));
         }
     };
 
@@ -513,6 +548,9 @@ export default function HospitalRegistrationForm() {
         form.append('Date', formData.date);
         form.append('Diagnosis', formData.diagnosis);
         form.append('Name', formData.name);
+        // Convert date string to proper format if needed
+        const dobDate = new Date(formData.dob);
+        form.append('dob', dobDate.toISOString());
         form.append('Age', formData.age);
         form.append('Gender', formData.gender); // formData.gender will now be 'M', 'F', or 'O'
         form.append('SpouseName', formData.spouseName);
@@ -537,6 +575,8 @@ export default function HospitalRegistrationForm() {
         form.append('OtherPerson', formData.otherPerson);
         form.append('OtherPersonPhone', formData.otherPersonPhone);
         form.append('HouseRoute', formData.houseRoute);
+
+        console.log("Fetched patientData:", formData);
 
         // Append files if present
         if (formData.photograph) {
@@ -576,7 +616,7 @@ export default function HospitalRegistrationForm() {
                 const categoryId = Number(formData.categoryId);
                 const pid = formData.patientId ? Number(formData.patientId) : null;
 
-                if (categoryId === 3 && collectAdditionalDetails && pid) {
+                if (categoryId === 1 && collectAdditionalDetails && pid) {
                     router.push(`/patientdetails?patientId=${encodeURIComponent(pid.toString())}`);
                 } else {
                     router.push("/viewpatients");
@@ -916,21 +956,38 @@ export default function HospitalRegistrationForm() {
                                         required
                                     />
                                 </div>
+                                <div className="flex gap-6">
+                                    {/* DOB */}
+                                    <div className="flex-1">
+                                        <label className="block text-sm font-semibold text-blue-900 mb-2 uppercase tracking-wide">
+                                            Date of Birth <span className="text-red-500">*</span>
+                                        </label>
+                                        <input
+                                            type="date"
+                                            name="dob"
+                                            value={formData.dob}
+                                            onChange={handleChange}
+                                            className={inputClasses("dob")}
+                                            required
+                                        />
+                                    </div>
 
-                                <div>
-                                    <label className="block text-sm font-semibold text-blue-900 mb-2 uppercase tracking-wide">
-                                        Age <span className="text-red-500">*</span>
-                                    </label>
-                                    <input
-                                        type="number"
-                                        name="age"
-                                        value={formData.age}
-                                        onChange={handleChange}
-                                        min="1"
-                                        className={inputClasses('age')}
-                                        placeholder="Enter age"
-                                        required
-                                    />
+                                    {/* Age */}
+                                    <div className="flex-1">
+                                        <label className="block text-sm font-semibold text-blue-900 mb-2 uppercase tracking-wide">
+                                            Age <span className="text-red-500">*</span>
+                                        </label>
+                                        <input
+                                            type="number"
+                                            name="age"
+                                            value={formData.age}
+                                            onChange={handleChange}
+                                            min="1"
+                                            className={inputClasses("age")}
+                                            placeholder="Enter age"
+                                            required
+                                        />
+                                    </div>
                                 </div>
 
                                 <div>
@@ -939,20 +996,50 @@ export default function HospitalRegistrationForm() {
                                     </label>
                                     <select
                                         name="gender"
-                                        value={
-                                            // Map M, F, O from formData back to "male", "female", "other" for display
-                                            formData.gender === 'M' ? 'male' :
-                                                formData.gender === 'F' ? 'female' :
-                                                    formData.gender === 'O' ? 'other' : ''
-                                        }
+                                        value={formData.gender}
                                         onChange={handleChange}
                                         className={inputClasses('gender')}
                                         required
                                     >
                                         <option value="">Select Gender</option>
-                                        <option value="male">Male</option>
-                                        <option value="female">Female</option>
-                                        <option value="other">Other</option>
+                                        <option value="M">Male</option>
+                                        <option value="F">Female</option>
+                                        <option value="O">Other</option>
+                                    </select>
+                                </div>
+                                {/* Profession */}
+                                <div>
+                                    <label className="block text-sm font-semibold text-blue-900 mb-2 uppercase tracking-wide">
+                                        Profession
+                                    </label>
+                                    <input
+                                        type="text"
+                                        name="profession"
+                                        value={formData.profession}
+                                        onChange={handleChange}
+                                        className={inputClasses("profession")}
+                                    />
+                                </div>
+
+                                {/* Religion */}
+                                <div>
+                                    <label className="block text-sm font-semibold text-blue-900 mb-2 uppercase tracking-wide">
+                                        Religion
+                                    </label>
+                                    <select
+                                        name="religion"
+                                        value={formData.religion || ""}
+                                        onChange={handleChange}
+                                        className={inputClasses("religion")}
+                                    >
+                                        <option value="">-- Select Religion --</option>
+                                        <option value="Islam">Islam</option>
+                                        <option value="Hinduism">Hinduism</option>
+                                        <option value="Christianity">Christianity</option>
+                                        <option value="Buddhism">Buddhism</option>
+                                        <option value="Jainism">Jainism</option>
+                                        <option value="Sikhism">Sikhism</option>
+                                        <option value="Other">Other</option>
                                     </select>
                                 </div>
                                 <div>
@@ -967,15 +1054,13 @@ export default function HospitalRegistrationForm() {
                                         required
                                     >
                                         <option value="">Select Financial Status</option>
-                                        <option value="Wealthy">Wealthy</option>
-                                        <option value="Upper Middle Class">Upper Middle Class</option>
-                                        <option value="Lower Middle Class">Lower Middle Class</option>
-                                        <option value="Poor">Poor</option>
-                                        <option value="Very Poor">Very Poor</option>
+                                        <option value="1">Wealthy</option>
+                                        <option value="2">Upper Middle Class</option>
+                                        <option value="3">Lower Middle Class</option>
+                                        <option value="4">Poor</option>
+                                        <option value="5">Very Poor</option>
                                     </select>
                                 </div>
-
-
                                 <div>
                                     <label className="block text-sm font-semibold text-blue-900 mb-2 uppercase tracking-wide">
                                         Aadhar Number
@@ -1076,6 +1161,20 @@ export default function HospitalRegistrationForm() {
                                             }}
                                         />
                                     </div>
+                                </div>
+                                {/* Email */}
+                                <div>
+                                    <label className="block text-sm font-semibold text-blue-900 mb-2 uppercase tracking-wide">
+                                        Email <span className="text-red-500">*</span>
+                                    </label>
+                                    <input
+                                        type="email"
+                                        name="email"
+                                        value={formData.email}
+                                        onChange={handleChange}
+                                        className={inputClasses("email")}
+                                        required
+                                    />
                                 </div>
 
                                 <div className="md:col-span-2">
@@ -1488,7 +1587,7 @@ export default function HospitalRegistrationForm() {
                                                 className="mt-1 w-5 h-5 text-yellow-600 focus:ring-yellow-500 border-gray-300 rounded"
                                             />
                                             <label htmlFor="additionalDetails" className="text-sm sm:text-base font-medium leading-6">
-                                                <span className="font-semibold text-yellow-900">Additional Patient Details:</span> Please tick this box if you're registering as a <span className="font-bold">Personal Care</span> patient. This will redirect you to collect further required information.
+                                                <span className="font-semibold text-yellow-900">Additional Patient Details:</span> Please tick this box if you're registering as a <span className="font-bold"> Home Care</span> patient. This will redirect you to collect further required information.
                                             </label>
                                         </div>
                                     </div>
@@ -1532,9 +1631,9 @@ export default function HospitalRegistrationForm() {
                                         // Proceed with reset for demonstration, but ideal is a custom modal
                                         setFormData({
                                             patientId: '', date: today, districtId: null, panchayathId: null, categoryId: null, ward: '', area: '', diagnosis: '', status: '',
-                                            name: '', age: '', gender: '', financialStatus: '', adhaarNumber: '', spouseName: '', fatherName: '', motherName: '',
+                                            name: '', dob: '', age: '', gender: '', profession: '', religion: '', financialStatus: '', adhaarNumber: '', spouseName: '', fatherName: '', motherName: '',
                                             phoneNumber1: '', phoneNumber2: '', adhaarAddress: '', currentAddress: '', houseRoute: '', contactPerson: '',
-                                            relation: '', contactPhone: '', neighbourResidence: '', neighbourPhone: '', communityVolunteer: '',
+                                            relation: '', contactPhone: '', neighbourResidence: '', neighbourPhone: '', communityVolunteer: '', email: '',
                                             communityVolunteerPhone: '', wardMember: '', wardMemberPhone: '', aashaVolunteer: '', aashaVolunteerPhone: '',
                                             otherPerson: '', otherPersonPhone: '', photograph: null, aadharDoc: null
                                         });

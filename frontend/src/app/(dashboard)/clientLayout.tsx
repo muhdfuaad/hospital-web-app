@@ -56,6 +56,11 @@ const menuItems: MenuItem[] = [
         href: "/viewAssignments"
       },
       {
+        id: "patient-CategoryLists",
+        label: "Patients by Category",
+        href: "/patientCategoryLists"
+      },
+      {
         id: "patient-registration",
         label: "Patients Registration",
         href: "/viewpatients"
