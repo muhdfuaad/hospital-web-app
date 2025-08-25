@@ -44,9 +44,9 @@ export default function VolunteerViewPage() {
   useEffect(() => {
     async function fetchVolunteers() {
       try {
-        const res = await fetch(`${API_BASE}/api/Volunteers`);
-        if (!res.ok) throw new Error("Failed to fetch volunteer data");
-        const data = await res.json();
+        const res = await API.get<VolunteerDataType[]>(`/api/Volunteers`);
+        if (!res.data) throw new Error("Failed to fetch volunteer data");
+        const data = await res.data;
         setVolunteers(data);
       } catch (err: any) {
         setError(err.message);
@@ -60,10 +60,8 @@ export default function VolunteerViewPage() {
   const handleDelete = async (id: number, volunteerName: string) => {
     if (!confirm(`Are you sure you want to delete ${volunteerName}'s record? This action cannot be undone.`)) return;
     try {
-      const res = await fetch(`${API_BASE}/api/Volunteers/${id}`, {
-        method: "DELETE",
-      });
-      if (!res.ok) throw new Error("Delete failed");
+       const res = await API.delete(`/api/Volunteers/${id}`);
+      if (!res.data) throw new Error("Delete failed");
       setVolunteers(volunteers.filter((volunteer) => volunteer.id !== id));
       alert("Volunteer record deleted successfully");
     } catch (err) {

@@ -47,9 +47,9 @@ export default function DoctorViewPage() {
   useEffect(() => {
     async function fetchDoctors() {
       try {
-        const res = await fetch(`${API_BASE}/api/Doctors`);
-        if (!res.ok) throw new Error("Failed to fetch doctor data");
-        const data = await res.json();
+        const res = await API.get<DoctorDataType[]>(`/api/Doctors`);
+        if (!res.data) throw new Error("Failed to fetch doctor data");
+        const data = await res.data;
         setDoctors(data);
       } catch (err: any) {
         setError(err.message);
@@ -65,11 +65,8 @@ export default function DoctorViewPage() {
     if (!confirm(`Are you sure you want to delete Dr. ${doctorName}'s record? This action cannot be undone.`)) return;
 
     try {
-      const res = await fetch(`${API_BASE}/api/Doctors/${id}`, {
-        method: "DELETE",
-      });
-
-      if (!res.ok) throw new Error("Delete failed");
+      const res = await API.delete(`/api/Doctors/${id}`);
+      if (!res.data) throw new Error("Delete failed");
 
       setDoctors(doctors.filter((doctor) => doctor.id !== id));
       alert("Doctor record deleted successfully");
