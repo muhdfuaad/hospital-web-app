@@ -20,11 +20,11 @@ interface Panchayath {
     dstId: number;
     dstName: string;
 }
-type Params = {
-    params: {
-        id: string;
-    };
-};
+interface DoctorData {
+    Doc_Id: string;
+    DocName: string;
+}
+
 interface PatientCategory {
     id: number;
     categoryName: string;
@@ -35,7 +35,10 @@ interface PatientCategory {
 interface FormDataType {
     id?: number;
     patientId: string;
+    referredDoctorName: string;
+    Doc_Id: string;
     districtId: number | null;
+    district?: string;
     panchayathId: number | null;
     categoryId: number | null;
     ward: string;
@@ -76,7 +79,7 @@ interface FormDataType {
     photograph: File | null;
     aadharDoc: File | null;
     previewPhotoUrl?: string;
-    previewAadharName?: string;
+    previewAadharUrl?: string;
 }
 
 export default function HospitalRegistrationForm() {
@@ -94,6 +97,8 @@ export default function HospitalRegistrationForm() {
 
     const [formData, setFormData] = useState<FormDataType>({
         patientId: '',
+        referredDoctorName: '',
+        Doc_Id: '',
         districtId: null,
         panchayathId: null,
         categoryId: null,
@@ -134,6 +139,8 @@ export default function HospitalRegistrationForm() {
         houseRoute: '',
         photograph: null,
         aadharDoc: null,
+        previewPhotoUrl: '',
+        previewAadharUrl: '',
     });
 
     const [errors, setErrors] = useState<Record<string, string>>({});
@@ -242,16 +249,19 @@ export default function HospitalRegistrationForm() {
     };
 
     const [buttonText, setButtonText] = useState("Submit");
-    const [existingPhotoUrl, setExistingPhotoUrl] = useState('');
-    const [existingAadharDocUrl, setExistingAadharDocUrl] = useState('');
+
+    const [existingPhotoUrl, setExistingPhotoUrl] = useState<string>('');
+    const [existingAadharDocUrl, setExistingAadharDocUrl] = useState<string>('');
+
     const [photoFileName, setPhotoFileName] = useState('');
     const [aadharFileName, setAadharFileName] = useState('');
+
     const [isLoading, setIsLoading] = useState(false);
 
     const [submitStatus, setSubmitStatus] = useState('');
     const [submitMessage, setSubmitMessage] = useState('');
 
-    const [doctors, setDoctors] = useState([]);
+    const [doctors, setDoctors] = useState<DoctorData[]>([]);
 
     // Fetch districts and panchayaths from API first
     useEffect(() => {
@@ -273,10 +283,15 @@ export default function HospitalRegistrationForm() {
     }, []);
 
     useEffect(() => {
-        fetch(`${API_BASE}/api/doctors`) // your .NET Core backend endpoint
-            .then((res) => res.json())
-            .then((data) => setDoctors(data))
-            .catch((err) => console.error("Error fetching doctors:", err));
+        const fetchDoctors = async () => {
+            try {
+                const response = await API.get<DoctorData[]>('/api/Doctors');
+                setDoctors(response.data);
+            } catch (err) {
+                console.error('Failed to fetch doctors:', err);
+            }
+        };
+        fetchDoctors();
     }, []);
 
     // Fetch Registration Number from API (only for new registrations)
@@ -321,10 +336,10 @@ export default function HospitalRegistrationForm() {
             const fetchPatientData = async () => {
                 setIsLoading(true);
                 try {
-                    const response = await fetch(`${API_BASE}/api/Hpforms/patient/${PatientId}`);
+                    const response = await API.get<FormDataType>(`/api/Hpforms/patient/${PatientId}`);
 
-                    if (response.ok) {
-                        const patientData = await response.json();
+                    if (response.data) {
+                        const patientData = await response.data;
                         const formattedDate = patientData.date
                             ? formatDateForInput(patientData.date)
                             : "";
@@ -338,9 +353,12 @@ export default function HospitalRegistrationForm() {
                         // Format the date for the input field
                         const formattedDob = patientData.dob ? new Date(patientData.dob).toISOString().split('T')[0] : '';
 
+
                         // Build formData
                         setFormData({
                             patientId: patientData.patientId?.toString() || '',
+                            referredDoctorName: '',
+                            Doc_Id: patientData.Doc_Id || '',
                             districtId,
                             panchayathId,
                             categoryId,
@@ -354,7 +372,7 @@ export default function HospitalRegistrationForm() {
                             age: patientData.age?.toString() || '',
 
                             // ✅ IMPORTANT: codes only
-                            gender: patientData.gender ?? '',                                  // 'M' | 'F' | 'O'
+                            gender: patientData.gender || '',                                  // 'M' | 'F' | 'O'
                             financialStatus: patientData.financialStatus != null
                                 ? String(patientData.financialStatus)                            // '1'..'5'
                                 : '',
@@ -397,13 +415,13 @@ export default function HospitalRegistrationForm() {
 
 
                         // Set existing photo URL if available
-                        if (patientData.photo) {
-                            setPhotoFileName(patientData.photo);  // Save just filename
-                            setExistingPhotoUrl(`${API_BASE}/uploads/${patientData.photo}`); // Assuming this is the path for photos
+                        if (patientData.photograph) {
+                            setPhotoFileName(patientData.photograph.name);  // Save just filename
+                            setExistingPhotoUrl(`${API_BASE}/uploads/${patientData.photograph}`); // Assuming this is the path for photos
                         }
-                        if (patientData.aadharFile) {
-                            setAadharFileName(patientData.aadharFile);  // Save just filename
-                            setExistingAadharDocUrl(`${API_BASE}/uploads/${patientData.aadharFile}`); // Assuming this is the path for Aadhar docs
+                        if (patientData.aadharDoc) {
+                            setAadharFileName(patientData.aadharDoc.name);  // Save just filename
+                            setExistingAadharDocUrl(`${API_BASE}/uploads/${patientData.aadharDoc}`); // Assuming this is the path for Aadhar docs
                         }
 
                         // Set selected district for panchayath filtering
@@ -430,7 +448,7 @@ export default function HospitalRegistrationForm() {
 
             fetchPatientData();
         }
-    }, [isEditMode, PatientId, districts, categories, panchayaths]); // Added panchayaths to dependencies
+    }, [isEditMode, PatientId, districts, categories, panchayaths]);
 
 
     // Update selected district when district data changes in edit mode
@@ -443,95 +461,93 @@ export default function HospitalRegistrationForm() {
         }
     }, [formData.districtId, districts, isEditMode]);
 
-    const handleChange = (e: React.ChangeEvent<any>) => {
-        const { name, value, files } = e.target;
+   const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
+) => {
+    const { name, value } = e.target;
+    const input = e.target as HTMLInputElement;
 
-        if (files) {
-            // Handle photo upload
-            if (name === "photograph" && files[0]) {
-                setFormData(prev => ({
-                    ...prev,
-                    photograph: files[0],
-                    previewPhotoUrl: URL.createObjectURL(files[0]),
-                }));
-                setPhotoFileName(files[0].name);
-                setExistingPhotoUrl('');
+    // Handle file uploads for photograph / aadharDoc
+    if (input.files && input.files[0]) {
+        const file = input.files[0];
+        const ext = file.name.split('.').pop()?.toLowerCase();
+
+        if (name === "photograph") {
+            setFormData(prev => ({
+                ...prev,
+                photograph: file, // store File
+                previewPhotoUrl: URL.createObjectURL(file)
+            }));
+            setPhotoFileName(file.name);
+            setExistingPhotoUrl(''); // clear previous backend URL
+        }
+
+        if (name === "aadharDoc") {
+            setFormData(prev => ({
+                ...prev,
+                aadharDoc: file, // store File
+                previewAadharUrl: ['jpg', 'jpeg', 'png'].includes(ext || '') 
+                    ? URL.createObjectURL(file) 
+                    : ''
+            }));
+            setAadharFileName(file.name);
+            setExistingAadharDocUrl('');
+        }
+
+            return;
+        }
+
+        // Handle normal inputs
+        const fieldValue = name.endsWith("Id") ? parseInt(value, 10) || null : value;
+
+        setFormData(prev => {
+            let updated = { ...prev, [name]: fieldValue };
+
+            // DOB → auto calculate Age
+            if (name === "dob" && value) {
+                const dobDate = new Date(value);
+                const today = new Date();
+                let age = today.getFullYear() - dobDate.getFullYear();
+                const monthDiff = today.getMonth() - dobDate.getMonth();
+                if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < dobDate.getDate())) {
+                    age--;
+                }
+                updated.age = age.toString();
             }
 
-            // Handle aadhar upload
-            if (name === "aadharDoc" && files[0]) {
-                setFormData(prev => ({
-                    ...prev,
-                    aadharDoc: files[0],
-                    previewAadharName: files[0].name,
-                }));
-                setAadharFileName(files[0].name);
-                setExistingAadharDocUrl('');
-            }
-        } else {
-            const fieldValue = name.endsWith("Id") ? parseInt(value, 10) || null : value;
-
-            setFormData(prev => {
-                let updated = { ...prev, [name]: fieldValue };
-
-                // 🔹 DOB → auto calculate Age
-                if (name === "dob" && value) {
-                    const dobDate = new Date(value);
+            // Age → auto calculate DOB
+            if (name === "age" && value) {
+                const ageNum = parseInt(value, 10);
+                if (!isNaN(ageNum)) {
                     const today = new Date();
-                    let age = today.getFullYear() - dobDate.getFullYear();
-                    const monthDiff = today.getMonth() - dobDate.getMonth();
-                    if (
-                        monthDiff < 0 ||
-                        (monthDiff === 0 && today.getDate() < dobDate.getDate())
-                    ) {
-                        age--;
-                    }
-                    updated.age = age.toString();
+                    const dobDate = new Date(today.getFullYear() - ageNum, today.getMonth(), today.getDate());
+                    updated.dob = dobDate.toISOString().split("T")[0];
                 }
-
-                // 🔹 Age → auto calculate DOB
-                if (name === "age" && value) {
-                    const ageNum = parseInt(value, 10);
-                    if (!isNaN(ageNum)) {
-                        const today = new Date();
-                        const dobDate = new Date(
-                            today.getFullYear() - ageNum,
-                            today.getMonth(),
-                            today.getDate()
-                        );
-                        updated.dob = dobDate.toISOString().split("T")[0]; // yyyy-mm-dd
-                    }
-                }
-
-                return updated;
-            });
-
-            if (name === "categoryId") {
-                const selected = categories.find((c) => c.id === parseInt(value));
-                setShowAdditionalDetailsCheckbox(
-                    selected?.categoryName.toLowerCase() === "home care"
-                );
-                setCollectAdditionalDetails(false);
             }
 
-            if (name === "districtId") {
-                const selectedId = parseInt(value, 10);
-                setSelectedDistrictId(selectedId);
-                setFormData((prev) => ({
-                    ...prev,
-                    panchayathId: null,
-                }));
-                setSelectedPanchayathId(null);
-            }
+            return updated;
+        });
 
-            if (name === "panchayathId") {
-                setSelectedPanchayathId(parseInt(value, 10));
-            }
+        // Select logic
+        if (name === "categoryId") {
+            const selected = categories.find(c => c.id === parseInt(value));
+            setShowAdditionalDetailsCheckbox(selected?.categoryName.toLowerCase() === "home care");
+            setCollectAdditionalDetails(false);
         }
 
-        if (errors[name]) {
-            setErrors((prev) => ({ ...prev, [name]: "" }));
+        if (name === "districtId") {
+            const selectedId = parseInt(value, 10);
+            setSelectedDistrictId(selectedId);
+            setFormData(prev => ({ ...prev, panchayathId: null }));
+            setSelectedPanchayathId(null);
         }
+
+        if (name === "panchayathId") {
+            setSelectedPanchayathId(parseInt(value, 10));
+        }
+
+        // Clear errors
+        if (errors[name]) setErrors(prev => ({ ...prev, [name]: "" }));
     };
 
 
@@ -633,17 +649,6 @@ export default function HospitalRegistrationForm() {
         }
     };
 
-
-    const inputClasses = (fieldName: string, errors: Record<string, any> = {}) => `
-        w-full px-4 py-3 rounded-xl border-2 transition-all duration-300
-        focus:outline-none focus:ring-4 focus:ring-blue-300 focus:border-blue-500
-        ${errors[fieldName]
-            ? 'border-red-500 bg-red-50'
-            : 'border-gray-300 bg-white hover:border-blue-400'
-        }
-        placeholder-gray-500 text-gray-900 font-medium
-    `;
-
     // Show loading state
     if (isLoading) {
         return (
@@ -683,7 +688,7 @@ export default function HospitalRegistrationForm() {
                                 <h3 className="text-6l font-semibold text-blue-900">Registration Details</h3>
                             </div>
 
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
                                 <div>
                                     <label className="block text-sm font-semibold text-blue-900 mb-2 uppercase tracking-wide">
                                         Patient ID<span className="text-red-500">*</span>
@@ -693,7 +698,7 @@ export default function HospitalRegistrationForm() {
                                         name="PatientId"
                                         value={formData.patientId}
                                         onChange={handleChange}
-                                        className={inputClasses('PatientId')}
+                                        className="w-full border border-gray-300 rounded-md px-3 py-1.5 text-sm"
                                         placeholder="Auto-generated ID"
                                         readOnly
                                         style={{ backgroundColor: '#f0f4f8', cursor: 'not-allowed' }}
@@ -706,18 +711,18 @@ export default function HospitalRegistrationForm() {
                                         Date <span className="text-red-500">*</span>
                                     </label>
                                     <div className="relative">
-                                        <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
                                         <input
                                             type="date"
                                             name="date"
                                             value={formData.date}
                                             onChange={handleChange}
-                                            className={`${inputClasses('date')} pl-12`}
+                                            className="w-full border border-gray-300 rounded-md px-3 py-1.5 text-sm"
                                             required
                                         />
                                     </div>
                                 </div>
-
+                                <div></div>
+                                <div></div>
                                 {/* District Select */}
                                 <div>
                                     <label className="block text-sm font-semibold text-blue-900 mb-2 uppercase tracking-wide">
@@ -734,7 +739,7 @@ export default function HospitalRegistrationForm() {
                                                 districtId: isNaN(selectedId) ? null : selectedId,
                                             }));
                                         }}
-                                        className={`${inputClasses("district")} flex-1`}
+                                        className="w-full border border-gray-300 rounded-md px-3 py-1.5 text-sm"
                                         required
                                     >
                                         <option value="">Select District</option>
@@ -762,7 +767,7 @@ export default function HospitalRegistrationForm() {
                                                 panchayathId: selectedId,
                                             }));
                                         }}
-                                        className={inputClasses('panchayath')}
+                                        className="w-full border border-gray-300 rounded-md px-3 py-1.5 text-sm"
                                         disabled={!selectedDistrictId}
                                         required
                                     >
@@ -788,7 +793,7 @@ export default function HospitalRegistrationForm() {
                                         name="ward"
                                         value={formData.ward}
                                         onChange={handleChange}
-                                        className={inputClasses('ward')}
+                                        className="w-full border border-gray-300 rounded-md px-3 py-1.5 text-sm"
                                         placeholder="Enter Ward No."
                                     />
                                 </div>
@@ -802,26 +807,12 @@ export default function HospitalRegistrationForm() {
                                         name="area"
                                         value={formData.area}
                                         onChange={handleChange}
-                                        className={inputClasses('area')}
+                                        className="w-full border border-gray-300 rounded-md px-3 py-1.5 text-sm"
                                         placeholder="Enter area or route"
                                     />
                                 </div>
 
-                                <div className="md:col-span-2">
-                                    <label className="block text-sm font-semibold text-blue-900 mb-2 uppercase tracking-wide">
-                                        Diagnosis <span className="text-red-500">*</span>
-                                    </label>
-                                    <textarea
-                                        name="diagnosis"
-                                        value={formData.diagnosis}
-                                        onChange={handleChange}
-                                        rows={4}
-                                        maxLength={1000}
-                                        className={inputClasses('diagnosis')}
-                                        placeholder="Enter diagnosis details (max 1000 characters)"
 
-                                    />
-                                </div>
 
                                 <div>
                                     <label className="block text-sm font-semibold text-blue-900 mb-2 uppercase tracking-wide">
@@ -839,7 +830,7 @@ export default function HospitalRegistrationForm() {
                                                     categoryId: isNaN(selectedId) ? null : selectedId,
                                                 }));
                                             }}
-                                            className={`${inputClasses("category")} flex-1`}
+                                            className="w-full border border-gray-300 rounded-md px-3 py-1.5 text-sm"
                                             required
                                         >
                                             <option value="">Select Category</option>
@@ -852,14 +843,14 @@ export default function HospitalRegistrationForm() {
                                                 ))}
                                         </select>
 
-                                        <button
+                                        {/* <button
                                             type="button"
                                             onClick={() => setShowCategoryModal(true)}
                                             className="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700 transition flex items-center justify-center"
                                             title="Add new category"
                                         >
                                             <Plus size={16} />
-                                        </button>
+                                        </button> */}
                                     </div>
 
                                     {/* Category Modal */}
@@ -919,19 +910,33 @@ export default function HospitalRegistrationForm() {
                                     </label>
                                     <select
                                         name="status"
-                                        value={formData.status || 'Active'}
+                                        value={formData.status || '1'}
                                         onChange={handleChange}
-                                        className={inputClasses('status')}
+                                        className="w-full border border-gray-300 rounded-md px-3 py-1.5 text-sm"
                                         required
                                     >
                                         <option value="">Select Status</option>
-                                        <option value="Active">Active</option>
-                                        <option value="Expired">Expired</option>
+                                        <option value="1">Active</option>
+                                        <option value="2">Expired</option>
                                     </select>
                                 </div>
-
-
                             </div>
+                            <div className="md:col-span-2 pt-5">
+                                <label className="block text-sm font-semibold text-blue-900 mb-2 uppercase tracking-wide">
+                                    Diagnosis <span className="text-red-500">*</span>
+                                </label>
+                                <textarea
+                                    name="diagnosis"
+                                    value={formData.diagnosis}
+                                    onChange={handleChange}
+                                    rows={2}
+                                    maxLength={1000}
+                                    className="w-full border border-gray-300 rounded-md px-3 py-1.5 text-sm"
+                                    placeholder="Enter diagnosis details (max 1000 characters)"
+
+                                />
+                            </div>
+
                         </div>
 
                         {/* Personal Information Section */}
@@ -941,7 +946,7 @@ export default function HospitalRegistrationForm() {
                                 <h3 className="text-6l font-semibold text-blue-900">Personal Information</h3>
                             </div>
 
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                                 <div>
                                     <label className="block text-sm font-semibold text-blue-900 mb-2 uppercase tracking-wide">
                                         Full Name <span className="text-red-500">*</span>
@@ -951,7 +956,7 @@ export default function HospitalRegistrationForm() {
                                         name="name"
                                         value={formData.name}
                                         onChange={handleChange}
-                                        className={inputClasses('name')}
+                                        className="w-full border border-gray-300 rounded-md px-3 py-1.5 text-sm"
                                         placeholder="Enter full name"
                                         required
                                     />
@@ -967,8 +972,7 @@ export default function HospitalRegistrationForm() {
                                             name="dob"
                                             value={formData.dob}
                                             onChange={handleChange}
-                                            className={inputClasses("dob")}
-                                            required
+                                            className="w-full border border-gray-300 rounded-md px-3 py-1.5 text-sm"
                                         />
                                     </div>
 
@@ -983,7 +987,7 @@ export default function HospitalRegistrationForm() {
                                             value={formData.age}
                                             onChange={handleChange}
                                             min="1"
-                                            className={inputClasses("age")}
+                                            className="w-full border border-gray-300 rounded-md px-3 py-1.5 text-sm"
                                             placeholder="Enter age"
                                             required
                                         />
@@ -996,9 +1000,9 @@ export default function HospitalRegistrationForm() {
                                     </label>
                                     <select
                                         name="gender"
-                                        value={formData.gender}
+                                        value={formData.gender || ""}
                                         onChange={handleChange}
-                                        className={inputClasses('gender')}
+                                        className="w-full border border-gray-300 rounded-md px-3 py-1.5 text-sm"
                                         required
                                     >
                                         <option value="">Select Gender</option>
@@ -1009,7 +1013,7 @@ export default function HospitalRegistrationForm() {
                                 </div>
                                 {/* Profession */}
                                 <div>
-                                    <label className="block text-sm font-semibold text-blue-900 mb-2 uppercase tracking-wide">
+                                    <label className="block text-sm font-semibold text-blue-900 mb-1 uppercase tracking-wide">
                                         Profession
                                     </label>
                                     <input
@@ -1017,7 +1021,7 @@ export default function HospitalRegistrationForm() {
                                         name="profession"
                                         value={formData.profession}
                                         onChange={handleChange}
-                                        className={inputClasses("profession")}
+                                        className="w-full border border-gray-300 rounded-md px-3 py-1.5 text-sm"
                                     />
                                 </div>
 
@@ -1030,16 +1034,16 @@ export default function HospitalRegistrationForm() {
                                         name="religion"
                                         value={formData.religion || ""}
                                         onChange={handleChange}
-                                        className={inputClasses("religion")}
+                                        className="w-full border border-gray-300 rounded-md px-3 py-1.5 text-sm"
                                     >
                                         <option value="">-- Select Religion --</option>
-                                        <option value="Islam">Islam</option>
-                                        <option value="Hinduism">Hinduism</option>
-                                        <option value="Christianity">Christianity</option>
-                                        <option value="Buddhism">Buddhism</option>
-                                        <option value="Jainism">Jainism</option>
-                                        <option value="Sikhism">Sikhism</option>
-                                        <option value="Other">Other</option>
+                                        <option value="1">Islam</option>
+                                        <option value="2">Hinduism</option>
+                                        <option value="3">Christianity</option>
+                                        <option value="4">Buddhism</option>
+                                        <option value="5">Jainism</option>
+                                        <option value="6">Sikhism</option>
+                                        <option value="7">Other</option>
                                     </select>
                                 </div>
                                 <div>
@@ -1050,7 +1054,7 @@ export default function HospitalRegistrationForm() {
                                         name="financialStatus"
                                         value={formData.financialStatus}
                                         onChange={handleChange}
-                                        className={inputClasses('financialStatus')}
+                                        className="w-full border border-gray-300 rounded-md px-3 py-1.5 text-sm"
                                         required
                                     >
                                         <option value="">Select Financial Status</option>
@@ -1071,7 +1075,7 @@ export default function HospitalRegistrationForm() {
                                         value={formData.adhaarNumber}
                                         onChange={handleChange}
                                         maxLength={14}
-                                        className={inputClasses('adhaarNumber')}
+                                        className="w-full border border-gray-300 rounded-md px-3 py-1.5 text-sm"
                                         placeholder="0000 - 0000 - 0000"
                                     />
                                 </div>
@@ -1085,7 +1089,7 @@ export default function HospitalRegistrationForm() {
                                         name="spouseName"
                                         value={formData.spouseName}
                                         onChange={handleChange}
-                                        className={inputClasses('spouseName')}
+                                        className="w-full border border-gray-300 rounded-md px-3 py-1.5 text-sm"
                                         placeholder="Enter spouse name"
                                     />
                                 </div>
@@ -1099,7 +1103,7 @@ export default function HospitalRegistrationForm() {
                                         name="fatherName"
                                         value={formData.fatherName}
                                         onChange={handleChange}
-                                        className={inputClasses('fatherName')}
+                                        className="w-full border border-gray-300 rounded-md px-3 py-1.5 text-sm"
                                         placeholder="Enter father name"
                                     />
                                 </div>
@@ -1113,7 +1117,7 @@ export default function HospitalRegistrationForm() {
                                         name="motherName"
                                         value={formData.motherName}
                                         onChange={handleChange}
-                                        className={inputClasses('motherName')}
+                                        className="w-full border border-gray-300 rounded-md px-3 py-1.5 text-sm"
                                         placeholder="Enter mother name"
                                     />
                                 </div>
@@ -1129,8 +1133,7 @@ export default function HospitalRegistrationForm() {
                                             name="phoneNumber1"
                                             value={formData.phoneNumber1}
                                             onChange={handleChange}
-                                            className={`${inputClasses('phoneNumber1')} pl-12`}
-                                            placeholder="10-digit number"
+                                            className="w-full border border-gray-300 rounded-md px-10 py-1.5 text-sm" // <-- increased left padding
                                             maxLength={10}
                                             onInput={(e: React.FormEvent<HTMLInputElement>) => {
                                                 const input = e.currentTarget;
@@ -1152,8 +1155,7 @@ export default function HospitalRegistrationForm() {
                                             name="phoneNumber2"
                                             value={formData.phoneNumber2}
                                             onChange={handleChange}
-                                            className={`${inputClasses('phoneNumber2')} pl-12`}
-                                            placeholder="10-digit number"
+                                            className="w-full border border-gray-300 rounded-md px-10 py-1.5 text-sm"
                                             maxLength={10}
                                             onInput={(e: React.FormEvent<HTMLInputElement>) => {
                                                 const input = e.currentTarget;
@@ -1172,8 +1174,7 @@ export default function HospitalRegistrationForm() {
                                         name="email"
                                         value={formData.email}
                                         onChange={handleChange}
-                                        className={inputClasses("email")}
-                                        required
+                                        className="w-full border border-gray-300 rounded-md px-3 py-1.5 text-sm"
                                     />
                                 </div>
 
@@ -1185,8 +1186,8 @@ export default function HospitalRegistrationForm() {
                                         name="adhaarAddress"
                                         value={formData.adhaarAddress}
                                         onChange={handleChange}
-                                        rows={3}
-                                        className={inputClasses('adhaarAddress')}
+                                        rows={2}
+                                        className="w-full border border-gray-300 rounded-md px-3 py-1.5 text-sm"
                                         placeholder="Enter Adhaar address"
                                     />
                                 </div>
@@ -1199,8 +1200,8 @@ export default function HospitalRegistrationForm() {
                                         name="currentAddress"
                                         value={formData.currentAddress}
                                         onChange={handleChange}
-                                        rows={3}
-                                        className={inputClasses('currentAddress')}
+                                        rows={2}
+                                        className="w-full border border-gray-300 rounded-md px-3 py-1.5 text-sm"
                                         placeholder="Enter current address"
                                     />
                                 </div>
@@ -1213,9 +1214,9 @@ export default function HospitalRegistrationForm() {
                                         name="houseRoute"
                                         value={formData.houseRoute}
                                         onChange={handleChange}
-                                        rows={4}
+                                        rows={2}
                                         maxLength={1000}
-                                        className={inputClasses('houseRoute')}
+                                        className="w-full border border-gray-300 rounded-md px-3 py-1.5 text-sm"
                                         placeholder="Describe your house route in detail (up to 1000 characters)"
                                     />
                                 </div>
@@ -1239,7 +1240,7 @@ export default function HospitalRegistrationForm() {
                                         name="contactPerson"
                                         value={formData.contactPerson}
                                         onChange={handleChange}
-                                        className={inputClasses('contactPerson')}
+                                        className="w-full border border-gray-300 rounded-md px-3 py-1.5 text-sm"
                                         placeholder="Enter name"
                                     />
                                 </div>
@@ -1253,7 +1254,7 @@ export default function HospitalRegistrationForm() {
                                         name="relation"
                                         value={formData.relation}
                                         onChange={handleChange}
-                                        className={inputClasses('relation')}
+                                        className="w-full border border-gray-300 rounded-md px-3 py-1.5 text-sm"
                                         placeholder="e.g. Brother, Sister"
                                     />
                                 </div>
@@ -1269,8 +1270,7 @@ export default function HospitalRegistrationForm() {
                                             name="contactPhone"
                                             value={formData.contactPhone}
                                             onChange={handleChange}
-                                            className={`${inputClasses('contactPhone')} pl-12`}
-                                            placeholder="10-digit number"
+                                            className="w-full border border-gray-300 rounded-md px-10 py-1.5 text-sm"
                                             maxLength={10}
                                             onInput={(e: React.FormEvent<HTMLInputElement>) => {
                                                 const input = e.currentTarget;
@@ -1289,7 +1289,7 @@ export default function HospitalRegistrationForm() {
                                 <h3 className="text-6l font-semibold text-blue-900">Emergency Contacts</h3>
                             </div>
 
-                            <div className="space-y-6">
+                            <div className="space-y-6 grid grid-cols-1 md:grid-cols-2 gap-6">
                                 {/* Neighbour Residence */}
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                     <div>
@@ -1301,7 +1301,7 @@ export default function HospitalRegistrationForm() {
                                             name="neighbourResidence"
                                             value={formData.neighbourResidence}
                                             onChange={handleChange}
-                                            className={inputClasses('neighbourResidence')}
+                                            className="w-full border border-gray-300 rounded-md px-3 py-1.5 text-sm"
                                             placeholder="Enter neighbour name"
                                         />
                                     </div>
@@ -1316,8 +1316,7 @@ export default function HospitalRegistrationForm() {
                                                 name="neighbourPhone"
                                                 value={formData.neighbourPhone}
                                                 onChange={handleChange}
-                                                className={`${inputClasses('neighbourPhone')} pl-12`}
-                                                placeholder="10-digit number"
+                                                className="w-full border border-gray-300 rounded-md px-10 py-1.5 text-sm"
                                                 maxLength={10}
                                                 onInput={(e: React.FormEvent<HTMLInputElement>) => {
                                                     const input = e.currentTarget;
@@ -1339,7 +1338,7 @@ export default function HospitalRegistrationForm() {
                                             name="communityVolunteer"
                                             value={formData.communityVolunteer}
                                             onChange={handleChange}
-                                            className={inputClasses('communityVolunteer')}
+                                            className="w-full border border-gray-300 rounded-md px-3 py-1.5 text-sm"
                                             placeholder="Enter volunteer name"
                                         />
                                     </div>
@@ -1354,8 +1353,7 @@ export default function HospitalRegistrationForm() {
                                                 name="communityVolunteerPhone"
                                                 value={formData.communityVolunteerPhone}
                                                 onChange={handleChange}
-                                                className={`${inputClasses('communityVolunteerPhone')} pl-12`}
-                                                placeholder="10-digit number"
+                                                className="w-full border border-gray-300 rounded-md px-10 py-1.5 text-sm"
                                                 maxLength={10}
                                                 onInput={(e: React.FormEvent<HTMLInputElement>) => {
                                                     const input = e.currentTarget;
@@ -1377,7 +1375,7 @@ export default function HospitalRegistrationForm() {
                                             name="wardMember"
                                             value={formData.wardMember}
                                             onChange={handleChange}
-                                            className={inputClasses('wardMember')}
+                                            className="w-full border border-gray-300 rounded-md px-3 py-1.5 text-sm"
                                             placeholder="Enter ward member name"
                                         />
                                     </div>
@@ -1392,8 +1390,7 @@ export default function HospitalRegistrationForm() {
                                                 name="wardMemberPhone"
                                                 value={formData.wardMemberPhone}
                                                 onChange={handleChange}
-                                                className={`${inputClasses('wardMemberPhone')} pl-12`}
-                                                placeholder="10-digit number"
+                                                className="w-full border border-gray-300 rounded-md px-10 py-1.5 text-sm"
                                                 maxLength={10}
                                                 onInput={(e: React.FormEvent<HTMLInputElement>) => {
                                                     const input = e.currentTarget;
@@ -1415,7 +1412,7 @@ export default function HospitalRegistrationForm() {
                                             name="aashaVolunteer"
                                             value={formData.aashaVolunteer}
                                             onChange={handleChange}
-                                            className={inputClasses('aashaVolunteer')}
+                                            className="w-full border border-gray-300 rounded-md px-3 py-1.5 text-sm"
                                             placeholder="Enter aasha volunteer name"
                                         />
                                     </div>
@@ -1430,8 +1427,7 @@ export default function HospitalRegistrationForm() {
                                                 name="aashaVolunteerPhone"
                                                 value={formData.aashaVolunteerPhone}
                                                 onChange={handleChange}
-                                                className={`${inputClasses('aashaVolunteerPhone')} pl-12`}
-                                                placeholder="10-digit number"
+                                                className="w-full border border-gray-300 rounded-md px-10 py-1.5 text-sm"
                                                 maxLength={10}
                                                 onInput={(e: React.FormEvent<HTMLInputElement>) => {
                                                     const input = e.currentTarget;
@@ -1453,7 +1449,7 @@ export default function HospitalRegistrationForm() {
                                             name="otherPerson"
                                             value={formData.otherPerson}
                                             onChange={handleChange}
-                                            className={inputClasses('otherPerson')}
+                                            className="w-full border border-gray-300 rounded-md px-3 py-1.5 text-sm"
                                             placeholder="Enter other person name"
                                         />
                                     </div>
@@ -1468,8 +1464,7 @@ export default function HospitalRegistrationForm() {
                                                 name="otherPersonPhone"
                                                 value={formData.otherPersonPhone}
                                                 onChange={handleChange}
-                                                className={`${inputClasses('otherPersonPhone')} pl-12`}
-                                                placeholder="10-digit number"
+                                                className="w-full border border-gray-300 rounded-md px-10 py-1.5 text-sm"
                                                 maxLength={10}
                                                 onInput={(e: React.FormEvent<HTMLInputElement>) => {
                                                     const input = e.currentTarget;
@@ -1481,7 +1476,44 @@ export default function HospitalRegistrationForm() {
                                 </div>
                             </div>
                         </div>
+                        <div className="bg-gray-50 p-6 rounded-2xl border-l-4 border-blue-600 grid grid-cols-1 md:grid-cols-4 gap-6">
+                            {/* Referred Doctor */}
+                            <div>
+                                <label className="block text-sm font-semibold text-blue-900 mb-2 uppercase tracking-wide">
+                                    Referred Doctor Name
+                                </label>
+                                <input
+                                    type="text"
+                                    name="referredDoctorName"
+                                    value={formData.referredDoctorName}
+                                    onChange={handleChange}
+                                    className="w-full border border-gray-300 rounded-md px-3 py-1.5 text-sm"
+                                />
+                            </div>
 
+                            {/* Appointed Doctor */}
+                            <div>
+                                <label className="block text-sm font-semibold text-blue-900 mb-2 uppercase tracking-wide">
+                                    Appointed Doctor
+                                </label>
+
+                                <select
+                                    name="Doc_Id"
+                                    value={formData.Doc_Id || ""}
+                                    onChange={(e) =>
+                                        setFormData(prev => ({ ...prev, Doc_Id: e.target.value }))
+                                    }
+                                    className="w-full border border-gray-300 rounded-md px-3 py-1.5 text-sm"
+                                >
+                                    <option value="">Select a doctor</option>
+                                    {doctors.map((doctor: any) => (
+                                        <option key={doctor.doc_Id} value={doctor.doc_Id}>
+                                            {doctor.doc_Id}. {doctor.docName}
+                                        </option>
+                                    ))}
+                                </select>
+                            </div>
+                        </div>
                         {/* File Upload Section */}
                         <div className="bg-gray-50 p-6 rounded-2xl border-l-4 border-blue-600">
                             <div className="flex items-center mb-6">
@@ -1501,16 +1533,14 @@ export default function HospitalRegistrationForm() {
                                             name="photograph"
                                             accept="image/*"
                                             onChange={(e) => {
-                                                const input = e.target as HTMLInputElement; // Cast to HTMLInputElement
-                                                const file = input.files?.[0];
+                                                const file = e.target.files?.[0] || null;
                                                 if (file) {
-
-                                                    const imgElement = document.getElementById("photoPreview") as HTMLImageElement;
-                                                    if (imgElement) {
-                                                        imgElement.src = URL.createObjectURL(file);
-                                                        imgElement.style.display = 'block';
-                                                    }
-                                                    setFormData(prev => ({ ...prev, photograph: file }));
+                                                    setFormData(prev => ({
+                                                        ...prev,
+                                                        photograph: file,
+                                                        previewPhotoUrl: URL.createObjectURL(file)
+                                                    }));
+                                                    setPhotoFileName(file.name);
                                                 }
                                             }}
                                             className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
@@ -1523,43 +1553,35 @@ export default function HospitalRegistrationForm() {
                                             </div>
                                         </div>
                                     </div>
-                                    {/* Display existing photo or preview new one */}
-                                    {(formData.previewPhotoUrl || existingPhotoUrl) && (
+                                    {formData.previewPhotoUrl && (
                                         <img
-                                            id="photoPreview"
+                                            src={formData.previewPhotoUrl}
                                             alt="Photo Preview"
-                                            src={formData.previewPhotoUrl || existingPhotoUrl}
-                                            className="mt-4 w-24 h-24 object-cover rounded-lg border-2 border-blue-200 block"
-                                        />
-                                    )}
-                                    {!(formData.previewPhotoUrl || existingPhotoUrl) && (
-                                        <img
-                                            id="photoPreview"
-                                            alt="Photo Preview"
-                                            className="mt-4 w-24 h-24 object-cover rounded-lg border-2 border-blue-200 hidden"
+                                            className="mt-4 w-24 h-24 object-cover rounded-lg border-2 border-blue-200"
                                         />
                                     )}
                                 </div>
 
-                                {/* Aadhar Document Upload */}
+                                {/* Aadhar Upload (PDF or Image) */}
                                 <div>
                                     <label className="block text-sm font-semibold text-blue-900 mb-2 uppercase tracking-wide">
-                                        Aadhar Document (PDF)
+                                        Aadhar Document (PDF / Image)
                                     </label>
                                     <div className="relative">
                                         <input
                                             type="file"
                                             name="aadharDoc"
-                                            accept="application/pdf"
+                                            accept="application/pdf, image/*"
                                             onChange={(e) => {
-                                                const input = e.target as HTMLInputElement; // Cast to HTMLInputElement
-                                                const file = input.files?.[0];
-                                                const label = document.getElementById("pdfFileNameDisplay"); // Updated ID
-                                                if (label) {
-                                                    label.textContent = file ? file.name : "No file chosen";
-                                                }
+                                                const file = e.target.files?.[0] || null;
                                                 if (file) {
-                                                    setFormData(prev => ({ ...prev, aadharDoc: file }));
+                                                    const ext = file.name.split('.').pop()?.toLowerCase();
+                                                    setFormData(prev => ({
+                                                        ...prev,
+                                                        aadharDoc: file,
+                                                        previewAadharUrl: (ext === 'jpg' || ext === 'jpeg' || ext === 'png') ? URL.createObjectURL(file) : ''
+                                                    }));
+                                                    setAadharFileName(file.name);
                                                 }
                                             }}
                                             className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
@@ -1567,15 +1589,25 @@ export default function HospitalRegistrationForm() {
                                         <div className="flex items-center justify-center w-full h-32 border-2 border-dashed border-blue-300 rounded-lg bg-blue-50 hover:bg-blue-100 transition-colors">
                                             <div className="text-center">
                                                 <FileText className="w-8 h-8 text-blue-400 mx-auto mb-2" />
-                                                <p className="text-sm text-blue-600 font-medium">Click to upload PDF</p>
-                                                <p className="text-xs text-blue-400">PDF files only</p>
+                                                <p className="text-sm text-blue-600 font-medium">Click to upload PDF or Image</p>
+                                                <p className="text-xs text-blue-400">PDF, JPG, PNG files only</p>
                                             </div>
                                         </div>
                                     </div>
-                                    <p id="pdfFileNameDisplay" className="mt-2 text-sm text-gray-600 truncate">
-                                        {formData.previewAadharName || aadharFileName || "No file chosen"}
-                                    </p>
+                                    {formData.previewAadharUrl ? (
+                                        <img
+                                            src={formData.previewAadharUrl}
+                                            alt="Aadhar Preview"
+                                            className="mt-4 w-24 h-24 object-cover rounded-lg border-2 border-blue-200"
+                                        />
+                                    ) : (
+                                        <p className="mt-2 text-sm text-gray-600 truncate">
+                                            {aadharFileName || "No file chosen"}
+                                        </p>
+                                    )}
                                 </div>
+
+                                {/* Additional Home Care Checkbox */}
                                 {showAdditionalDetailsCheckbox && (
                                     <div className="bg-yellow-50 border-l-4 border-yellow-400 text-yellow-800 px-4 py-3 rounded-md mt-6 shadow-sm">
                                         <div className="flex items-start gap-3">
@@ -1587,13 +1619,11 @@ export default function HospitalRegistrationForm() {
                                                 className="mt-1 w-5 h-5 text-yellow-600 focus:ring-yellow-500 border-gray-300 rounded"
                                             />
                                             <label htmlFor="additionalDetails" className="text-sm sm:text-base font-medium leading-6">
-                                                <span className="font-semibold text-yellow-900">Additional Patient Details:</span> Please tick this box if you're registering as a <span className="font-bold"> Home Care</span> patient. This will redirect you to collect further required information.
+                                                <span className="font-semibold text-yellow-900">Additional Patient Details:</span> Please tick this box if you're registering as a <span className="font-bold">Home Care</span> patient. This will redirect you to collect further required information.
                                             </label>
                                         </div>
                                     </div>
                                 )}
-
-
                             </div>
                         </div>
 
@@ -1617,48 +1647,6 @@ export default function HospitalRegistrationForm() {
                                     ) : (
                                         isEditMode ? 'Update Patient' : 'Register Patient'
                                     )}
-                                </button>
-
-                                {/* Reset Button */}
-                                <button
-                                    type="button"
-                                    className="bg-gradient-to-r from-gray-500 to-gray-600 hover:from-gray-600 hover:to-gray-700 text-white font-semibold py-4 px-8 rounded-2xl transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl flex items-center justify-center"
-                                    onClick={() => {
-                                        // Use a custom modal or message box instead of confirm()
-                                        // For simplicity, I'm just showing a console log and proceeding for now.
-                                        // In a real app, you'd show a UI prompt.
-                                        console.log('Reset form confirmation needed');
-                                        // Proceed with reset for demonstration, but ideal is a custom modal
-                                        setFormData({
-                                            patientId: '', date: today, districtId: null, panchayathId: null, categoryId: null, ward: '', area: '', diagnosis: '', status: '',
-                                            name: '', dob: '', age: '', gender: '', profession: '', religion: '', financialStatus: '', adhaarNumber: '', spouseName: '', fatherName: '', motherName: '',
-                                            phoneNumber1: '', phoneNumber2: '', adhaarAddress: '', currentAddress: '', houseRoute: '', contactPerson: '',
-                                            relation: '', contactPhone: '', neighbourResidence: '', neighbourPhone: '', communityVolunteer: '', email: '',
-                                            communityVolunteerPhone: '', wardMember: '', wardMemberPhone: '', aashaVolunteer: '', aashaVolunteerPhone: '',
-                                            otherPerson: '', otherPersonPhone: '', photograph: null, aadharDoc: null
-                                        });
-                                        setSelectedDistrictId(null);
-                                        setSelectedPanchayathId(null);
-                                        setPhotoFileName('');
-                                        setAadharFileName('');
-                                        setExistingPhotoUrl('');
-                                        setExistingAadharDocUrl('');
-                                        // Hide and clear image preview
-                                        const photoPreview = document.getElementById("photoPreview") as HTMLImageElement;
-                                        if (photoPreview) {
-                                            photoPreview.style.display = 'none';
-                                            photoPreview.src = '';
-                                        }
-                                        // Clear PDF preview text
-                                        const pdfFileNameDisplay = document.getElementById("pdfFileNameDisplay");
-                                        if (pdfFileNameDisplay) {
-                                            pdfFileNameDisplay.textContent = 'No file chosen';
-                                        }
-                                    }}
-
-                                >
-                                    <RotateCcw className="w-6 h-6 mr-3" />
-                                    Reset Form
                                 </button>
                             </div>
                         </div>

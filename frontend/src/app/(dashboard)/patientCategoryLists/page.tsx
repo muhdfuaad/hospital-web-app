@@ -97,26 +97,26 @@ export default function ViewPage() {
       }
     }
 
-    async function fetchLookupData() {
+async function fetchLookupData() {
       try {
-        const [districtRes, panchayathRes, categoryRes] = await Promise.all([
-          fetch(`${API_BASE}/api/Districts`),
-          fetch(`${API_BASE}/api/Panchayaths`),
-          fetch(`${API_BASE}/api/PatientCategories`),
+              const [districtRes, panchayathRes, categoryRes] = await Promise.all([
+        API.get<any[]>("/api/Districts"),
+        API.get<any[]>("/api/Panchayaths"),
+        API.get<any[]>("/api/PatientCategories"),
         ]);
 
-        if (!districtRes.ok || !panchayathRes.ok || !categoryRes.ok)
+        if (!districtRes.data || !panchayathRes.data || !categoryRes.data)
           throw new Error("Failed to fetch lookup data");
 
         const [districtData, panchayathData, categoryData] = await Promise.all([
-          districtRes.json(),
-          panchayathRes.json(),
-          categoryRes.json(),
+          districtRes.data,
+          panchayathRes.data,
+          categoryRes.data
         ]);
 
         // ✅ Normalize district data
         setDistricts(
-          districtData.map((d: any) => ({
+           districtRes.data.map((d) => ({
             id: d.id,
             districtName: d.name, // Use correct API field
           }))
@@ -124,7 +124,7 @@ export default function ViewPage() {
 
         // ✅ Normalize panchayath data
         setPanchayaths(
-          panchayathData.map((p: any) => ({
+          panchayathRes.data.map((p) => ({
             id: p.panchayathId, // Correct ID field
             panchayathName: p.panchayathName,
           }))
@@ -132,7 +132,7 @@ export default function ViewPage() {
 
         // ✅ Normalize category data
         setCategories(
-          categoryData.map((c: any) => ({
+          categoryRes.data.map((c) => ({
             id: c.id,
             categoryName: c.categoryName,
           }))

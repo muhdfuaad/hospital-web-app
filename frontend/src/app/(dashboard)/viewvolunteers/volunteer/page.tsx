@@ -125,9 +125,9 @@ const VolunteerRegistrationForm: React.FC = () => {
             const fetchVolunteerData = async () => {
                 setIsLoading(true);
                 try {
-                    const response = await fetch(`${API_BASE}/api/Volunteers/${volunteerId}`);
-                    if (response.ok) {
-                        const volunteerData = await response.json();
+                    const response = await API.get<Record<string, any>>(`/api/Volunteers/${volunteerId}`);
+                    if (response.data) {
+                        const volunteerData = await response.data;
 
                         // Format the date for the input field
                         const formattedDob = volunteerData.dob ? new Date(volunteerData.dob).toISOString().split('T')[0] : '';
@@ -364,11 +364,14 @@ const VolunteerRegistrationForm: React.FC = () => {
 
                     // Fetch new Vol_Id after successful submission
                     try {
-                        const volIdResponse = await fetch(`${API_BASE}/api/Volunteers/get-id`);
-                        if (volIdResponse.ok) {
-                            const newVolId = await volIdResponse.text();
-                            setFormData(prev => ({ ...prev, Vol_Id: newVolId }));
-                        }
+                        // Call backend to get new Volunteer ID
+                        const response = await API.get('/api/Volunteers/get-id', { responseType: 'text' });
+
+                        // Extract the ID as string
+                        const newVolId = response.data as string;
+
+                        // Update the form state with the new Volunteer ID
+                        setFormData(prev => ({ ...prev, Vol_Id: newVolId }));
                     } catch (err) {
                         console.error('Failed to fetch new Vol_Id after reset', err);
                     }

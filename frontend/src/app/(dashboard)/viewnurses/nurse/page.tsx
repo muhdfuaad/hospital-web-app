@@ -20,12 +20,6 @@ interface Panchayath {
     dstName: string;
 }
 
-interface ApiResponse {
-    success: boolean;
-    message: string;
-    data?: any;
-}
-
 interface NurseData {
     Nurse_Id: string;
     district: string;
@@ -298,11 +292,9 @@ const NurseRegistrationForm: React.FC = () => {
 
                     // Fetch new Nurse_Id after successful submission
                     try {
-                        const nurseIdResponse = await fetch(`${API_BASE}/api/Nurses/get-id`);
-                        if (nurseIdResponse.ok) {
-                            const newNurseId = await nurseIdResponse.text();
-                            setFormData(prev => ({ ...prev, Nurse_Id: newNurseId }));
-                        }
+                        const response = await API.get('/api/Nurses/get-id', { responseType: 'text' });
+                        const newNurseId = response.data as string; // cast to string for TypeScript
+                        setFormData(prev => ({ ...prev, Nurse_Id: newNurseId }));
                     } catch (err) {
                         console.error('Failed to fetch new Nurse_Id after reset', err);
                     }

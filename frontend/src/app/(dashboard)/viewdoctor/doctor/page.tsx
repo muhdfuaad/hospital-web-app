@@ -81,69 +81,6 @@ const DoctorRegistrationForm: React.FC = () => {
     const [isLoading, setIsLoading] = useState(false);
 
 
-    // Fetch existing doctor data for edit mode
-    useEffect(() => {
-        if (isEditMode && doctorId) {
-            const fetchDoctorData = async () => {
-                setIsLoading(true);
-                try {
-                    const response = await fetch(`${API_BASE}/api/Doctors/${doctorId}`);
-                    if (response.ok) {
-                        const doctorData = await response.json();
-
-                        // Format the date for the input field
-                        const formattedDob = doctorData.dob ? new Date(doctorData.dob).toISOString().split('T')[0] : '';
-
-                        setFormData({
-                            Doc_Id: doctorData.doc_Id || '',
-                            district: doctorData.district || '',
-                            panchayath: doctorData.panchayath || '',
-                            ward_no: doctorData.ward_no || '',
-                            DocName: doctorData.docName || '',
-                            address: doctorData.address || '',
-                            gender: doctorData.gender || '',
-                            dob: formattedDob,
-                            age: doctorData.age || '',
-                            BloodGroup: doctorData.bloodGroup || '',
-                            phone: doctorData.phone || '',
-                            email: doctorData.email || '',
-                            specialization: doctorData.specialization || '',
-                            degree: doctorData.degree || '',
-                            experience: doctorData.experience || '',
-                            licenseNumber: doctorData.licenseNumber || '',
-                            department: doctorData.department || '',
-                            Photo: null, // File will be handled separately
-                            description: doctorData.description || ''
-                        });
-
-                        // Set existing photo URL if available
-                        if (doctorData.photo) {
-                            setExistingPhotoUrl(`${API_BASE}/uploads/${doctorData.photo}`);
-                            setPhotoFileName(doctorData.photo);
-                        }
-
-                        // Set selected district for panchayath filtering
-                        const selectedDistrict = districts.find(d => d.name === doctorData.district);
-                        if (selectedDistrict) {
-                            setSelectedDistrictId(selectedDistrict.id);
-                        }
-                    } else {
-                        console.error('Failed to fetch doctor data');
-                        setSubmitStatus('error');
-                        setSubmitMessage('Failed to load doctor data for editing');
-                    }
-                } catch (err) {
-                    console.error('Error fetching doctor data:', err);
-                    setSubmitStatus('error');
-                    setSubmitMessage('Error loading doctor data');
-                } finally {
-                    setIsLoading(false);
-                }
-            };
-
-            fetchDoctorData();
-        }
-    }, [isEditMode, doctorId, districts]);
 
 
     // Fetch Doc_Id from API (only for new registrations)
@@ -303,6 +240,71 @@ const DoctorRegistrationForm: React.FC = () => {
         return Object.keys(newErrors).length === 0;
     };
 
+    
+    // Fetch existing doctor data for edit mode
+    useEffect(() => {
+        if (isEditMode && doctorId) {
+            const fetchDoctorData = async () => {
+                setIsLoading(true);
+                try {
+                    const response = await API.get<Record<string, any>>(`/api/Doctors/${doctorId}`);
+                    if (response.data) {
+                        const doctorData = await response.data;
+
+                        // Format the date for the input field
+                        const formattedDob = doctorData.dob ? new Date(doctorData.dob).toISOString().split('T')[0] : '';
+
+                        setFormData({
+                            Doc_Id: doctorData.doc_Id || '',
+                            district: doctorData.district || '',
+                            panchayath: doctorData.panchayath || '',
+                            ward_no: doctorData.ward_no || '',
+                            DocName: doctorData.docName || '',
+                            address: doctorData.address || '',
+                            gender: doctorData.gender || '',
+                            dob: formattedDob,
+                            age: doctorData.age || '',
+                            BloodGroup: doctorData.bloodGroup || '',
+                            phone: doctorData.phone || '',
+                            email: doctorData.email || '',
+                            specialization: doctorData.specialization || '',
+                            degree: doctorData.degree || '',
+                            experience: doctorData.experience || '',
+                            licenseNumber: doctorData.licenseNumber || '',
+                            department: doctorData.department || '',
+                            Photo: null, // File will be handled separately
+                            description: doctorData.description || ''
+                        });
+
+                        // Set existing photo URL if available
+                        if (doctorData.photo) {
+                            setExistingPhotoUrl(`${API_BASE}/uploads/${doctorData.photo}`);
+                            setPhotoFileName(doctorData.photo);
+                        }
+
+                        // Set selected district for panchayath filtering
+                        const selectedDistrict = districts.find(d => d.name === doctorData.district);
+                        if (selectedDistrict) {
+                            setSelectedDistrictId(selectedDistrict.id);
+                        }
+                    } else {
+                        console.error('Failed to fetch doctor data');
+                        setSubmitStatus('error');
+                        setSubmitMessage('Failed to load doctor data for editing');
+                    }
+                } catch (err) {
+                    console.error('Error fetching doctor data:', err);
+                    setSubmitStatus('error');
+                    setSubmitMessage('Error loading doctor data');
+                } finally {
+                    setIsLoading(false);
+                }
+            };
+
+            fetchDoctorData();
+        }
+    }, [isEditMode, doctorId, districts]);
+
     const handleSubmit = async (e: React.MouseEvent) => {
         e.preventDefault();
 
@@ -390,13 +392,10 @@ const DoctorRegistrationForm: React.FC = () => {
                         description: ''
                     });
 
-                    // Fetch new Doc_Id after successful submission
                     try {
-                        const docIdResponse = await fetch(`${API_BASE}/api/Doctors/get-id`);
-                        if (docIdResponse.ok) {
-                            const newDocId = await docIdResponse.text();
-                            setFormData(prev => ({ ...prev, Doc_Id: newDocId }));
-                        }
+                        const response = await API.get('/api/Doctors/get-id', { responseType: 'text' });
+                        const newDocId = response.data as string; // ✅ cast to string
+                        setFormData(prev => ({ ...prev, Doc_Id: newDocId }));
                     } catch (err) {
                         console.error('Failed to fetch new Doc_Id after reset', err);
                     }
