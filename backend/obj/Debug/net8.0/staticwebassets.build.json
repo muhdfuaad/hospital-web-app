@@ -1,6 +1,6 @@
 {
   "Version": 1,
-  "Hash": "xZUNfuwrZrfUT/hGHx2qI4ZQHm0lnX23ljrYJ+NVonU=",
+  "Hash": "hIbYMSJbfHIG+iLZ9htE6YAiiPA426WkhQ+Dc95NFLc=",
   "Source": "HmsApi",
   "BasePath": "_content/HmsApi",
   "Mode": "Default",
@@ -162,6 +162,27 @@
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
       "OriginalItemSpec": "wwwroot\\Uploads\\9af4d118-f2c0-4522-86fc-7d1190b41eeb.jpg"
+    },
+    {
+      "Identity": "D:\\Share\\HmsApi\\HmsApi\\wwwroot\\Uploads\\AadharDocs\\0927bbe2-8684-4001-a744-87394bd3bed6.pdf",
+      "SourceId": "HmsApi",
+      "SourceType": "Discovered",
+      "ContentRoot": "D:\\Share\\HmsApi\\HmsApi\\wwwroot\\",
+      "BasePath": "_content/HmsApi",
+      "RelativePath": "Uploads/AadharDocs/0927bbe2-8684-4001-a744-87394bd3bed6#[.{fingerprint}]?.pdf",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "Fingerprint": "a3qajx7gmr",
+      "Integrity": "lintnpZ04kR5XkndpKsEIVta+0IlxKAwO6Fdu/kcxRI=",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\Uploads\\AadharDocs\\0927bbe2-8684-4001-a744-87394bd3bed6.pdf"
     },
     {
       "Identity": "D:\\Share\\HmsApi\\HmsApi\\wwwroot\\Uploads\\AadharDocs\\0ba21242-9903-44cc-bcb8-07d714e4e2f9.pdf",
@@ -708,6 +729,27 @@
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
       "OriginalItemSpec": "wwwroot\\Uploads\\Photographs\\cb5fc031-a074-467f-abc2-014f9b0ae258.jpg"
+    },
+    {
+      "Identity": "D:\\Share\\HmsApi\\HmsApi\\wwwroot\\Uploads\\Photographs\\d29cfe1a-4871-44ad-b145-1127362af24e.jpg",
+      "SourceId": "HmsApi",
+      "SourceType": "Discovered",
+      "ContentRoot": "D:\\Share\\HmsApi\\HmsApi\\wwwroot\\",
+      "BasePath": "_content/HmsApi",
+      "RelativePath": "Uploads/Photographs/d29cfe1a-4871-44ad-b145-1127362af24e#[.{fingerprint}]?.jpg",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "Fingerprint": "ldsma1kid9",
+      "Integrity": "1xj2yH95yG+tRS/djT2zQ5YdjPCtypDsuDM7mB18Kl8=",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\Uploads\\Photographs\\d29cfe1a-4871-44ad-b145-1127362af24e.jpg"
     }
   ],
   "Endpoints": [
@@ -1282,6 +1324,88 @@
         {
           "Name": "integrity",
           "Value": "sha256-gMPxKXoebcLPAfaihj2WG7ulwGUki8j1aFMESbAdz24="
+        }
+      ]
+    },
+    {
+      "Route": "Uploads/AadharDocs/0927bbe2-8684-4001-a744-87394bd3bed6.a3qajx7gmr.pdf",
+      "AssetFile": "D:\\Share\\HmsApi\\HmsApi\\wwwroot\\Uploads\\AadharDocs\\0927bbe2-8684-4001-a744-87394bd3bed6.pdf",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "57110"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "application/pdf"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"lintnpZ04kR5XkndpKsEIVta+0IlxKAwO6Fdu/kcxRI=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Mon, 25 Aug 2025 06:42:30 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "a3qajx7gmr"
+        },
+        {
+          "Name": "label",
+          "Value": "Uploads/AadharDocs/0927bbe2-8684-4001-a744-87394bd3bed6.pdf"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-lintnpZ04kR5XkndpKsEIVta+0IlxKAwO6Fdu/kcxRI="
+        }
+      ]
+    },
+    {
+      "Route": "Uploads/AadharDocs/0927bbe2-8684-4001-a744-87394bd3bed6.pdf",
+      "AssetFile": "D:\\Share\\HmsApi\\HmsApi\\wwwroot\\Uploads\\AadharDocs\\0927bbe2-8684-4001-a744-87394bd3bed6.pdf",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "57110"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "application/pdf"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"lintnpZ04kR5XkndpKsEIVta+0IlxKAwO6Fdu/kcxRI=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Mon, 25 Aug 2025 06:42:30 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "no-cache"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-lintnpZ04kR5XkndpKsEIVta+0IlxKAwO6Fdu/kcxRI="
         }
       ]
     },
@@ -3414,6 +3538,88 @@
         {
           "Name": "integrity",
           "Value": "sha256-gMPxKXoebcLPAfaihj2WG7ulwGUki8j1aFMESbAdz24="
+        }
+      ]
+    },
+    {
+      "Route": "Uploads/Photographs/d29cfe1a-4871-44ad-b145-1127362af24e.jpg",
+      "AssetFile": "D:\\Share\\HmsApi\\HmsApi\\wwwroot\\Uploads\\Photographs\\d29cfe1a-4871-44ad-b145-1127362af24e.jpg",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "8550"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "image/jpeg"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"1xj2yH95yG+tRS/djT2zQ5YdjPCtypDsuDM7mB18Kl8=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Mon, 25 Aug 2025 06:42:30 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=3600, must-revalidate"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-1xj2yH95yG+tRS/djT2zQ5YdjPCtypDsuDM7mB18Kl8="
+        }
+      ]
+    },
+    {
+      "Route": "Uploads/Photographs/d29cfe1a-4871-44ad-b145-1127362af24e.ldsma1kid9.jpg",
+      "AssetFile": "D:\\Share\\HmsApi\\HmsApi\\wwwroot\\Uploads\\Photographs\\d29cfe1a-4871-44ad-b145-1127362af24e.jpg",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "8550"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "image/jpeg"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"1xj2yH95yG+tRS/djT2zQ5YdjPCtypDsuDM7mB18Kl8=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Mon, 25 Aug 2025 06:42:30 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "ldsma1kid9"
+        },
+        {
+          "Name": "label",
+          "Value": "Uploads/Photographs/d29cfe1a-4871-44ad-b145-1127362af24e.jpg"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-1xj2yH95yG+tRS/djT2zQ5YdjPCtypDsuDM7mB18Kl8="
         }
       ]
     }

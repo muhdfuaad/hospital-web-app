@@ -1886,6 +1886,12 @@
                     "type": "integer",
                     "format": "int32"
                   },
+                  "Doc_Id": {
+                    "type": "string"
+                  },
+                  "ReferredDoctorName": {
+                    "type": "string"
+                  },
                   "DistrictId": {
                     "type": "integer",
                     "format": "int32"
@@ -1902,6 +1908,9 @@
                     "type": "string"
                   },
                   "Area": {
+                    "type": "string"
+                  },
+                  "Dob": {
                     "type": "string"
                   },
                   "Date": {
@@ -1922,6 +1931,12 @@
                     "format": "int32"
                   },
                   "Gender": {
+                    "type": "string"
+                  },
+                  "Religion": {
+                    "type": "string"
+                  },
+                  "Profession": {
                     "type": "string"
                   },
                   "FinancialStatus": {
@@ -1946,6 +1961,9 @@
                     "type": "string"
                   },
                   "PhoneNumber2": {
+                    "type": "string"
+                  },
+                  "Email": {
                     "type": "string"
                   },
                   "AdhaarNumber": {
@@ -2007,6 +2025,12 @@
                 "PatientId": {
                   "style": "form"
                 },
+                "Doc_Id": {
+                  "style": "form"
+                },
+                "ReferredDoctorName": {
+                  "style": "form"
+                },
                 "DistrictId": {
                   "style": "form"
                 },
@@ -2020,6 +2044,9 @@
                   "style": "form"
                 },
                 "Area": {
+                  "style": "form"
+                },
+                "Dob": {
                   "style": "form"
                 },
                 "Date": {
@@ -2038,6 +2065,12 @@
                   "style": "form"
                 },
                 "Gender": {
+                  "style": "form"
+                },
+                "Religion": {
+                  "style": "form"
+                },
+                "Profession": {
                   "style": "form"
                 },
                 "FinancialStatus": {
@@ -2062,6 +2095,9 @@
                   "style": "form"
                 },
                 "PhoneNumber2": {
+                  "style": "form"
+                },
+                "Email": {
                   "style": "form"
                 },
                 "AdhaarNumber": {
@@ -2239,6 +2275,12 @@
                     "type": "integer",
                     "format": "int32"
                   },
+                  "Doc_Id": {
+                    "type": "string"
+                  },
+                  "ReferredDoctorName": {
+                    "type": "string"
+                  },
                   "DistrictId": {
                     "type": "integer",
                     "format": "int32"
@@ -2255,6 +2297,9 @@
                     "type": "string"
                   },
                   "Area": {
+                    "type": "string"
+                  },
+                  "Dob": {
                     "type": "string"
                   },
                   "Date": {
@@ -2275,6 +2320,12 @@
                     "format": "int32"
                   },
                   "Gender": {
+                    "type": "string"
+                  },
+                  "Religion": {
+                    "type": "string"
+                  },
+                  "Profession": {
                     "type": "string"
                   },
                   "FinancialStatus": {
@@ -2299,6 +2350,9 @@
                     "type": "string"
                   },
                   "PhoneNumber2": {
+                    "type": "string"
+                  },
+                  "Email": {
                     "type": "string"
                   },
                   "AdhaarNumber": {
@@ -2360,6 +2414,12 @@
                 "PatientId": {
                   "style": "form"
                 },
+                "Doc_Id": {
+                  "style": "form"
+                },
+                "ReferredDoctorName": {
+                  "style": "form"
+                },
                 "DistrictId": {
                   "style": "form"
                 },
@@ -2373,6 +2433,9 @@
                   "style": "form"
                 },
                 "Area": {
+                  "style": "form"
+                },
+                "Dob": {
                   "style": "form"
                 },
                 "Date": {
@@ -2391,6 +2454,12 @@
                   "style": "form"
                 },
                 "Gender": {
+                  "style": "form"
+                },
+                "Religion": {
+                  "style": "form"
+                },
+                "Profession": {
                   "style": "form"
                 },
                 "FinancialStatus": {
@@ -2415,6 +2484,9 @@
                   "style": "form"
                 },
                 "PhoneNumber2": {
+                  "style": "form"
+                },
+                "Email": {
                   "style": "form"
                 },
                 "AdhaarNumber": {
@@ -2563,6 +2635,12 @@
                     "type": "integer",
                     "format": "int32"
                   },
+                  "Doc_Id": {
+                    "type": "string"
+                  },
+                  "ReferredDoctorName": {
+                    "type": "string"
+                  },
                   "DistrictId": {
                     "type": "integer",
                     "format": "int32"
@@ -2579,6 +2657,9 @@
                     "type": "string"
                   },
                   "Area": {
+                    "type": "string"
+                  },
+                  "Dob": {
                     "type": "string"
                   },
                   "Date": {
@@ -2599,6 +2680,12 @@
                     "format": "int32"
                   },
                   "Gender": {
+                    "type": "string"
+                  },
+                  "Religion": {
+                    "type": "string"
+                  },
+                  "Profession": {
                     "type": "string"
                   },
                   "FinancialStatus": {
@@ -2623,6 +2710,9 @@
                     "type": "string"
                   },
                   "PhoneNumber2": {
+                    "type": "string"
+                  },
+                  "Email": {
                     "type": "string"
                   },
                   "AdhaarNumber": {
@@ -2684,6 +2774,12 @@
                 "PatientId": {
                   "style": "form"
                 },
+                "Doc_Id": {
+                  "style": "form"
+                },
+                "ReferredDoctorName": {
+                  "style": "form"
+                },
                 "DistrictId": {
                   "style": "form"
                 },
@@ -2697,6 +2793,9 @@
                   "style": "form"
                 },
                 "Area": {
+                  "style": "form"
+                },
+                "Dob": {
                   "style": "form"
                 },
                 "Date": {
@@ -2715,6 +2814,12 @@
                   "style": "form"
                 },
                 "Gender": {
+                  "style": "form"
+                },
+                "Religion": {
+                  "style": "form"
+                },
+                "Profession": {
                   "style": "form"
                 },
                 "FinancialStatus": {
@@ -2739,6 +2844,9 @@
                   "style": "form"
                 },
                 "PhoneNumber2": {
+                  "style": "form"
+                },
+                "Email": {
                   "style": "form"
                 },
                 "AdhaarNumber": {
@@ -8963,6 +9071,14 @@
             "type": "integer",
             "format": "int32"
           },
+          "doc_Id": {
+            "type": "string",
+            "nullable": true
+          },
+          "referredDoctorName": {
+            "type": "string",
+            "nullable": true
+          },
           "districtId": {
             "type": "integer",
             "format": "int32",
@@ -8983,6 +9099,10 @@
             "nullable": true
           },
           "area": {
+            "type": "string",
+            "nullable": true
+          },
+          "dob": {
             "type": "string",
             "nullable": true
           },
@@ -9008,6 +9128,14 @@
             "format": "int32"
           },
           "gender": {
+            "type": "string",
+            "nullable": true
+          },
+          "religion": {
+            "type": "string",
+            "nullable": true
+          },
+          "profession": {
             "type": "string",
             "nullable": true
           },
@@ -9040,6 +9168,10 @@
             "type": "string"
           },
           "phoneNumber2": {
+            "type": "string",
+            "nullable": true
+          },
+          "email": {
             "type": "string",
             "nullable": true
           },
@@ -9130,6 +9262,14 @@
             "type": "integer",
             "format": "int32"
           },
+          "doc_Id": {
+            "type": "string",
+            "nullable": true
+          },
+          "referredDoctorName": {
+            "type": "string",
+            "nullable": true
+          },
           "districtId": {
             "type": "integer",
             "format": "int32",
@@ -9150,6 +9290,10 @@
             "nullable": true
           },
           "area": {
+            "type": "string",
+            "nullable": true
+          },
+          "dob": {
             "type": "string",
             "nullable": true
           },
@@ -9174,6 +9318,14 @@
             "format": "int32"
           },
           "gender": {
+            "type": "string",
+            "nullable": true
+          },
+          "religion": {
+            "type": "string",
+            "nullable": true
+          },
+          "profession": {
             "type": "string",
             "nullable": true
           },
@@ -9206,6 +9358,10 @@
             "nullable": true
           },
           "phoneNumber2": {
+            "type": "string",
+            "nullable": true
+          },
+          "email": {
             "type": "string",
             "nullable": true
           },

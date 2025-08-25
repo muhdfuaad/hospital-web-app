@@ -11,6 +11,8 @@ namespace HmsApi.Models.Patients
 
         [Required]
         public int PatientId { get; set; }
+        public string? Doc_Id { get; set; }
+        public string? ReferredDoctorName { get; set; }
 
         // Replaced full names with IDs
         public int? DistrictId { get; set; }
@@ -18,7 +20,8 @@ namespace HmsApi.Models.Patients
         public int? CategoryId { get; set; }
 
         public string? Ward { get; set; }
-        public string? Area { get; set; }
+        public string? Area { get; set; } = "";
+        public string? Dob { get; set; }
         public DateTime? Date { get; set; }
         public string? Diagnosis { get; set; }
         public string? Status { get; set; }
@@ -30,6 +33,8 @@ namespace HmsApi.Models.Patients
         public int Age { get; set; }
 
         public string? Gender { get; set; }
+        public string? Religion { get; set; } = "";
+        public string? Profession { get; set; } = "";
         public string? FinancialStatus { get; set; }
         public string? SpouseName { get; set; } = "";
         public string? FatherName { get; set; } = "";
@@ -41,6 +46,7 @@ namespace HmsApi.Models.Patients
         public string PhoneNumber1 { get; set; } = string.Empty;
 
         public string? PhoneNumber2 { get; set; } = "";
+        public string? Email { get; set; } = "";
         public string? AdhaarNumber { get; set; } = "";
         public string? ContactPerson { get; set; } = "";
         public string? Relation { get; set; } = "";
@@ -71,6 +77,8 @@ namespace HmsApi.Models.Patients
     public class HpformsDto
     {
         public int PatientId { get; set; }
+        public string? Doc_Id { get; set; }
+        public string? ReferredDoctorName { get; set; }
 
         // Only IDs now
         public int? DistrictId { get; set; }
@@ -79,6 +87,7 @@ namespace HmsApi.Models.Patients
 
         public string? Ward { get; set; }
         public string? Area { get; set; } = "";
+        public string Dob { get; set; }
         public DateTime Date { get; set; }
         public string? Diagnosis { get; set; } = "";
         public string? Status { get; set; }
@@ -86,6 +95,8 @@ namespace HmsApi.Models.Patients
         public string Name { get; set; }
         public int Age { get; set; }
         public string Gender { get; set; }
+        public string? Religion { get; set; }
+        public string? Profession { get; set; }
         public string? FinancialStatus { get; set; }
 
         public string? SpouseName { get; set; } = "";
@@ -96,6 +107,7 @@ namespace HmsApi.Models.Patients
 
         public string? PhoneNumber1 { get; set; }
         public string? PhoneNumber2 { get; set; } = "";
+        public string? Email { get; set; } = "";
         public string? AdhaarNumber { get; set; } = "";
         public string? ContactPerson { get; set; } = "";
         public string? Relation { get; set; } = "";

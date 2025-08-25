@@ -71,6 +71,12 @@ namespace HmsApi.Controllers.Patients
             var dto = new HpformsDto
             {
                 PatientId = hpform.PatientId,
+                Doc_Id = hpform.Doc_Id,
+                ReferredDoctorName = hpform.ReferredDoctorName,
+                Dob = hpform.Dob,
+                Email = hpform.Email,
+                Religion = hpform.Religion,
+                Profession = hpform.Profession,
                 DistrictId = hpform.DistrictId,
                 PanchayathId = hpform.PanchayathId,
                 Ward = hpform.Ward,
@@ -188,6 +194,12 @@ namespace HmsApi.Controllers.Patients
             // Update existing form with new data (Keep the same PatientId - DO NOT CHANGE IT)
             // existingHpform.PatientId remains the same - this is key for editing
             existingHpform.DistrictId = hpformDto.DistrictId;
+            existingHpform.Doc_Id = hpformDto.Doc_Id;
+            existingHpform.ReferredDoctorName = hpformDto.ReferredDoctorName;
+            existingHpform.Dob = hpformDto.Dob;
+            existingHpform.Religion = hpformDto.Religion;
+            existingHpform.Profession = hpformDto.Profession;
+            existingHpform.Email = hpformDto.Email;
             existingHpform.PanchayathId = hpformDto.PanchayathId;
             existingHpform.Ward = hpformDto.Ward;
             existingHpform.Area = hpformDto.Area;
@@ -314,6 +326,12 @@ namespace HmsApi.Controllers.Patients
             // Update existing form with new data (Keep the same PatientId - DO NOT CHANGE IT)
             // existingHpform.PatientId remains the same - this is key for editing
             existingHpform.DistrictId = hpformDto.DistrictId;
+            existingHpform.Doc_Id = hpformDto.Doc_Id;
+            existingHpform.ReferredDoctorName = hpformDto.ReferredDoctorName;
+            existingHpform.Dob = hpformDto.Dob;
+            existingHpform.Religion = hpformDto.Religion;
+            existingHpform.Profession = hpformDto.Profession;
+            existingHpform.Email = hpformDto.Email;
             existingHpform.PanchayathId = hpformDto.PanchayathId;
             existingHpform.Ward = hpformDto.Ward;
             existingHpform.Area = hpformDto.Area;
@@ -421,6 +439,12 @@ namespace HmsApi.Controllers.Patients
             var hpform = new Hpform
             {
                 PatientId = PT_Id,
+                Doc_Id = hpformDto.Doc_Id,
+                ReferredDoctorName = hpformDto.ReferredDoctorName,
+                Dob = hpformDto.Dob,
+                Email = hpformDto.Email,
+                Religion = hpformDto.Religion,
+                Profession = hpformDto.Profession,
                 DistrictId = hpformDto.DistrictId,
                 PanchayathId = hpformDto.PanchayathId,
                 Ward = hpformDto.Ward,

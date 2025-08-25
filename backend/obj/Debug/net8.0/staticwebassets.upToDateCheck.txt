@@ -5,6 +5,7 @@ wwwroot\Uploads\4bf4b4e1-535a-4694-b1a2-5b03c7ed45de.jpg
 wwwroot\Uploads\74b49de0-2a8a-44b2-b5a1-abf9979dcb66.jpg
 wwwroot\Uploads\7c2d1251-2bca-48da-8cab-19caeb0f1297.jpg
 wwwroot\Uploads\9af4d118-f2c0-4522-86fc-7d1190b41eeb.jpg
+wwwroot\Uploads\AadharDocs\0927bbe2-8684-4001-a744-87394bd3bed6.pdf
 wwwroot\Uploads\AadharDocs\0ba21242-9903-44cc-bcb8-07d714e4e2f9.pdf
 wwwroot\Uploads\AadharDocs\499eafac-2d58-45c7-b848-95bd5bc009da.pdf
 wwwroot\Uploads\AadharDocs\4ecf0c58-e2b9-4fa1-9210-d95d9b0346c9.pdf
@@ -31,3 +32,4 @@ wwwroot\Uploads\Photographs\83c75eff-d2e1-47a8-a108-6fa24c0ab512.jpg
 wwwroot\Uploads\Photographs\b780279a-fabb-410c-8a2a-4c5919ec606f.jpg
 wwwroot\Uploads\Photographs\b99f96ef-376e-4336-a203-5b5afb43ac11.jpg
 wwwroot\Uploads\Photographs\cb5fc031-a074-467f-abc2-014f9b0ae258.jpg
+wwwroot\Uploads\Photographs\d29cfe1a-4871-44ad-b145-1127362af24e.jpg

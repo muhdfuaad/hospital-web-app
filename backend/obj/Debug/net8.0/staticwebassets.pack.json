@@ -29,6 +29,10 @@
       "PackagePath": "staticwebassets\\Uploads\\9af4d118-f2c0-4522-86fc-7d1190b41eeb.jpg"
     },
     {
+      "Id": "D:\\Share\\HmsApi\\HmsApi\\wwwroot\\Uploads\\AadharDocs\\0927bbe2-8684-4001-a744-87394bd3bed6.pdf",
+      "PackagePath": "staticwebassets\\Uploads\\AadharDocs\\0927bbe2-8684-4001-a744-87394bd3bed6.pdf"
+    },
+    {
       "Id": "D:\\Share\\HmsApi\\HmsApi\\wwwroot\\Uploads\\AadharDocs\\0ba21242-9903-44cc-bcb8-07d714e4e2f9.pdf",
       "PackagePath": "staticwebassets\\Uploads\\AadharDocs\\0ba21242-9903-44cc-bcb8-07d714e4e2f9.pdf"
     },
@@ -107,6 +111,10 @@
     {
       "Id": "D:\\Share\\HmsApi\\HmsApi\\wwwroot\\Uploads\\Photographs\\cb5fc031-a074-467f-abc2-014f9b0ae258.jpg",
       "PackagePath": "staticwebassets\\Uploads\\Photographs\\cb5fc031-a074-467f-abc2-014f9b0ae258.jpg"
+    },
+    {
+      "Id": "D:\\Share\\HmsApi\\HmsApi\\wwwroot\\Uploads\\Photographs\\d29cfe1a-4871-44ad-b145-1127362af24e.jpg",
+      "PackagePath": "staticwebassets\\Uploads\\Photographs\\d29cfe1a-4871-44ad-b145-1127362af24e.jpg"
     },
     {
       "Id": "D:\\Share\\HmsApi\\HmsApi\\wwwroot\\Uploads\\d25c9f32-a4ff-4777-aa1c-c76ef3b21a38.pdf",

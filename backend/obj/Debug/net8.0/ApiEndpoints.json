@@ -1199,6 +1199,16 @@
         "IsRequired": false
       },
       {
+        "Name": "Doc_Id",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "ReferredDoctorName",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
         "Name": "DistrictId",
         "Type": "System.Nullable\u00601[[System.Int32, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
         "IsRequired": false
@@ -1220,6 +1230,11 @@
       },
       {
         "Name": "Area",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "Dob",
         "Type": "System.String",
         "IsRequired": false
       },
@@ -1250,6 +1265,16 @@
       },
       {
         "Name": "Gender",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "Religion",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "Profession",
         "Type": "System.String",
         "IsRequired": false
       },
@@ -1290,6 +1315,11 @@
       },
       {
         "Name": "PhoneNumber2",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "Email",
         "Type": "System.String",
         "IsRequired": false
       },
@@ -1436,6 +1466,16 @@
         "IsRequired": false
       },
       {
+        "Name": "Doc_Id",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "ReferredDoctorName",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
         "Name": "DistrictId",
         "Type": "System.Nullable\u00601[[System.Int32, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
         "IsRequired": false
@@ -1457,6 +1497,11 @@
       },
       {
         "Name": "Area",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "Dob",
         "Type": "System.String",
         "IsRequired": false
       },
@@ -1487,6 +1532,16 @@
       },
       {
         "Name": "Gender",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "Religion",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "Profession",
         "Type": "System.String",
         "IsRequired": false
       },
@@ -1527,6 +1582,11 @@
       },
       {
         "Name": "PhoneNumber2",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "Email",
         "Type": "System.String",
         "IsRequired": false
       },
@@ -1719,6 +1779,16 @@
         "IsRequired": false
       },
       {
+        "Name": "Doc_Id",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "ReferredDoctorName",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
         "Name": "DistrictId",
         "Type": "System.Nullable\u00601[[System.Int32, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
         "IsRequired": false
@@ -1740,6 +1810,11 @@
       },
       {
         "Name": "Area",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "Dob",
         "Type": "System.String",
         "IsRequired": false
       },
@@ -1770,6 +1845,16 @@
       },
       {
         "Name": "Gender",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "Religion",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "Profession",
         "Type": "System.String",
         "IsRequired": false
       },
@@ -1810,6 +1895,11 @@
       },
       {
         "Name": "PhoneNumber2",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "Email",
         "Type": "System.String",
         "IsRequired": false
       },
